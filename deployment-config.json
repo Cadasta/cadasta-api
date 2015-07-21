@@ -1,0 +1,48 @@
+{
+  "environment": {
+    "development":{
+      "resourceDatabase":{
+        "username": "",
+        "password": "",
+        "server":"",
+        "port":"",
+        "database": ""
+      },
+      "apiPort" : "3000"
+    },
+    "testing": {
+      "resourceDatabase":{
+        "username": "",
+        "password": "",
+        "server":"",
+        "port":"",
+        "database": ""
+      },
+      "apiPort" : "9000"
+    },
+    "staging": {
+      "resourceDatabase":{
+        "username": "",
+        "password": "",
+        "server":"",
+        "port":"",
+        "database": ""
+      },
+      "apiPort" : "3000"
+    },
+
+    "production": {
+      "resourceDatabase":{
+        "username": "",
+        "password": "",
+        "server":"",
+        "port":"",
+        "database": ""
+      },
+      "apiPort" : "3001"
+    }
+  },
+
+  "rollbar" : ""
+
+}
