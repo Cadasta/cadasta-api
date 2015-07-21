@@ -11,8 +11,8 @@ module.exports = function(grunt) {
 
         apidoc: {
             myapp: {
-                src: "app/",
-                dest: "app/public/docs",
+                src: ".",
+                dest: "public/docs/",
                 options: {
                     debug: true,
                     includeFilters: [ ".*\\.js$" ],
