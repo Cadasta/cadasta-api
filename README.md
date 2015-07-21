@@ -9,3 +9,9 @@
 *ssh example*    
 
      ssh -i /path/to/your/copy/of/cadasta-api.pem  ubuntu@54.69.121.180  
+
+
+### Debugging in Webstorm
+Create a Node.js run configuration. Configuration settings should look something like this:
+
+![image](https://media.taiga.io/attachments/9/0/c/f/c016ef1a7871b34fae073ad2081a195e548bf1920646c9832bfe052cf54e/webstorm-api-debug-config.png)
