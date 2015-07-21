@@ -8,7 +8,8 @@
         "port":"",
         "database": ""
       },
-      "apiPort" : "3000"
+      "apiPort" : "3000",
+      "rollbarKey" : "010577ab60254b9086522435b5d674c8"
     },
     "testing": {
       "resourceDatabase":{
@@ -28,7 +29,8 @@
         "port":"",
         "database": ""
       },
-      "apiPort" : "3000"
+      "apiPort" : "3000",
+      "rollbarKey" : "010577ab60254b9086522435b5d674c8"
     },
 
     "production": {
@@ -39,10 +41,8 @@
         "port":"",
         "database": ""
       },
-      "apiPort" : "3001"
+      "apiPort" : "3001",
+      "rollbarKey" : "010577ab60254b9086522435b5d674c8"
     }
-  },
-
-  "rollbar" : ""
-
+  }
 }

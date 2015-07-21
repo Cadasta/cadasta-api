@@ -13,7 +13,10 @@
     "express": "~4.13.1",
     "hbs": "~3.1.0",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "rollbar": "^0.5.4",
+    "serve-favicon": "~2.3.0",
+    "winston": "^1.0.1",
+    "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

@@ -4,6 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var compression = require('compression')
 var bodyParser = require('body-parser');
+// Logging packages
+var rollbar = require('rollbar');
+var winston = require('winston');
+require('winston-rollbar').Rollbar;
+require('./console-winston');
 
 var deploymentConfig = require("./deployment-config.json");
 var routes = require('./routes/index');
@@ -66,11 +71,12 @@ if (app.get('env') === 'development') {
 } else if (app.get('env') === 'staging') {
 
     printStackTrace(app);
+    addLogging(app, envSettings);
 
 } else if (app.get('env') === 'production') {
 
     hideStackTrace(app);
-
+    addLogging(app, envSettings);
 }
 
 
@@ -105,4 +111,11 @@ function hideStackTrace(app){
             error: {}
         });
     });
+}
+
+function addLogging(app,envSettings){
+    app.use(rollbar.errorHandler(envSettings.rollbarKey));
+    winston.add(winston.transports.Rollbar, { rollbarAccessToken: envSettings.rollbarKey, level:'warn' });
+    rollbar.handleUncaughtExceptions(envSettings.rollbar, { exitOnUncaughtException: true });
+
 }
