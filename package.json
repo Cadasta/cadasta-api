@@ -1,9 +1,9 @@
 {
-  "name": "test",
+  "name": "cadasta-api",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node app/app.js"
   },
   "dependencies": {
     "body-parser": "~1.13.2",

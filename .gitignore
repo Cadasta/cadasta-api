@@ -5,3 +5,5 @@ Thumbs.db
 .DS_Store
 
 node_modules/
+public/docs/
+

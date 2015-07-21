@@ -12,7 +12,12 @@ module.exports = function(grunt) {
         apidoc: {
             myapp: {
                 src: "app/",
-                dest: "apidoc/"
+                dest: "app/public/docs",
+                options: {
+                    debug: true,
+                    includeFilters: [ ".*\\.js$" ],
+                    excludeFilters: [ "node_modules/" ]
+                }
             }
         }
     });
