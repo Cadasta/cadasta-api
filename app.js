@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var compression = require('compression')
 var bodyParser = require('body-parser');
 
 var deploymentConfig = require("./deployment-config.json");
@@ -31,6 +32,9 @@ app.set('env', deploymentType);
 
 // Environment specific configuration settings
 var envSettings = deploymentConfig.environment[deploymentType];
+
+// compress all requests: gzip/deflate
+app.use(compression())
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
