@@ -13,6 +13,7 @@
 ###Running locally
  After git cloning, do a `npm install` at the repo root.  To run the repo in Webstorm (where u can add breakpoints) see the next section for details.
  Otherwise you can fire up the API (in development mode) with:
+
     > node app.js
 
 ### Debugging in Webstorm
