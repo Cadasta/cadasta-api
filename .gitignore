@@ -6,4 +6,6 @@ Thumbs.db
 
 node_modules/
 public/docs/
+ship/**
+deploy/**
 

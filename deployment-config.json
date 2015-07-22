@@ -9,6 +9,7 @@
         "database": ""
       },
       "apiPort" : "3000",
+
       "rollbarKey" : "010577ab60254b9086522435b5d674c8"
     },
     "testing": {
@@ -19,7 +20,7 @@
         "port":"",
         "database": ""
       },
-      "apiPort" : "9000"
+      "apiPort" : "9000",
     },
     "staging": {
       "resourceDatabase":{
@@ -30,6 +31,9 @@
         "database": ""
       },
       "apiPort" : "3000",
+      "hostIp": "54.69.121.180",
+      "hostPath":"~/staging",
+      "hostUsername":"ubuntu",
       "rollbarKey" : "010577ab60254b9086522435b5d674c8"
     },
 
@@ -42,6 +46,9 @@
         "database": ""
       },
       "apiPort" : "3001",
+      "hostIp": "54.69.121.180",
+      "hostPath":"~/production/",
+      "hostUsername":"ubuntu",
       "rollbarKey" : "010577ab60254b9086522435b5d674c8"
     }
   }
