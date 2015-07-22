@@ -10,11 +10,18 @@
 
      ssh -i /path/to/your/copy/of/cadasta-api.pem  ubuntu@54.69.121.180  
 
+###Running locally
+ After git cloning, do a `npm install` at the repo root.  To run the repo in Webstorm (where u can add breakpoints) see the next section for details.
+ Otherwise you can fire up the API (in development mode) with:
+    > node app.js
 
 ### Debugging in Webstorm
-Create a Node.js run configuration. Configuration settings should look something like this. Now you can put in breakpoints.
+Create a Node.js run configuration. Configuration settings should look something like this. Now you can put in breakpoints.  Then click the "bug" button in the Webstorm toolbar.
 
 ![image](https://media.taiga.io/attachments/9/0/c/f/c016ef1a7871b34fae073ad2081a195e548bf1920646c9832bfe052cf54e/webstorm-api-debug-config.png)
+
+
+
 
 ### Documenting Endpoints
 This API is leveraging [apidoc](http://apidocjs.com/) to convert code comments above endpoint definitions to html docs. Please see [apidoc](http://apidocjs.com/) for commenting details. After adding comments, your will need to run the following Grunt task to refresh the docs.
