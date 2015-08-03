@@ -24,12 +24,12 @@ module.exports = function(grunt) {
 
         apidoc: {
             docs: {
-                src: ".",
-                dest: "public/docs/",
+                src: "src",
+                dest: "src/public/docs/",
                 options: {
                     debug: true,
                     includeFilters: [ ".*\\.js$" ],
-                    excludeFilters: [ "node_modules/", "deploy/", "ship/" ]
+                    excludeFilters: [ "node_modules/", "ship/" ]
                 }
             }
         },
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
         mkdir: {
             deploy: {
                 options: {
-                    create: ['deploy', 'ship']
+                    create: ['ship']
                 }
             }
         },
@@ -48,20 +48,8 @@ module.exports = function(grunt) {
 
         copy : {
 
-            deploy : {
+            publish : {
                 files: [
-                    {expand: true, cwd: '', src: [
-                            '**',
-                            '!node_modules/**',
-                            '!test/**',
-                            '!deploy/**',
-                            '!ship/**',
-                            '!.gitignore',
-                            '!Gruntfile.js',
-                            '!README.md',
-                            '!webstorm-api-debug-config.png'
-                        ],
-                        dest: 'deploy/'},
                     {expand: true, cwd: '', src: ['publish.sh'], dest: 'ship/'}
                 ]
             }
