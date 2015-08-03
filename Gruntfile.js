@@ -29,7 +29,7 @@ module.exports = function(grunt) {
                 options: {
                     debug: true,
                     includeFilters: [ ".*\\.js$" ],
-                    excludeFilters: [ "node_modules/" ]
+                    excludeFilters: [ "node_modules/", "deploy/", "ship/" ]
                 }
             }
         },
@@ -99,6 +99,10 @@ module.exports = function(grunt) {
                     'scp -v -i ' + pem + ' ship/deploy.tar.gz '+ hostUser + '@' + hostIp + ':'+ hostPath,
                     'scp -v -i ' + pem + ' ship/publish.sh '+ hostUser + '@' + hostIp + ':'+ hostPath
                 ].join('&&')
+            },
+
+            markdownDocs : {
+                command: 'node node_modules/apidoc-markdown -p public/docs -o api-documentation.md'
             }
 
         }
@@ -111,12 +115,18 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-file-append');
 
+    grunt.registerTask('updateDocs', [
+        'apidoc:docs',
+        'shell:markdownDocs',
+    ]);
+
     // The build and 'deploy' task
     grunt.registerTask('deploy', [
         'mkdir:deploy',
         'clean:deploy',
         'copy:deploy',
         'apidoc:docs',
+        'shell:markdownDocs',
         'file_append:deploy',
         'shell:compress',
         'shell:scp'

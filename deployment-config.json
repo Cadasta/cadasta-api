@@ -20,7 +20,7 @@
         "port":"",
         "database": ""
       },
-      "apiPort" : "9000",
+      "apiPort" : "9000"
     },
     "staging": {
       "resourceDatabase":{
