@@ -15,6 +15,7 @@ var settings = require('./settings.js');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+// Create the express instance
 var app = express();
 
 // view engine setup
@@ -24,29 +25,36 @@ app.set('view engine', 'hbs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-var validDeployments = ['production', 'staging', 'development', 'testing'];
+// Set the valid environments
+var validEnvironments = ['production', 'staging', 'development', 'testing'];
 
-var deploymentType = process.argv[2] || 'development';
+// Get the runtime environment from the node app argument; default to development
+var environment = process.argv[2] || 'development';
 
-if(validDeployments.indexOf(deploymentType) === -1) {
-    console.error('Invalid deployment type');
+// Ensure the environment argument is valid
+if(validEnvironments.indexOf(environment) === -1) {
+    console.error('Invalid environment type');
     return;
 }
 
 // Set app env
-app.set('env', deploymentType);
+app.set('env', environment);
 
 // Environment specific configuration settings
-var envSettings = deploymentConfig.environment[deploymentType];
-settings.pg = envSettings.resourceDatabase;
+var envSettings = deploymentConfig.environment[environment];
+settings.pg = envSettings.pg;
 
 // compress all requests: gzip/deflate
-app.use(compression())
+app.use(compression());
 
+// Body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Static directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Endpoint configuration
 app.use('/', routes);
 app.use('/users', users);
 
@@ -63,20 +71,24 @@ app.use(function(req, res, next) {
 // Environment-specific configuration
 if (app.get('env') === 'development') {
 
+    // Use the morgan logger and print stack trace
     app.use(logger('dev'));
     printStackTrace(app);
 
 } else if (app.get('env') === 'testing') {
 
+    // print stack trace
     printStackTrace(app);
 
 } else if (app.get('env') === 'staging') {
 
+    // print stack trace and log warnings and errors to Rollbar logging dashboard
     printStackTrace(app);
     addLogging(app, envSettings);
 
 } else if (app.get('env') === 'production') {
 
+    // hide stack trace and log warnings and errors to Rollbar logging dashboard
     hideStackTrace(app);
     addLogging(app, envSettings);
 }
