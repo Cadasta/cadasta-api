@@ -1,7 +1,7 @@
 #!/bin/bash
 
-rm -rf deploy
-tar -zxf deploy.tar.gz
+rm -rf src
+tar -zxf src.tar.gz
 cd deploy
 sudo npm install --production
 grunt apidoc:docs

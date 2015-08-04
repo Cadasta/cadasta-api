@@ -2,7 +2,7 @@
  * Created by rgwozdz on 7/20/15.
  */
 
-var config = require('./src/deployment-config.json');
+var config = require('./app/deployment-config.json');
 
 module.exports = function(grunt) {
 
@@ -24,8 +24,8 @@ module.exports = function(grunt) {
 
         apidoc: {
             docs: {
-                src: "src",
-                dest: "src/public/docs/",
+                src: "app",
+                dest: "app/public/docs/",
                 options: {
                     debug: true,
                     includeFilters: [ ".*\\.js$" ],
@@ -43,7 +43,7 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            deploy: ["deploy/**"]
+            deploy: ["ship/**"]
         },
 
         copy : {
@@ -79,18 +79,18 @@ module.exports = function(grunt) {
         shell: {
 
             compress: {
-                command : 'tar -zcvf ship/deploy.tar.gz deploy'
+                command : 'tar -zcvf ship/app.tar.gz app'
             },
 
             scp : {
                 command : [
-                    'scp -v -i ' + pem + ' ship/deploy.tar.gz '+ hostUser + '@' + hostIp + ':'+ hostPath,
+                    'scp -v -i ' + pem + ' ship/app.tar.gz '+ hostUser + '@' + hostIp + ':'+ hostPath,
                     'scp -v -i ' + pem + ' ship/publish.sh '+ hostUser + '@' + hostIp + ':'+ hostPath
                 ].join('&&')
             },
 
             markdownDocs : {
-                command: 'node node_modules/apidoc-markdown -p src/public/docs -o api-documentation.md'
+                command: 'node node_modules/apidoc-markdown -p app/public/docs -o api-documentation.md'
             }
 
         }
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', [
         'mkdir:deploy',
         'clean:deploy',
-        'copy:deploy',
+        'copy:publish',
         'apidoc:docs',
         'shell:markdownDocs',
         'file_append:deploy',
