@@ -11,7 +11,7 @@ require('winston-rollbar').Rollbar;
 require('./console-winston');
 
 var deploymentConfig = require("./deployment-config.json");
-var settings = require('./pg.js');
+var settings = require('./settings.js');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 

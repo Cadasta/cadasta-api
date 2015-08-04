@@ -110,7 +110,7 @@ function query(queryStr) {
 function setupDB() {
     var q1 = fs.readFileSync('db/sql/1_db.sql', 'utf8');
     var q2 = fs.readFileSync('db/sql/2_survey-tables.sql', 'utf8');
-    
+
     query(q1)
         .then(function(){
 
