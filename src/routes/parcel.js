@@ -15,9 +15,9 @@ var throwjs = require('throw.js');
  */
 router.get('/:id', function(req, res, next) {
 
-    var sqlString = "select ST_AsGeoJSON(geom) AS geom from parcel WHERE id = " + req.params.id;
+    var sql = { name: "get_parcel", text: "select ST_AsGeoJSON(geom) AS geom from parcel WHERE id = $1", values:[req.params.id]};
 
-    pgb.queryDeferred(sqlString)
+    pgb.queryDeferred(sql)
         .then(function(result){
 
             // If no results send bad request error

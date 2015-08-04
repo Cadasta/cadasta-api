@@ -15,12 +15,12 @@ var conString = "postgres://" +
  *
  * @type {Function}
  */
-module.exports.queryCallback = function(sqlStr, cb) {
+module.exports.queryCallback = function(sql, cb, opts) {
     pg.connect(conString, function(err, client, done) {
         if(err) {
             console.error('error fetching client from pool', err);
         }
-        client.query(sqlStr, function(queryerr, result) {
+        client.query(sqlStr, sqlParams, function(queryerr, result) {
             done();
             if(queryerr) {
                 console.error('ERROR RUNNING QUERY:', sqlStr, queryerr);
@@ -34,7 +34,7 @@ module.exports.queryCallback = function(sqlStr, cb) {
 module.exports.queryDeferred = function(sqlStr, opts){
 
     var options = opts || {};
-    var sqlPars = options.sqlParams || null;
+    var sqlParams = options.sqlParams || null;
 
     var deferred = Q.defer();
 
@@ -45,7 +45,7 @@ module.exports.queryDeferred = function(sqlStr, opts){
             deferred.reject(err);
         }
 
-        client.query(sqlStr, function(queryerr, result) {
+        client.query(sqlStr, sqlParams, function(queryerr, result) {
             done();
             if(queryerr) {
                 console.error('ERROR RUNNING QUERY:', sqlStr, queryerr);
