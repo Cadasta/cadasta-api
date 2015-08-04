@@ -11,6 +11,7 @@ require('winston-rollbar').Rollbar;
 require('./console-winston');
 
 var deploymentConfig = require("./deployment-config.json");
+var settings = require('./pg.js');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -37,6 +38,7 @@ app.set('env', deploymentType);
 
 // Environment specific configuration settings
 var envSettings = deploymentConfig.environment[deploymentType];
+settings.pg = envSettings.resourceDatabase;
 
 // compress all requests: gzip/deflate
 app.use(compression())

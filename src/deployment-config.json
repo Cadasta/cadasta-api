@@ -2,22 +2,22 @@
   "environment": {
     "development":{
       "resourceDatabase":{
-        "user": "",
-        "password": "",
-        "server":"",
-        "port":"",
-        "database": ""
+        "user": "postgres",
+        "password": "password",
+        "server":"127.0.0.1",
+        "port":"5432",
+        "database": "cadasta"
       },
       "apiPort" : "5000",
       "rollbarKey" : ""
     },
     "testing": {
       "resourceDatabase":{
-        "user": "",
-        "password": "",
-        "server":"",
-        "port":"",
-        "database": ""
+        "user": "postgres",
+        "password": "password",
+        "server":"127.0.0.1",
+        "port":"5432",
+        "database": "cadasta"
       },
       "apiPort" : "9000"
     },
