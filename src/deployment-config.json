@@ -17,7 +17,7 @@
         "password": "password",
         "server":"127.0.0.1",
         "port":"5432",
-        "database": "cadasta"
+        "database": "cadasta-testing"
       },
       "apiPort" : "9000"
     },

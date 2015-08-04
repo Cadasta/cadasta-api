@@ -2,24 +2,24 @@
 
 
 
-- [User](#user)
-	- [Request User information](#request-user-information)
+- [Parcel](#parcel)
+	- [Request parcel information](#request-parcel-information)
 	
 
 
-# User
+# Parcel
 
-## Request User information
+## Request parcel information
 
 
 
-	GET /user/:id
+	GET /parcel/:id
 
 
 ### Parameters
 
 | Name    | Type      | Description                          |
 |---------|-----------|--------------------------------------|
-| id			| <p>Number</p> 			|  <p>User's unique ID.</p> 							|
+| id			| <p>Number</p> 			|  <p>parcel's unique ID.</p> 							|
 
 

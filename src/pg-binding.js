@@ -1,5 +1,6 @@
 var pg = require('pg');
-var settings = require('./settings').pg;
+var Q = require('q');
+var settings = require('./settings.js').pg;
 
 // PostGIS Connection String
 var conString = "postgres://" +
@@ -30,9 +31,10 @@ module.exports.queryCallback = function(sqlStr, cb) {
 };
 
 
-module.exports.queryDeferred = function(sqlStr, sqlParams){
+module.exports.queryDeferred = function(sqlStr, opts){
 
-    var sqlPars = sqlParams || null;
+    var options = opts || {};
+    var sqlPars = options.sqlParams || null;
 
     var deferred = Q.defer();
 
@@ -49,7 +51,7 @@ module.exports.queryDeferred = function(sqlStr, sqlParams){
                 console.error('ERROR RUNNING QUERY:', sqlStr, queryerr);
                 deferred.reject(queryerr);
             } else {
-                deferred.resolve(result && result.rows ? result.rows : result);
+                deferred.resolve(result && result.rows ? result.rows : []);
             }
         });
 

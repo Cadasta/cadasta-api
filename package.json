@@ -17,6 +17,7 @@
     "q": "^1.4.1",
     "rollbar": "^0.5.4",
     "serve-favicon": "~2.3.0",
+    "throw.js": "^1.0.0",
     "winston": "^1.0.1",
     "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master"
   },

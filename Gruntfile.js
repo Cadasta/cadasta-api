@@ -2,7 +2,7 @@
  * Created by rgwozdz on 7/20/15.
  */
 
-var config = require('./deployment-config.json');
+var config = require('./src/deployment-config.json');
 
 module.exports = function(grunt) {
 
@@ -90,7 +90,7 @@ module.exports = function(grunt) {
             },
 
             markdownDocs : {
-                command: 'node node_modules/apidoc-markdown -p public/docs -o api-documentation.md'
+                command: 'node node_modules/apidoc-markdown -p src/public/docs -o api-documentation.md'
             }
 
         }
