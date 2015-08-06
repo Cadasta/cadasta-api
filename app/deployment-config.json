@@ -23,11 +23,11 @@
     },
     "staging": {
       "pg":{
-        "user": "",
-        "password": "",
-        "server":"",
-        "port":"",
-        "database": ""
+        "user": "postgres",
+        "password": "cadastredisaster",
+        "server":"cadasta-db.cupykt6ozsml.us-east-1.rds.amazonaws.com",
+        "port":"5432",
+        "database": "api_dev"
       },
       "apiPort" : "3000",
       "hostIp": "54.69.121.180",
