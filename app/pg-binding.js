@@ -11,7 +11,7 @@ var conString = "postgres://" +
     settings.database;
 
 /**
- * Main query function to execute an SQL query.
+ * Main query function to execute an SQL query; callback form.
  *
  * @type {Function}
  */
@@ -30,7 +30,11 @@ module.exports.queryCallback = function(sql, cb, opts) {
     });
 };
 
-
+/**
+ * Main query function to execute an SQL query; deferred form.
+ *
+ * @type {Function}
+ */
 module.exports.queryDeferred = function(sqlStr, opts){
 
     var options = opts || {};

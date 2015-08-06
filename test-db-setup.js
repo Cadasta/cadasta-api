@@ -16,7 +16,7 @@ if(validEnvironments.indexOf(environmentType) === -1) {
 }
 
 // Get DB settings for the requested environment
-var settings = require('./src/deployment-config.json').environment[environmentType].pg;
+var settings = require('./app/deployment-config.json').environment[environmentType].pg;
 
 // build DB connection string
 var conString = "postgres://" +
@@ -127,6 +127,7 @@ function setupDB() {
 
             console.error(err);
         })
+        .done();
 
 }
 

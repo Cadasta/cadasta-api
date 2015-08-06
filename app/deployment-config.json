@@ -29,7 +29,7 @@
         "port":"",
         "database": ""
       },
-      "apiPort" : "5000",
+      "apiPort" : "3000",
       "hostIp": "54.69.121.180",
       "hostPath":"~/staging",
       "hostUsername":"ubuntu",
