@@ -2,20 +2,35 @@
  * Created by rgwozdz on 7/20/15.
  */
 
-var config = require('./app/deployment-config.json');
+
+
+
 
 module.exports = function(grunt) {
+
+    var settings, envSettings;
 
     var env = grunt.option('env') || 'development';
     var pem = grunt.option('pem') || null;
     var deployer = grunt.option('deployer') || null;
     var revision = grunt.option('rev') || null;
 
+    //if settings.js doesn't exist, let the user know and exit
+    try {
+        settings = require('./app/settings/settings.js');
+
+        // Environment specific configuration settings
+        envSettings = require("./app/settings/environment-settings.js")[env];
+    } catch (e) {
+        console.log("Missing a settings file.\n", e);
+        return;
+    }
+
 
     if(env === 'production' || env === 'staging') {
-        var hostIp = config.environment[env].hostIp;
-        var hostPath = config.environment[env].hostPath;
-        var hostUser = config.environment[env].hostUsername;
+        var hostIp = envSettings[env].hostIp;
+        var hostPath = envSettings[env].hostPath;
+        var hostUser = envSettings[env].hostUsername;
     }
 
 
@@ -65,7 +80,7 @@ module.exports = function(grunt) {
                     },
                     {
                         append: "\ncurl https://api.rollbar.com/api/1/deploy/ \\\n"
-                            + "-F access_token=" + config.environment[env].rollbarKey + " \\\n"
+                            + "-F access_token=" + settings.rollbarKey + " \\\n"
                                 + "-F environment=" + env + " \\\n"
                                 + "-F revision=" + revision + " \\\n"
                                 + "-F local_username=" + deployer +" \\\n",
