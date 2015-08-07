@@ -115,9 +115,9 @@ router.get('', function(req, res, next) {
 
     var sql = pgUtils.featureCollectionSQL(nonGeomColumns, {geometryColumn: 'geom'});
     var preparedStatement = {
-        name: "get_parcel",
+        name: "get_all_parcels",
         text: sql,
-        values:[req.params.id]};
+        values:[]};
 
     pgb.queryDeferred(preparedStatement)
         .then(function(result){

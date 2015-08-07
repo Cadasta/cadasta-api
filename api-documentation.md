@@ -3,14 +3,14 @@
 
 
 - [Parcel](#parcel)
-	- [Request parcel information](#request-parcel-information)
-	- [Request parcel all parcels](#request-parcel-all-parcels)
+	- [Request one parcel](#request-one-parcel)
+	- [Request all parcels](#request-all-parcels)
 	
 
 
 # Parcel
 
-## Request parcel information
+## Request one parcel
 
 
 
@@ -119,7 +119,7 @@ Success-Response:
     ]
 }
 ```
-## Request parcel all parcels
+## Request all parcels
 
 
 
