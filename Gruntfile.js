@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         settings = require('./app/settings/settings.js');
 
         // Environment specific configuration settings
-        envSettings = require("./app/settings/environment-settings.js")[env];
+        envSettings = require("./app/settings/environment-settings.js");
     } catch (e) {
         console.log("Missing a settings file.\n", e);
         return;
@@ -28,9 +28,7 @@ module.exports = function(grunt) {
 
 
     if(env === 'production' || env === 'staging') {
-        var hostIp = envSettings[env].hostIp;
-        var hostPath = envSettings[env].hostPath;
-        var hostUser = envSettings[env].hostUsername;
+        envSettings = envSettings[env];
     }
 
 
@@ -91,6 +89,15 @@ module.exports = function(grunt) {
             }
         },
 
+        replace: {
+
+            docs: {
+                src: ['app/public/docs/api_data.js', 'app/public/docs/api_data.json'],
+                overwrite: true,
+                replacements: [{ from: 'http://localhost', to: 'http://' + envSettings.hostIp + ':' + envSettings.apiPort }]
+            }
+        },
+
         shell: {
 
             compress: {
@@ -99,8 +106,8 @@ module.exports = function(grunt) {
 
             scp : {
                 command : [
-                    'scp -v -i ' + pem + ' ship/app.tar.gz '+ hostUser + '@' + hostIp + ':'+ hostPath,
-                    'scp -v -i ' + pem + ' ship/publish.sh '+ hostUser + '@' + hostIp + ':'+ hostPath
+                    'scp -v -i ' + pem + ' ship/app.tar.gz '+ envSettings.hostUsername + '@' + envSettings.hostIp + ':'+ envSettings.hostPath,
+                    'scp -v -i ' + pem + ' ship/publish.sh '+ envSettings.hostUsername + '@' + envSettings.hostIp + ':'+ envSettings.hostPath
                 ].join('&&')
             },
 
@@ -117,6 +124,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-file-append');
+    grunt.loadNpmTasks('grunt-text-replace');
 
     grunt.registerTask('updateDocs', [
         'apidoc:docs',
@@ -129,6 +137,7 @@ module.exports = function(grunt) {
         'clean:deploy',
         'copy:publish',
         'apidoc:docs',
+        'replace:docs',
         'shell:markdownDocs',
         'file_append:deploy',
         'shell:compress',

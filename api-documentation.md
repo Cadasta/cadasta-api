@@ -29,7 +29,7 @@
 Example usage:
 
 ```
-curl -i http://localhost/activity
+curl -i http://54.69.121.180:3000/activity
 ```
 
 ### Success Response
@@ -85,7 +85,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/parcel/1
+curl -i http://54.69.121.180:3000/parcel/1
 ```
 
 ### Success Response
@@ -150,7 +150,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/parcel
+curl -i http://54.69.121.180:3000/parcel
 ```
 
 ### Success Response
@@ -223,7 +223,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/relationship
+curl -i http://54.69.121.180:3000/relationship
 ```
 
 ### Success Response
@@ -271,7 +271,7 @@ HTTP/1.1 200 OK
 Example usage:
 
 ```
-curl -i http://localhost/relationship
+curl -i http://54.69.121.180:3000/relationship
 ```
 
 ### Success Response

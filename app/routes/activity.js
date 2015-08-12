@@ -17,7 +17,9 @@ var throwjs = require('throw.js');
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
  * @apiSuccess {String} response.features.properties.activity_type activity type
  * @apiSuccess {String} response.features.properties.type type
- * @apiSuccess {Number} response.features.properties.id activity's parcel id
+ * @apiSuccess {Number} response.features.properties.id activity's id (could be parcel or relationship id)
+ * @apiSuccess {Number} response.features.properties.name activity creator's name
+ * @apiSuccess {Number} response.features.properties.id activity's id parcel id
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
@@ -33,9 +35,11 @@ var throwjs = require('throw.js');
       "type": "Feature",
       "geometry": null,
       "properties": {
-        "activity_type": "party",
-        "id": 2,
-        "type": "",
+        "activity_type": "parcel",
+        "id": 1,
+        "type": "survey_grade_gps",
+        "name": null,
+        "parcel_id": null,
         "time_created": "2015-08-12T03:46:01.673153+00:00"
       }
     },
@@ -43,9 +47,11 @@ var throwjs = require('throw.js');
       "type": "Feature",
       "geometry": null,
       "properties": {
-        "activity_type": "relationship",
+        "activity_type": "parcel",
         "id": 2,
-        "type": "Own",
+        "type": "survey_grade_gps",
+        "name": null,
+        "parcel_id": null,
         "time_created": "2015-08-12T03:46:01.673153+00:00"
       }
     }
@@ -55,7 +61,7 @@ var throwjs = require('throw.js');
 router.get('', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "activity_type,id,type,time_created";
+    var nonGeomColumns = "activity_type,id,type,name, parcel_id,time_created";
 
     var sql = pgUtils.featureCollectionSQL("show_activity", nonGeomColumns);
     var preparedStatement = {
