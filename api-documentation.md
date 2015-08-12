@@ -46,9 +46,11 @@ Success-Response:
       "type": "Feature",
       "geometry": null,
       "properties": {
-        "activity_type": "party",
-        "id": 2,
-        "type": "",
+        "activity_type": "parcel",
+        "id": 1,
+        "type": "survey_grade_gps",
+        "name": null,
+        "parcel_id": null,
         "time_created": "2015-08-12T03:46:01.673153+00:00"
       }
     },
@@ -56,9 +58,11 @@ Success-Response:
       "type": "Feature",
       "geometry": null,
       "properties": {
-        "activity_type": "relationship",
+        "activity_type": "parcel",
         "id": 2,
-        "type": "Own",
+        "type": "survey_grade_gps",
+        "name": null,
+        "parcel_id": null,
         "time_created": "2015-08-12T03:46:01.673153+00:00"
       }
     }
