@@ -10,18 +10,6 @@ var winston = require('winston');
 require('winston-rollbar').Rollbar;
 require('./console-winston');
 
-var deploymentConfig = require("./deployment-config.json");
-var settings = require('./settings.js');
-
-// Create the express instance
-var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // Set the valid environments
 var validEnvironments = ['production', 'staging', 'development', 'testing'];
@@ -35,12 +23,36 @@ if(validEnvironments.indexOf(environment) === -1) {
     return;
 }
 
+var settings, envSettings;
+
+//if settings.js doesn't exist, let the user know and exit
+try {
+    settings = require('./settings/settings.js');
+
+    // Environment specific configuration settings
+    envSettings = require("./settings/environment-settings.js")[environment];
+} catch (e) {
+    console.log("Missing a settings file.\n", e);
+    return;
+}
+
+// Copy the Environment specific Postgres settings to the settings module, then they will be available whereever settings module is required.
+settings.pg = envSettings.pg;
+
+
+
+// Create the express instance
+var app = express();
+
 // Set app env
 app.set('env', environment);
 
-// Environment specific configuration settings
-var envSettings = deploymentConfig.environment[environment];
-settings.pg = envSettings.pg;
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // compress all requests: gzip/deflate
 app.use(compression());
@@ -57,15 +69,6 @@ var routes = require('./routes/index');
 var parcel = require('./routes/parcel');
 app.use('/', routes);
 app.use('/parcel', parcel);
-
-// catch 404 and forward to error handler; Remove this?
-/*
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-*/
 
 
 // Environment-specific configuration
@@ -127,9 +130,11 @@ function hideStackTrace(app){
     });
 }
 
-function addLogging(app,envSettings){
-    app.use(rollbar.errorHandler(envSettings.rollbarKey));
-    winston.add(winston.transports.Rollbar, { rollbarAccessToken: envSettings.rollbarKey, level:'warn' });
-    rollbar.handleUncaughtExceptions(envSettings.rollbar, { exitOnUncaughtException: true });
+function addLogging(app,settings){
 
+    if(settings.useRollbar) {
+        app.use(rollbar.errorHandler(envSettings.rollbarKey));
+        winston.add(winston.transports.Rollbar, { rollbarAccessToken: envSettings.rollbarKey, level:'warn' });
+        rollbar.handleUncaughtExceptions(envSettings.rollbar, { exitOnUncaughtException: true });
+    }
 }

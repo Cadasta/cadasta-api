@@ -4,7 +4,9 @@ Thumbs.db
 
 .DS_Store
 
-app/deployment-config.json
+app/settings/*
+!app/settings/settings.js.example
+!app/settings/environment-settings.js.example
 node_modules/
 app/public/docs/
 ship/**

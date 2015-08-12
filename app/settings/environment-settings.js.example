@@ -1,0 +1,51 @@
+module.exports = {
+    // Development environment settings (DB details, API port, etc)
+    "development":{
+      "pg":{
+        "user": "postgres",
+        "password": "users-password",
+        "server":"127.0.0.1",
+        "port":"5432",
+        "database": "postgres-database-name"
+      },
+      "apiPort" : "5000" // Port you want API to run on
+    },
+    // Testing environment settings (DB details, API port, etc)
+    "testing": {
+      "pg":{
+        "user": "postgres",
+        "password": "users-password",
+        "server":"127.0.0.1",
+        "port":"5432",
+        "database": "postgres-database-name"
+      },
+      "apiPort" : "9000" // Port you want API to run on
+    },
+    // Staging environment settings (DB details, API port, etc)
+    "staging": {
+      "pg":{
+        "user": "postgres",
+        "password": "users-password",
+        "server":"127.0.0.1",
+        "port":"5432",
+        "database": "postgres-database-name"
+      },
+      "apiPort" : "3000", // Port you want API to run on
+      "hostIp": "123.4.5.6",  // IP address of machine you want to scp the code to (for deploy)
+      "hostPath":"~/staging", // Path on machine you want to scp the code to (for deploy)
+      "hostUsername":"ubuntu" // user on machine you want to scp the code to (for deploy)
+    },
+    "production": {
+      "pg":{
+        "user": "",
+        "password": "",
+        "server":"",
+        "port":"",
+        "database": ""
+      },
+      "apiPort" : "",
+      "hostIp": "",
+      "hostPath":"",
+      "hostUsername":""
+    }
+}

@@ -1,0 +1,10 @@
+
+
+var settings = {};
+
+settings.useRollbar = false;  // Use Rollbar for console logging
+settings.rollbarKey =  ""; // If you are going to use Rollbar you need to supply a API key
+
+module.exports = settings;
+
+
