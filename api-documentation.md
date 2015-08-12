@@ -6,6 +6,10 @@
 	- [Request one parcel](#request-one-parcel)
 	- [Request all parcels](#request-all-parcels)
 	
+- [Relationship](#relationship)
+	- [Request one relationship](#request-one-relationship)
+	- [Request all relationships](#request-all-relationships)
+	
 
 
 # Parcel
@@ -54,46 +58,8 @@ Success-Response:
                             -105.229024887085,
                             21.1694127979643
                         ],
-                        [
-                            -105.231556892395,
-                            21.1681321755877
-                        ],
-                        [
-                            -105.231213569641,
-                            21.1652507347151
-                        ],
-                        [
-                            -105.227437019348,
-                            21.1661712010929
-                        ],
-                        [
-                            -105.224862098694,
-                            21.1647304685776
-                        ],
-                        [
-                            -105.223617553711,
-                            21.1619290040903
-                        ],
-                        [
-                            -105.22340297699,
-                            21.1582870209836
-                        ],
-                        [
-                            -105.217137336731,
-                            21.1587272654609
-                        ],
-                        [
-                            -105.220828056335,
-                            21.1639300555639
-                        ],
-                        [
-                            -105.223445892334,
-                            21.168452332221
-                        ],
-                        [
-                            -105.223574638367,
-                            21.1700931240934
-                        ],
+                        ...
+                        ...
                         [
                             -105.228338241577,
                             21.1714137482368
@@ -157,46 +123,8 @@ Success-Response:
                             -105.229024887085,
                             21.1694127979643
                         ],
-                        [
-                            -105.231556892395,
-                            21.1681321755877
-                        ],
-                        [
-                            -105.231213569641,
-                            21.1652507347151
-                        ],
-                        [
-                            -105.227437019348,
-                            21.1661712010929
-                        ],
-                        [
-                            -105.224862098694,
-                            21.1647304685776
-                        ],
-                        [
-                            -105.223617553711,
-                            21.1619290040903
-                        ],
-                        [
-                            -105.22340297699,
-                            21.1582870209836
-                        ],
-                        [
-                            -105.217137336731,
-                            21.1587272654609
-                        ],
-                        [
-                            -105.220828056335,
-                            21.1639300555639
-                        ],
-                        [
-                            -105.223445892334,
-                            21.168452332221
-                        ],
-                        [
-                            -105.223574638367,
-                            21.1700931240934
-                        ],
+                        ...
+                        ...
                         [
                             -105.228338241577,
                             21.1714137482368
@@ -220,6 +148,129 @@ Success-Response:
             }
         }
     ]
+}
+```
+# Relationship
+
+## Request one relationship
+
+
+
+	GET /relationship/:id
+
+
+### Parameters
+
+| Name    | Type      | Description                          |
+|---------|-----------|--------------------------------------|
+| id			| <p>Number</p> 			|  <p>parcel's unique ID.</p> 							|
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/relationship
+```
+
+### Success Response
+
+Success-Response:
+
+```
+HTTP/1.1 200 OK
+
+{
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              47.867583,
+              -122.164306
+            ]
+          },
+          "properties": {
+            "relationship_id": 1,
+            "relationship_type": "Own",
+            "parcel_id": 1,
+            "spatial_source": "survey_grade_gps",
+            "party_id": 1,
+            "first_name": "Daniel",
+            "last_name": "Baah",
+            "time_created": "2015-08-12T03:46:01.673153+00:00"
+          }
+        }
+      ]
+    }
+```
+## Request all relationships
+
+
+
+	GET /relationship
+
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/relationship
+```
+
+### Success Response
+
+Success-Response:
+
+```
+    HTTP/1.1 200 OK
+    {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.867583,
+          -122.164306
+        ]
+      },
+      "properties": {
+        "relationship_id": 1,
+        "relationship_type": "Own",
+        "parcel_id": 1,
+        "spatial_source": "survey_grade_gps",
+        "party_id": 1,
+        "first_name": "Daniel",
+        "last_name": "Baah",
+        "time_created": "2015-08-12T03:46:01.673153+00:00"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.670367,
+          -122.387855
+        ]
+      },
+      "properties": {
+        "relationship_id": 2,
+        "relationship_type": "Own",
+        "parcel_id": 2,
+        "spatial_source": "survey_grade_gps",
+        "party_id": 2,
+        "first_name": "Sarah",
+        "last_name": "Bindman",
+        "time_created": "2015-08-12T03:46:01.673153+00:00"
+      }
+    }
+  ]
 }
 ```
 

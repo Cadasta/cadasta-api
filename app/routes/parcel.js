@@ -43,46 +43,8 @@ var throwjs = require('throw.js');
                             -105.229024887085,
                             21.1694127979643
                         ],
-                        [
-                            -105.231556892395,
-                            21.1681321755877
-                        ],
-                        [
-                            -105.231213569641,
-                            21.1652507347151
-                        ],
-                        [
-                            -105.227437019348,
-                            21.1661712010929
-                        ],
-                        [
-                            -105.224862098694,
-                            21.1647304685776
-                        ],
-                        [
-                            -105.223617553711,
-                            21.1619290040903
-                        ],
-                        [
-                            -105.22340297699,
-                            21.1582870209836
-                        ],
-                        [
-                            -105.217137336731,
-                            21.1587272654609
-                        ],
-                        [
-                            -105.220828056335,
-                            21.1639300555639
-                        ],
-                        [
-                            -105.223445892334,
-                            21.168452332221
-                        ],
-                        [
-                            -105.223574638367,
-                            21.1700931240934
-                        ],
+                        ...
+                        ...
                         [
                             -105.228338241577,
                             21.1714137482368
@@ -113,7 +75,7 @@ router.get('', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,archived,time_created,time_updated,created_by,updated_by";
 
-    var sql = pgUtils.featureCollectionSQL(nonGeomColumns, {geometryColumn: 'geom'});
+    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom'});
     var preparedStatement = {
         name: "get_all_parcels",
         text: sql,
@@ -172,46 +134,8 @@ router.get('', function(req, res, next) {
                             -105.229024887085,
                             21.1694127979643
                         ],
-                        [
-                            -105.231556892395,
-                            21.1681321755877
-                        ],
-                        [
-                            -105.231213569641,
-                            21.1652507347151
-                        ],
-                        [
-                            -105.227437019348,
-                            21.1661712010929
-                        ],
-                        [
-                            -105.224862098694,
-                            21.1647304685776
-                        ],
-                        [
-                            -105.223617553711,
-                            21.1619290040903
-                        ],
-                        [
-                            -105.22340297699,
-                            21.1582870209836
-                        ],
-                        [
-                            -105.217137336731,
-                            21.1587272654609
-                        ],
-                        [
-                            -105.220828056335,
-                            21.1639300555639
-                        ],
-                        [
-                            -105.223445892334,
-                            21.168452332221
-                        ],
-                        [
-                            -105.223574638367,
-                            21.1700931240934
-                        ],
+                        ...
+                        ...
                         [
                             -105.228338241577,
                             21.1714137482368
@@ -242,7 +166,7 @@ router.get('/:id', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,archived,time_created,time_updated,created_by,updated_by";
 
-    var sql = pgUtils.featureCollectionSQL(nonGeomColumns, {geometryColumn: 'geom', whereClause: 'WHERE id = $1'});
+    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom', whereClause: 'WHERE id = $1'});
     var preparedStatement = {
         name: "get_parcel",
         text: sql,
