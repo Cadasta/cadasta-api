@@ -15,7 +15,7 @@
 module.exports.featureCollectionSQL = function(table, propertyColumns, opts){
 
     var options = opts || {};
-    var geomFragment = "ST_AsGeoJSON(t." + options.geometryColumn + ")::json" || "NULL";
+    var geomFragment = typeof options.geometryColumn === "undefined" ? "NULL" : "ST_AsGeoJSON(t." + options.geometryColumn + ")::json";
     var whereClause = options.whereClause || '';
 
     var sql = "SELECT row_to_json(fc) AS response "

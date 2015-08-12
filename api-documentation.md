@@ -2,6 +2,9 @@
 
 
 
+- [Activity](#activity)
+	- [Request all activities](#request-all-activities)
+	
 - [Parcel](#parcel)
 	- [Request one parcel](#request-one-parcel)
 	- [Request all parcels](#request-all-parcels)
@@ -12,6 +15,56 @@
 	
 
 
+# Activity
+
+## Request all activities
+
+
+
+	GET /activity
+
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/activity
+```
+
+### Success Response
+
+Success-Response:
+
+```
+    HTTP/1.1 200 OK
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "activity_type": "party",
+        "id": 2,
+        "type": "",
+        "time_created": "2015-08-12T03:46:01.673153+00:00"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "activity_type": "relationship",
+        "id": 2,
+        "type": "Own",
+        "time_created": "2015-08-12T03:46:01.673153+00:00"
+      }
+    }
+  ]
+}
+```
 # Parcel
 
 ## Request one parcel

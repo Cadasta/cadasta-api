@@ -68,10 +68,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 var routes = require('./routes/index');
 var parcel = require('./routes/parcel');
 var relationship = require('./routes/relationships');
+var activity = require('./routes/activity');
 app.use('/', routes);
 app.use('/parcel', parcel);
 app.use('/relationship', relationship);
-
+app.use('/activity', activity);
 
 // Environment-specific configuration
 if (app.get('env') === 'development') {
