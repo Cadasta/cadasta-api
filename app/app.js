@@ -1,3 +1,4 @@
+var argv = require('minimist')(process.argv.slice(2));
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -15,7 +16,7 @@ require('./console-winston');
 var validEnvironments = ['production', 'staging', 'development', 'testing'];
 
 // Get the runtime environment from the node app argument; default to development
-var environment = process.argv[2] || 'development';
+var environment = argv.env || 'development';
 
 // Ensure the environment argument is valid
 if(validEnvironments.indexOf(environment) === -1) {

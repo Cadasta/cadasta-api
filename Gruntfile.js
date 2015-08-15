@@ -72,7 +72,7 @@ module.exports = function(grunt) {
             deploy: {
                 files: [
                     {
-                        append: "\nsudo pm2 restart <%=pkg.name%>-" + env + " || sudo pm2 start app.js --name <%=pkg.name%>-" + env + " -- " + env + " || exit 1\n\n",
+                        append: "\nsudo pm2 restart <%=pkg.name%>-" + env + " || sudo pm2 start app.js --name <%=pkg.name%>-" + env + " --env " + env + " || exit 1\n\n",
                         input: 'ship/publish.sh',
                         output: 'ship/publish.sh'
                     },
