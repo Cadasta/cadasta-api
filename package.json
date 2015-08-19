@@ -35,6 +35,8 @@
     "grunt-mkdir": "^0.1.2",
     "grunt-shell": "^1.1.2",
     "grunt-text-replace": "^0.4.0",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
+    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup"
   }
 }

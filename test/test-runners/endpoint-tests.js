@@ -36,9 +36,25 @@ if(filesOption) {
         });
 }
 
-// Loop thru test files
-testFiles.forEach(function(file){
+// Prep database
+//1) truncate
+//2) load data
+var beforeTests = require('../test-setup/before-tests.js');
 
-    require('../endpointSpecs/' + file)(app);
+beforeTests()
+    .then(function(response){
 
-});
+        // Loop thru test files
+        testFiles.forEach(function(file){
+
+            require('../endpointSpecs/' + file)(app);
+
+        });
+
+        run();
+    })
+    .catch(function(err){
+        console.error(err, err.stack);
+    })
+    .done();
+
