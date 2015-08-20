@@ -38,7 +38,7 @@
     "grunt-mkdir": "^0.1.2",
     "grunt-shell": "^1.1.2",
     "grunt-text-replace": "^0.4.0",
-    "mocha": "^2.2.5",
+    "mocha": "^2.2.5"
 
   }
 }
