@@ -5,9 +5,9 @@ var pgUtils = require('../pg-utils');
 var throwjs = require('throw.js');
 
 /**
- * @api {get} /activity Request all activities
+ * @api {get} /activities Request all activities
  * @apiName GetActivities
- * @apiGroup Activity
+ * @apiGroup Activities
  *
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
@@ -23,7 +23,7 @@ var throwjs = require('throw.js');
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/activity
+ *     curl -i http://localhost/activities
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK

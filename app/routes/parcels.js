@@ -5,13 +5,11 @@ var pgUtils = require('../pg-utils');
 var throwjs = require('throw.js');
 
 /**
- * @api {get} /parcel/:id Request one parcel
- * @apiName GetParcel
+ * @api {get} /parcels Request all parcels
+ * @apiName GetParcels
  * @apiGroup Parcel
  *
- * @apiParam {Number} id parcel's unique ID.
- *
- * @apiSuccess {Object} response A feature collection with one parcel feature
+ * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
  * @apiSuccess {String} response.features.type "Feature"
@@ -24,7 +22,7 @@ var throwjs = require('throw.js');
  * @apiSuccess {String} response.features.properties.time_created Time stamp of last update
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/parcel/1
+ *     curl -i http://localhost/parcels
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -62,7 +60,7 @@ var throwjs = require('throw.js');
                 "land_use": null,
                 "gov_pin": null,
                 "active": true,
-                "sys_delete": False,
+                "sys_delete": false,
                 "time_created": "2015-08-06T15:41:26.440037-07:00",
                 "time_updated": null,
                 "created_by": 1,
@@ -72,16 +70,16 @@ var throwjs = require('throw.js');
     ]
 }
  */
-router.get('/:id', function(req, res, next) {
+router.get('', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,sys_delete,time_created,time_updated,created_by,updated_by";
 
-    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom', whereClause: 'WHERE id = $1'});
+    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom'});
     var preparedStatement = {
-        name: "get_parcel",
+        name: "get_all_parcels",
         text: sql,
-        values:[req.params.id]};
+        values:[]};
 
     pgb.queryDeferred(preparedStatement)
         .then(function(result){

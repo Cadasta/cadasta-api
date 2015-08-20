@@ -5,9 +5,11 @@ var pgUtils = require('../pg-utils');
 var throwjs = require('throw.js');
 
 /**
- * @api {get} /relationships Request all relationships
- * @apiName GetRelationships
+ * @api {get} /relationship/:id Request one relationship
+ * @apiName GetRelationship
  * @apiGroup Relationship
+ *
+ * @apiParam {Number} id relationship's unique ID.
  *
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
@@ -25,66 +27,47 @@ var throwjs = require('throw.js');
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/relationships
+ *     curl -i http://localhost/relationship
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *
  *     {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          47.867583,
-          -122.164306
-        ]
-      },
-      "properties": {
-        "relationship_id": 1,
-        "relationship_type": "Own",
-        "parcel_id": 1,
-        "spatial_source": "survey_grade_gps",
-        "party_id": 1,
-        "first_name": "Daniel",
-        "last_name": "Baah",
-        "time_created": "2015-08-12T03:46:01.673153+00:00"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          47.670367,
-          -122.387855
-        ]
-      },
-      "properties": {
-        "relationship_id": 2,
-        "relationship_type": "Own",
-        "parcel_id": 2,
-        "spatial_source": "survey_grade_gps",
-        "party_id": 2,
-        "first_name": "Sarah",
-        "last_name": "Bindman",
-        "time_created": "2015-08-12T03:46:01.673153+00:00"
-      }
-    }
-  ]
-}
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  47.867583,
+                  -122.164306
+                ]
+              },
+              "properties": {
+                "relationship_id": 1,
+                "relationship_type": "Own",
+                "parcel_id": 1,
+                "spatial_source": "survey_grade_gps",
+                "party_id": 1,
+                "first_name": "Daniel",
+                "last_name": "Baah",
+                "time_created": "2015-08-12T03:46:01.673153+00:00"
+              }
+            }
+          ]
+        }
  */
-router.get('', function(req, res, next) {
+router.get('/:id', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
 
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, {geometryColumn: 'parcel_geometry', whereClause: ''});
+    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, {geometryColumn: 'parcel_geometry', whereClause: 'WHERE relationship_id = $1'});
     var preparedStatement = {
-        name: "get_all_show_relationship",
+        name: "get_one_show_relationship",
         text: sql,
-        values:[]};
+        values:[req.params.id]};
 
     pgb.queryDeferred(preparedStatement)
         .then(function(result){

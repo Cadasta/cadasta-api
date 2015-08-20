@@ -2,26 +2,28 @@
 
 
 
-- [Activity](#activity)
+- [Activities](#activities)
 	- [Request all activities](#request-all-activities)
+	
+- [Custom](#custom)
+	- [Parcel/Num relationships List](#parcel/num-relationships-list)
 	
 - [Parcel](#parcel)
 	- [Request one parcel](#request-one-parcel)
 	- [Request all parcels](#request-all-parcels)
 	
 - [Relationship](#relationship)
-	- [Request one relationship](#request-one-relationship)
 	- [Request all relationships](#request-all-relationships)
 	
 
 
-# Activity
+# Activities
 
 ## Request all activities
 
 
 
-	GET /activity
+	GET /activities
 
 
 ### Examples
@@ -29,7 +31,7 @@
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/activity
+curl -i http://localhost/activities
 ```
 
 ### Success Response
@@ -69,6 +71,63 @@ Success-Response:
   ]
 }
 ```
+# Custom
+
+## Parcel/Num relationships List
+
+
+
+	GET /custom/get_parcels_list
+
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/custom/get_parcels_list
+```
+
+### Success Response
+
+Success-Response:
+
+```
+    HTTP/1.1 200 OK
+
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 12,
+                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "num_relationships": 1
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 10,
+                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "num_relationships": 2
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 11,
+                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "num_relationships": 1
+            }
+        }
+    ]
+}
+```
 # Parcel
 
 ## Request one parcel
@@ -89,7 +148,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/parcel/1
+curl -i http://localhost/parcel/1
 ```
 
 ### Success Response
@@ -131,8 +190,8 @@ Success-Response:
                 "area": null,
                 "land_use": null,
                 "gov_pin": null,
-                "active": false,
-                "archived": null,
+                "active": true,
+                "sys_delete": False,
                 "time_created": "2015-08-06T15:41:26.440037-07:00",
                 "time_updated": null,
                 "created_by": 1,
@@ -146,7 +205,7 @@ Success-Response:
 
 
 
-	GET /parcel
+	GET /parcels
 
 
 ### Examples
@@ -154,7 +213,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/parcel
+curl -i http://localhost/parcels
 ```
 
 ### Success Response
@@ -196,8 +255,8 @@ Success-Response:
                 "area": null,
                 "land_use": null,
                 "gov_pin": null,
-                "active": false,
-                "archived": null,
+                "active": true,
+                "sys_delete": false,
                 "time_created": "2015-08-06T15:41:26.440037-07:00",
                 "time_updated": null,
                 "created_by": 1,
@@ -209,65 +268,11 @@ Success-Response:
 ```
 # Relationship
 
-## Request one relationship
-
-
-
-	GET /relationship/:id
-
-
-### Parameters
-
-| Name    | Type      | Description                          |
-|---------|-----------|--------------------------------------|
-| id			| <p>Number</p> 			|  <p>parcel's unique ID.</p> 							|
-
-### Examples
-
-Example usage:
-
-```
-curl -i http://54.69.121.180:3000/relationship
-```
-
-### Success Response
-
-Success-Response:
-
-```
-HTTP/1.1 200 OK
-
-{
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [
-              47.867583,
-              -122.164306
-            ]
-          },
-          "properties": {
-            "relationship_id": 1,
-            "relationship_type": "Own",
-            "parcel_id": 1,
-            "spatial_source": "survey_grade_gps",
-            "party_id": 1,
-            "first_name": "Daniel",
-            "last_name": "Baah",
-            "time_created": "2015-08-12T03:46:01.673153+00:00"
-          }
-        }
-      ]
-    }
-```
 ## Request all relationships
 
 
 
-	GET /relationship
+	GET /relationships
 
 
 ### Examples
@@ -275,7 +280,7 @@ HTTP/1.1 200 OK
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/relationship
+curl -i http://localhost/relationships
 ```
 
 ### Success Response

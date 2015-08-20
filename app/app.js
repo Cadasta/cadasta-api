@@ -68,12 +68,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Endpoint configuration
 var routes = require('./routes/index');
 var parcel = require('./routes/parcel');
-var relationship = require('./routes/relationships');
-var activity = require('./routes/activity');
+var parcels = require('./routes/parcels');
+var relationships = require('./routes/relationships');
+var relationship = require('./routes/relationship');
+var activities = require('./routes/activities');
+var custom = require('./routes/custom');
+
 app.use('/', routes);
+app.use('/parcels', parcels);
 app.use('/parcel', parcel);
+app.use('/relationships', relationships);
 app.use('/relationship', relationship);
-app.use('/activity', activity);
+app.use('/activities', activities);
+app.use('/custom', custom);
+
 
 // Environment-specific configuration
 if (app.get('env') === 'development') {
