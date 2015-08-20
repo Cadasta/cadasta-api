@@ -3,6 +3,7 @@ var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
 var throwjs = require('throw.js');
+var common = require('../common.js');
 
 /**
  * @api {get} /custom/get_parcels_list Parcel/Num relationships List
@@ -17,6 +18,7 @@ var throwjs = require('throw.js');
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
  * @apiSuccess {Integer} response.features.properties.id parcel id
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp with timezone
+ * @apiSuccess {Numeric} response.features.properties.area area of parcel geometry
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/custom/get_parcels_list
@@ -33,6 +35,7 @@ var throwjs = require('throw.js');
             "properties": {
                 "id": 12,
                 "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "area": null,
                 "num_relationships": 1
             }
         },
@@ -42,6 +45,7 @@ var throwjs = require('throw.js');
             "properties": {
                 "id": 10,
                 "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "area": null,
                 "num_relationships": 2
             }
         },
@@ -51,6 +55,7 @@ var throwjs = require('throw.js');
             "properties": {
                 "id": 11,
                 "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "area": null,
                 "num_relationships": 1
             }
         }
@@ -60,8 +65,10 @@ var throwjs = require('throw.js');
  * */
 router.get('/get_parcels_list', function(req, res, next) {
 
+    //var args = common.getArguments(req);
+
     // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,time_created, num_relationships";
+    var nonGeomColumns = "id,time_created,area, num_relationships";
 
     var sql = pgUtils.featureCollectionSQL("show_parcel_list", nonGeomColumns, null);
     var preparedStatement = {

@@ -104,6 +104,7 @@ Success-Response:
             "properties": {
                 "id": 12,
                 "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "area": null,
                 "num_relationships": 1
             }
         },
@@ -113,6 +114,7 @@ Success-Response:
             "properties": {
                 "id": 10,
                 "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "area": null,
                 "num_relationships": 2
             }
         },
@@ -122,6 +124,7 @@ Success-Response:
             "properties": {
                 "id": 11,
                 "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "area": null,
                 "num_relationships": 1
             }
         }
