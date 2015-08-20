@@ -20,7 +20,10 @@
     "serve-favicon": "~2.3.0",
     "throw.js": "^1.0.0",
     "winston": "^1.0.1",
-    "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master"
+    "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master",
+    "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
+    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
+    "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master"
   },
   "devDependencies": {
     "apidoc-markdown": "^0.2.0",
@@ -36,8 +39,6 @@
     "grunt-shell": "^1.1.2",
     "grunt-text-replace": "^0.4.0",
     "mocha": "^2.2.5",
-    "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
-    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
-    "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master"
+
   }
 }
