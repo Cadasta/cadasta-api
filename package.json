@@ -37,6 +37,7 @@
     "grunt-text-replace": "^0.4.0",
     "mocha": "^2.2.5",
     "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
-    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup"
+    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
+    "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master"
   }
 }
