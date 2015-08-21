@@ -40,7 +40,10 @@ try {
 // Copy the Environment specific Postgres settings to the settings module, then they will be available whereever settings module is required.
 settings.pg = envSettings.pg;
 
-
+var DataTransformer = require('cadasta-data-transformer');
+var ingestion_engine = DataTransformer(settings);
+//Register the CSV Provider
+require("cadasta-provider-csv").register(ingestion_engine);
 
 // Create the express instance
 var app = express();
@@ -68,14 +71,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Endpoint configuration
 var routes = require('./routes/index');
 var parcel = require('./routes/parcel');
-var parcels = require('./routes/parcels');
-var relationships = require('./routes/relationships');
-var relationship = require('./routes/relationship');
-var activities = require('./routes/activities');
-var custom = require('./routes/custom');
-
+var relationship = require('./routes/relationships');
+var activity = require('./routes/activity');
 app.use('/', routes);
 app.use('/parcels', parcels);
+app.use('/providers', ingestion_engine.router);
 app.use('/parcel', parcel);
 app.use('/relationships', relationships);
 app.use('/relationship', relationship);
