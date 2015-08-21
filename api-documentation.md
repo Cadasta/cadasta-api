@@ -31,7 +31,7 @@
 Example usage:
 
 ```
-curl -i http://localhost/activities
+curl -i http://54.69.121.180:3000/activities
 ```
 
 ### Success Response
@@ -85,7 +85,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/custom/get_parcels_list
+curl -i http://54.69.121.180:3000/custom/get_parcels_list
 ```
 
 ### Success Response
@@ -151,7 +151,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/parcel/1
+curl -i http://54.69.121.180:3000/parcel/1
 ```
 
 ### Success Response
@@ -194,7 +194,6 @@ Success-Response:
                 "land_use": null,
                 "gov_pin": null,
                 "active": true,
-                "sys_delete": False,
                 "time_created": "2015-08-06T15:41:26.440037-07:00",
                 "time_updated": null,
                 "created_by": 1,
@@ -216,7 +215,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/parcels
+curl -i http://54.69.121.180:3000/parcels
 ```
 
 ### Success Response
@@ -259,7 +258,6 @@ Success-Response:
                 "land_use": null,
                 "gov_pin": null,
                 "active": true,
-                "sys_delete": false,
                 "time_created": "2015-08-06T15:41:26.440037-07:00",
                 "time_updated": null,
                 "created_by": 1,
@@ -283,7 +281,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://localhost/relationships
+curl -i http://54.69.121.180:3000/relationships
 ```
 
 ### Success Response

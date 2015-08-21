@@ -60,7 +60,6 @@ var throwjs = require('throw.js');
                 "land_use": null,
                 "gov_pin": null,
                 "active": true,
-                "sys_delete": false,
                 "time_created": "2015-08-06T15:41:26.440037-07:00",
                 "time_updated": null,
                 "created_by": 1,
@@ -73,7 +72,7 @@ var throwjs = require('throw.js');
 router.get('', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,sys_delete,time_created,time_updated,created_by,updated_by";
+    var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
 
     var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom'});
     var preparedStatement = {
