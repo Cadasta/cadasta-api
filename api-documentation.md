@@ -8,11 +8,12 @@
 - [Custom](#custom)
 	- [Parcel/Num relationships List](#parcel/num-relationships-list)
 	
-- [Parcel](#parcel)
+- [Parcels](#parcels)
 	- [Request one parcel](#request-one-parcel)
 	- [Request all parcels](#request-all-parcels)
 	
-- [Relationship](#relationship)
+- [Relationships](#relationships)
+	- [Request one relationship](#request-one-relationship)
 	- [Request all relationships](#request-all-relationships)
 	
 
@@ -31,7 +32,7 @@
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/activities
+curl -i http://localhost/activities
 ```
 
 ### Success Response
@@ -85,7 +86,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/custom/get_parcels_list
+curl -i http://localhost/custom/get_parcels_list
 ```
 
 ### Success Response
@@ -131,13 +132,13 @@ Success-Response:
     ]
 }
 ```
-# Parcel
+# Parcels
 
 ## Request one parcel
 
 
 
-	GET /parcel/:id
+	GET /parcels/:id
 
 
 ### Parameters
@@ -151,7 +152,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/parcel/1
+curl -i http://localhost/parcels/1
 ```
 
 ### Success Response
@@ -215,7 +216,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/parcels
+curl -i http://localhost/parcels
 ```
 
 ### Success Response
@@ -267,8 +268,62 @@ Success-Response:
     ]
 }
 ```
-# Relationship
+# Relationships
 
+## Request one relationship
+
+
+
+	GET /relationships/:id
+
+
+### Parameters
+
+| Name    | Type      | Description                          |
+|---------|-----------|--------------------------------------|
+| id			| <p>Number</p> 			|  <p>relationship's unique ID.</p> 							|
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/relationships
+```
+
+### Success Response
+
+Success-Response:
+
+```
+HTTP/1.1 200 OK
+
+{
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              47.867583,
+              -122.164306
+            ]
+          },
+          "properties": {
+            "relationship_id": 1,
+            "relationship_type": "Own",
+            "parcel_id": 1,
+            "spatial_source": "survey_grade_gps",
+            "party_id": 1,
+            "first_name": "Daniel",
+            "last_name": "Baah",
+            "time_created": "2015-08-12T03:46:01.673153+00:00"
+          }
+        }
+      ]
+    }
+```
 ## Request all relationships
 
 
@@ -281,7 +336,7 @@ Success-Response:
 Example usage:
 
 ```
-curl -i http://54.69.121.180:3000/relationships
+curl -i http://localhost/relationships
 ```
 
 ### Success Response

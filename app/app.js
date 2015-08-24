@@ -45,6 +45,12 @@ var ingestion_engine = DataTransformer(settings);
 //Register the CSV Provider
 require("cadasta-provider-csv").register(ingestion_engine);
 
+//Register the GeoJSON Provider
+require("cadasta-provider-geojson").register(ingestion_engine);
+
+//Register the ONA-data Provider
+require("cadasta-provider-ona").register(ingestion_engine);
+
 // Create the express instance
 var app = express();
 
@@ -70,15 +76,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Endpoint configuration
 var routes = require('./routes/index');
-var parcel = require('./routes/parcel');
-var relationship = require('./routes/relationships');
-var activity = require('./routes/activity');
+var parcels = require('./routes/parcels');
+var relationships = require('./routes/relationships');
+var activities = require('./routes/activities');
+var custom = require('./routes/custom');
+
+
 app.use('/', routes);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);
-app.use('/parcel', parcel);
 app.use('/relationships', relationships);
-app.use('/relationship', relationship);
 app.use('/activities', activities);
 app.use('/custom', custom);
 
