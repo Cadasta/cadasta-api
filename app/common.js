@@ -18,17 +18,9 @@ common.isInteger = function(x){
     return Math.round(x) === x;
 };
 
-common.parseQueryOptions = function(queryParams, nonGeomColumns, geomCol ) {
+common.parseQueryOptions = function(queryParams, queryOptions ) {
 
-    var queryOptions = {
-        columns: nonGeomColumns,
-        geometryColumn: geomCol,
-        order_by: '',
-        limit: '',
-        where: ''
-    };
-
-    var colArr = nonGeomColumns.split(',');
+    var colArr = queryOptions.columns.split(',');
 
     if(queryParams.hasOwnProperty('returnGeom')) {
 
@@ -39,6 +31,8 @@ common.parseQueryOptions = function(queryParams, nonGeomColumns, geomCol ) {
         if(queryParams.returnGeom === 'false') {
             queryOptions.geometryColumn = null;
         }
+    } else {
+        queryOptions.geometryColumn = null;
     }
 
     if(queryParams.hasOwnProperty('fields')) {

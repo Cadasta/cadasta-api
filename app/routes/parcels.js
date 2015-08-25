@@ -74,14 +74,23 @@ router.get('', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
-    var geomCol = 'geom';
-
     var colArr = nonGeomColumns.split(',');
 
-    var sqlModifiers = common.getAllOptions(req.query, nonGeomColumns, geomCol)
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: ''
+    };
 
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
 
-    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom'});
+    var sql = pgUtils.featureCollectionSQL("parcel", queryOptions);
 
     var preparedStatement = {
         name: "get_all_parcels",
@@ -173,7 +182,21 @@ router.get('/:id', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
 
-    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom', whereClause: 'WHERE id = $1'});
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: 'WHERE id = $1'
+    };
+
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
+
+    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
     var preparedStatement = {
         name: "get_parcel",
         text: sql,
