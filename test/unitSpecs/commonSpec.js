@@ -1,0 +1,27 @@
+/**
+ * Created by rgwozdz on 8/15/15.
+ */
+
+var moduleUnderTest = require("../../app/common.js")
+var assert = require('chai').assert;
+
+describe('common.js module', function() {
+    describe('parseQueryOptions', function () {
+        it('should return expected Object with properties and values', function () {
+
+            var result = moduleUnderTest.parseQueryOptions({fields:'a,b', limit: 2, order_by: 'a,b', order:'DESC', returnGeom:'false'}, 'a,b,c', 'geom');
+
+            var expectedResult = {
+                columns: 'a,b',
+                geometryColumn: null,
+                order_by: 'ORDER BY a,b',
+                limit: 'LIMIT 2',
+                where: ''
+            };
+
+            assert.equal(JSON.stringify(result), JSON.stringify(expectedResult));
+
+        });
+
+    });
+});

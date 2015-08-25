@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
+var common = require('../common.js');
 var throwjs = require('throw.js');
 
 /**
@@ -73,8 +74,15 @@ router.get('', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
+    var geomCol = 'geom';
+
+    var colArr = nonGeomColumns.split(',');
+
+    var sqlModifiers = common.getAllOptions(req.query, nonGeomColumns, geomCol)
+
 
     var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, {geometryColumn: 'geom'});
+
     var preparedStatement = {
         name: "get_all_parcels",
         text: sql,

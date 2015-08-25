@@ -51,6 +51,48 @@ module.exports = function(app) {
             });
         });
 
+        describe('GET /parcels?fields=id', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .get('/parcels')
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        // Test that it returns GeoJSON
+                        testUtils.expectFeatureCollection(res.body);
+
+                        //  Get the GeoJSON features for further testing
+                        var features = res.body.features;
+
+                        // This endpoint, when pointed to test DB, should return several features
+                        if(features.length > 0) {
+
+                            // Ensure features have correct properties
+                            features.forEach(function(feature){
+
+                                expect(feature).to.have.deep.property('properties.id');
+                                expect(feature).to.have.deep.property('properties.spatial_source');
+                                expect(feature).to.have.deep.property('properties.user_id');
+                                expect(feature).to.have.deep.property('properties.area');
+                                expect(feature).to.have.deep.property('properties.land_use');
+                                expect(feature).to.have.deep.property('properties.gov_pin');
+                                expect(feature).to.have.deep.property('properties.active');
+                                expect(feature).to.have.deep.property('properties.time_created');
+                                expect(feature).to.have.deep.property('properties.time_updated');
+                                expect(feature).to.have.deep.property('properties.created_by');
+                                expect(feature).to.have.deep.property('properties.updated_by');
+                            });
+                        }
+
+                        done();
+                    });
+
+            });
+        });
+
         describe('GET /parcels/1', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
