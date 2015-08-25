@@ -12,7 +12,7 @@ var common = require('../common.js');
  *
  * @apiParam {String} tenure_type Options: own, lease, occupy, informal occupy
  * @apiParamExample  Query String Example:
- *  curl -i http://localhost/custom/get_parcels_list?tenure_type?=own,lease
+ *  curl -i http://localhost/custom/get_parcels_list?tenure_type=own,lease
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
