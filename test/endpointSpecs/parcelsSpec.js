@@ -9,7 +9,7 @@ module.exports = function(app) {
 
     describe('Parcels suite', function () {
 
-        describe('GET /parcel', function () {
+        describe('GET /parcels', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
@@ -51,7 +51,7 @@ module.exports = function(app) {
             });
         });
 
-        describe('GET /parcel/1', function () {
+        describe('GET /parcels/1', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
