@@ -81,6 +81,12 @@ Success-Response:
 	GET /custom/get_parcels_list
 
 
+### Parameters
+
+| Name    | Type      | Description                          |
+|---------|-----------|--------------------------------------|
+| tenure_type			| <p>String</p> 			|  <p>Options: own, lease, occupy, informal occupy</p> 							|
+
 ### Examples
 
 Example usage:

@@ -10,6 +10,9 @@ var common = require('../common.js');
  * @apiName get_parcels_list
  * @apiGroup Custom
  *
+ * @apiParam {String} tenure_type Options: own, lease, occupy, informal occupy
+ * @apiParamExample  Query String Example:
+ *  curl -i http://localhost/custom/get_parcels_list?tenure_type?=own,lease
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
@@ -63,30 +66,56 @@ var common = require('../common.js');
 }
  *
  * */
-router.get('/get_parcels_list', function(req, res, next) {
 
-    //var args = common.getArguments(req);
+router.get('/get_parcels_list', function (req, res, next) {
+
+    var args = common.getArguments(req);
+    var options = {};
+    var tenure_type;
+    var obj = {};
+
+    if (args.tenure_type) {
+        obj = createWhereClause(args.tenure_type);
+        options.whereClause = 'WHERE tenure_type IN (' + obj.str + ')';
+    } else {
+        obj.uriList = [];
+    }
 
     // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,time_created,area, num_relationships";
+    var nonGeomColumns = "id,time_created,area,tenure_type,num_relationships";
 
-    var sql = pgUtils.featureCollectionSQL("show_parcel_list", nonGeomColumns, null);
-    var preparedStatement = {
-        name: "get_parcel_list",
-        text: sql,
-        values:[]};
+    var sql = pgUtils.featureCollectionSQL("show_parcel_list", nonGeomColumns, options);
 
-    pgb.queryDeferred(preparedStatement)
-        .then(function(result){
-
-            res.status(200).json(result[0].response);
-
-        })
-        .catch(function(err){
-            next(err);
-        });
+    // Handle bad requests; arg must tenure_type
+    if (Object.keys(args).length > 0 && Object.keys(args).indexOf('tenure_type') == -1) {
+        res.status(400).json({error: "Bad Request; invalid 'tenure_type' option"});
+    } else {
+        pgb.queryDeferred(sql, {sqlParams: obj.uriList})
+            .then(function (result) {
+                res.status(200).json(result[0].response);
+            })
+            .catch(function (err) {
+                next(err);
+            });
+    }
 
 });
 
+function createWhereClause(arr) {
+    var obj = {};
+
+    obj.str = '';
+    obj.uriList = arr.split(',');
+
+    obj.uriList.forEach(function (val, i) {
+        if (i < obj.uriList.length - 1) {
+            obj.str += '$' + (i + 1) + ', ';
+        } else {
+            obj.str += '$' + (i + 1) + '';
+        }
+    });
+
+    return obj;
+}
 
 module.exports = router;
