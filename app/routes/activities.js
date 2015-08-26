@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
-var throwjs = require('throw.js');
+var common = require('../common.js');
 
 /**
  * @api {get} /activities Request all activities

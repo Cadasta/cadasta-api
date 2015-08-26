@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
-var throwjs = require('throw.js');
+var common = require('../common.js');
 
 /**
  * @api {get} /relationships Request all relationships
@@ -172,7 +172,7 @@ router.get('/:id', function(req, res, next) {
         geometryColumn: 'geom',
         order_by: '',
         limit: '',
-        whereClause: 'WHERE id = $1'
+        whereClause: 'WHERE relationship_id = $1'
     };
 
     try{
@@ -183,7 +183,7 @@ router.get('/:id', function(req, res, next) {
 
     var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
 
-    pgb.queryDeferred(sql, {paramValues: [req.param.id]})
+    pgb.queryDeferred(sql, {paramValues: [req.params.id]})
         .then(function(result){
 
             res.status(200).json(result[0].response);
