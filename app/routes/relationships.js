@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
-var throwjs = require('throw.js');
+var common = require('../common.js');
 
 /**
  * @api {get} /relationships Request all relationships
@@ -80,13 +80,23 @@ router.get('', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
 
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, {geometryColumn: 'parcel_geometry', whereClause: ''});
-    var preparedStatement = {
-        name: "get_all_show_relationship",
-        text: sql,
-        values:[]};
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: ''
+    };
 
-    pgb.queryDeferred(preparedStatement)
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
+
+    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
+
+    pgb.queryDeferred(sql)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -157,13 +167,23 @@ router.get('/:id', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
 
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, {geometryColumn: 'parcel_geometry', whereClause: 'WHERE relationship_id = $1'});
-    var preparedStatement = {
-        name: "get_one_show_relationship",
-        text: sql,
-        values:[req.params.id]};
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: 'WHERE relationship_id = $1'
+    };
 
-    pgb.queryDeferred(preparedStatement)
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
+
+    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
+
+    pgb.queryDeferred(sql, {paramValues: [req.params.id]})
         .then(function(result){
 
             res.status(200).json(result[0].response);

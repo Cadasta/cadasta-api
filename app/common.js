@@ -14,3 +14,83 @@ common.getArguments = function (req) {
     return args;
 };
 
+common.isInteger = function(x){
+    return Math.round(x) === x;
+};
+
+common.parseQueryOptions = function(queryParams, allColumns, queryOptions ) {
+
+    var colArr = allColumns.split(',');
+
+    if(queryParams.hasOwnProperty('fields')) {
+
+        var selectedFieldsArr = queryParams.fields.split(',');
+
+        selectedFieldsArr.every(function(field){
+
+            if(allColumns.indexOf(field) === -1) {
+
+                throw Error("Bad Request; invalid 'fields' option");
+            }
+
+        });
+
+        queryOptions.columns = queryParams.fields;
+    }
+
+    if(queryParams.hasOwnProperty('returnGeom')) {
+
+        if(['true', 'false'].indexOf(queryParams.returnGeom) === -1) {
+            throw Error("Bad Request; invalid 'returnGeom' option");
+        }
+
+        if(queryParams.returnGeom === 'false') {
+            queryOptions.geometryColumn = null;
+        }
+    } else {
+        queryOptions.geometryColumn = null;
+    }
+
+    if(queryParams.hasOwnProperty('limit')) {
+
+        if(!common.isInteger(Number(queryParams.limit))) {
+
+            throw Error("Bad Request; invalid 'limit' option");
+        }
+
+        queryOptions.limit = "LIMIT " + queryParams.limit;
+    }
+
+    if(queryParams.hasOwnProperty('order_by')) {
+
+        var orderByArr = queryParams.order_by.split(',');
+
+        orderByArr.every(function(field){
+
+            if(colArr.indexOf(field) === -1) {
+                throw Error("Bad Request; invalid 'order_by' option");
+            }
+
+        });
+
+        queryOptions.order_by = 'ORDER BY ' + queryParams.order_by;
+    }
+
+
+    if(queryParams.hasOwnProperty('order')) {
+
+        var orders = ['ASC', 'DESC'];
+
+        if(orders.indexOf(queryParams.order) === -1) {
+            throw Error("Bad Request; invalid 'order' option");
+        }
+
+        if(queryOptions.order_by) {
+            queryOptions.order_by = queryOptions.order_by + ' ' + queryParams.order;
+        }
+    }
+
+
+    return queryOptions;
+
+}

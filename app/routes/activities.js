@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
-var throwjs = require('throw.js');
+var common = require('../common.js');
 
 /**
  * @api {get} /activities Request all activities
@@ -63,13 +63,23 @@ router.get('', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "activity_type,id,type,name, parcel_id,time_created";
 
-    var sql = pgUtils.featureCollectionSQL("show_activity", nonGeomColumns);
-    var preparedStatement = {
-        name: "get_all_show_activity",
-        text: sql,
-        values:[]};
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: ''
+    };
 
-    pgb.queryDeferred(preparedStatement)
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
+
+    var sql = pgUtils.featureCollectionSQL("show_activity", nonGeomColumns, queryOptions);
+
+    pgb.queryDeferred(sql)
         .then(function(result){
 
             res.status(200).json(result[0].response);
