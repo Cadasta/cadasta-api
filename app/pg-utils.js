@@ -24,7 +24,7 @@ module.exports.featureCollectionSQL = function(table, propertyColumns, opts){
             + ", {{geometry}} As geometry "
             + ", row_to_json((SELECT l FROM (select {{columns}}) As l "
         + ")) As properties "
-        + "FROM " + table + " As t {{where}}) As f )  As fc;"
+        + "FROM " + table + " As t {{where}}) As f )  As fc;";
 
     return sql.replace('{{columns}}', propertyColumns).replace('{{geometry}}', geomFragment).replace('{{where}}', whereClause);
 };

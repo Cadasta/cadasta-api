@@ -63,3 +63,14 @@ module.exports.queryDeferred = function(sqlStr, opts){
 
     return deferred.promise;
 };
+
+module.exports.sanitize = function (val) {
+    // we want a null to still be null, not a string
+    if (typeof val === 'string' && val !== 'null') {
+        // $nh9$ is using $$ with an arbitrary tag. $$ in pg is a safe way to quote something,
+        // because all escape characters are ignored inside of it.
+        var esc = settings.escapeStr;
+        return "$" + esc + "$" + val + "$" + esc + "$";
+    }
+    return val;
+};
