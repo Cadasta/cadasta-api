@@ -96,12 +96,7 @@ router.get('', function(req, res, next) {
 
     var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
 
-    var preparedStatement = {
-        name: "get_all_show_relationship",
-        text: sql,
-        values:[]};
-
-    pgb.queryDeferred(preparedStatement)
+    pgb.queryDeferred(sql)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -186,14 +181,9 @@ router.get('/:id', function(req, res, next) {
         return res.status(400).send(e);
     }
 
-    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
+    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
 
-    var preparedStatement = {
-        name: "get_one_show_relationship",
-        text: sql,
-        values:[req.params.id]};
-
-    pgb.queryDeferred(preparedStatement)
+    pgb.queryDeferred(sql, {paramValues: [req.param.id]})
         .then(function(result){
 
             res.status(200).json(result[0].response);
