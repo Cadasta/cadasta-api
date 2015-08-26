@@ -80,7 +80,22 @@ router.get('', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
 
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, {geometryColumn: 'parcel_geometry', whereClause: ''});
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: ''
+    };
+
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
+
+    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
+
     var preparedStatement = {
         name: "get_all_show_relationship",
         text: sql,
@@ -157,7 +172,22 @@ router.get('/:id', function(req, res, next) {
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
 
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, {geometryColumn: 'parcel_geometry', whereClause: 'WHERE relationship_id = $1'});
+    var queryOptions = {
+        columns: nonGeomColumns,
+        geometryColumn: 'geom',
+        order_by: '',
+        limit: '',
+        whereClause: 'WHERE id = $1'
+    };
+
+    try{
+        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
+    } catch (e) {
+        return res.status(400).send(e);
+    }
+
+    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
+
     var preparedStatement = {
         name: "get_one_show_relationship",
         text: sql,

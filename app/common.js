@@ -18,9 +18,25 @@ common.isInteger = function(x){
     return Math.round(x) === x;
 };
 
-common.parseQueryOptions = function(queryParams, queryOptions ) {
+common.parseQueryOptions = function(queryParams, allColumns, queryOptions ) {
 
-    var colArr = queryOptions.columns.split(',');
+    var colArr = allColumns.split(',');
+
+    if(queryParams.hasOwnProperty('fields')) {
+
+        var selectedFieldsArr = queryParams.fields.split(',');
+
+        selectedFieldsArr.every(function(field){
+
+            if(allColumns.indexOf(field) === -1) {
+
+                throw Error("Bad Request; invalid 'fields' option");
+            }
+
+        });
+
+        queryOptions.columns = queryParams.fields;
+    }
 
     if(queryParams.hasOwnProperty('returnGeom')) {
 
@@ -33,22 +49,6 @@ common.parseQueryOptions = function(queryParams, queryOptions ) {
         }
     } else {
         queryOptions.geometryColumn = null;
-    }
-
-    if(queryParams.hasOwnProperty('fields')) {
-
-        var selectedFieldsArr = queryParams.fields.split(',');
-
-        selectedFieldsArr.every(function(field){
-
-            if(colArr.indexOf(field) === -1) {
-
-                throw Error("Bad Request; invalid 'fields' option");
-            }
-
-        });
-
-        queryOptions.columns = queryParams.fields;
     }
 
     if(queryParams.hasOwnProperty('limit')) {
@@ -86,7 +86,7 @@ common.parseQueryOptions = function(queryParams, queryOptions ) {
         }
 
         if(queryOptions.order_by) {
-            queryOptions.order_by + ' ' + queryParams.order;
+            queryOptions.order_by = queryOptions.order_by + ' ' + queryParams.order;
         }
     }
 

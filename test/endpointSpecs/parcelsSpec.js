@@ -51,11 +51,11 @@ module.exports = function(app) {
             });
         });
 
-        describe('GET /parcels?fields=id', function () {
+        describe('GET /parcels?fields&limit&order_by&order', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/parcels')
+                    .get('/parcels?fields=id,user_id&limit=2&order_by=id&order=DESC')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -67,25 +67,16 @@ module.exports = function(app) {
                         //  Get the GeoJSON features for further testing
                         var features = res.body.features;
 
-                        // This endpoint, when pointed to test DB, should return several features
-                        if(features.length > 0) {
+                        expect(features).with.length(2);
 
-                            // Ensure features have correct properties
-                            features.forEach(function(feature){
+                        // Ensure features have correct properties
+                        features.forEach(function(feature){
 
-                                expect(feature).to.have.deep.property('properties.id');
-                                expect(feature).to.have.deep.property('properties.spatial_source');
-                                expect(feature).to.have.deep.property('properties.user_id');
-                                expect(feature).to.have.deep.property('properties.area');
-                                expect(feature).to.have.deep.property('properties.land_use');
-                                expect(feature).to.have.deep.property('properties.gov_pin');
-                                expect(feature).to.have.deep.property('properties.active');
-                                expect(feature).to.have.deep.property('properties.time_created');
-                                expect(feature).to.have.deep.property('properties.time_updated');
-                                expect(feature).to.have.deep.property('properties.created_by');
-                                expect(feature).to.have.deep.property('properties.updated_by');
-                            });
-                        }
+                            expect(feature).to.have.deep.property('properties.id');
+                            expect(feature).to.have.deep.property('properties.user_id');
+                        });
+
+                        expect(features[1].properties.id > features[0].properties.id)
 
                         done();
                     });
@@ -97,7 +88,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/parcels/1')
+                    .get('/parcels/1?returnGeom=true')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds

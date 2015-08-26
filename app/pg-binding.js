@@ -16,11 +16,15 @@ var conString = "postgres://" +
  * @type {Function}
  */
 module.exports.queryCallback = function(sql, cb, opts) {
+
+    var options = opts || {};
+    var parameterizedQueryValues = options.paramValues || null;
+
     pg.connect(conString, function(err, client, done) {
         if(err) {
             console.error('error fetching client from pool', err);
         }
-        client.query(sqlStr, sqlParams, function(queryerr, result) {
+        client.query(sql, paramValues, function(queryerr, result) {
             done();
             if(queryerr) {
                 console.error('ERROR RUNNING QUERY:', sqlStr, queryerr);
@@ -35,10 +39,10 @@ module.exports.queryCallback = function(sql, cb, opts) {
  *
  * @type {Function}
  */
-module.exports.queryDeferred = function(sqlStr, opts){
+module.exports.queryDeferred = function(sql, opts){
 
     var options = opts || {};
-    var sqlParams = options.sqlParams || null;
+    var parameterizedQueryValues = options.paramValues || null;
 
     var deferred = Q.defer();
 
@@ -49,10 +53,10 @@ module.exports.queryDeferred = function(sqlStr, opts){
             deferred.reject(err);
         }
 
-        client.query(sqlStr, sqlParams, function(queryerr, result) {
+        client.query(sql, parameterizedQueryValues, function(queryerr, result) {
             done();
             if(queryerr) {
-                console.error('ERROR RUNNING QUERY:', sqlStr, queryerr);
+                console.error('ERROR RUNNING QUERY:', sql, queryerr);
                 deferred.reject(queryerr);
             } else {
                 deferred.resolve(result && result.rows ? result.rows : []);

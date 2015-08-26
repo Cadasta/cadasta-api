@@ -74,7 +74,6 @@ router.get('', function(req, res, next) {
 
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
-    var colArr = nonGeomColumns.split(',');
 
     var queryOptions = {
         columns: nonGeomColumns,
@@ -90,14 +89,9 @@ router.get('', function(req, res, next) {
         return res.status(400).send(e);
     }
 
-    var sql = pgUtils.featureCollectionSQL("parcel", queryOptions);
+    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
 
-    var preparedStatement = {
-        name: "get_all_parcels",
-        text: sql,
-        values:[]};
-
-    pgb.queryDeferred(preparedStatement)
+    pgb.queryDeferred(sql)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -197,12 +191,8 @@ router.get('/:id', function(req, res, next) {
     }
 
     var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
-    var preparedStatement = {
-        name: "get_parcel",
-        text: sql,
-        values:[req.params.id]};
 
-    pgb.queryDeferred(preparedStatement)
+    pgb.queryDeferred(sql, {paramValues: [req.params.id]})
         .then(function(result){
 
             res.status(200).json(result[0].response);

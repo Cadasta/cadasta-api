@@ -4,13 +4,13 @@
 
 var moduleUnderTest = require("../../app/common.js")
 var assert = require('chai').assert;
+var equal = require('deep-equal');
 
 describe('common.js module', function() {
     describe('parseQueryOptions', function () {
         it('should return expected Object with properties and values', function () {
 
-            var result = moduleUnderTest.parseQueryOptions({fields:'a,b', limit: 2, order_by: 'a,b', order:'DESC', returnGeom:'false'}, {
-                columns: 'a,b,c',
+            var result = moduleUnderTest.parseQueryOptions({fields:'a,b', limit: 2, order_by: 'a,b', order:'DESC', returnGeom:'false'},'a,b,c', {
                 geometryColumn: null });
 
             var expectedResult = {
@@ -20,13 +20,13 @@ describe('common.js module', function() {
                 order_by: 'ORDER BY a,b'
             };
 
-            assert.equal(JSON.stringify(result), JSON.stringify(expectedResult));
+            assert.equal(equal(result,expectedResult), true);
 
         });
 
         it('should return expected Object with properties and values', function () {
 
-            var result = moduleUnderTest.parseQueryOptions({}, {
+            var result = moduleUnderTest.parseQueryOptions({},'a,b,c', {
                 columns: 'a,b,c',
                 geometryColumn: 'geom'});
 
@@ -35,7 +35,7 @@ describe('common.js module', function() {
                 geometryColumn: null
             };
 
-            assert.equal(JSON.stringify(result), JSON.stringify(expectedResult));
+            assert.equal(equal(result,expectedResult), true);
 
         });
 

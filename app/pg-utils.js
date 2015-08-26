@@ -19,7 +19,7 @@ module.exports.featureCollectionSQL = function(table, propertyColumns, opts){
     var limit = options.limit || '';
     var order_by = options.order_by || '';
     var whereClause = options.whereClause || '';
-    propertyColumns = options.columns || propertyColumns;
+    var columns = options.columns || propertyColumns;
 
     var sql = "SELECT row_to_json(fc) AS response "
         + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
@@ -27,9 +27,9 @@ module.exports.featureCollectionSQL = function(table, propertyColumns, opts){
             + ", {{geometry}} As geometry "
             + ", row_to_json((SELECT l FROM (select {{columns}}) As l "
         + ")) As properties "
-        + "FROM " + table + " As t {{where}} {{limit}} {{order_by}}) As f )  As fc;"
+        + "FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
 
-    return sql.replace('{{columns}}', propertyColumns)
+    return sql.replace('{{columns}}', columns)
                 .replace('{{geometry}}', geomFragment)
                 .replace('{{where}}', whereClause)
                 .replace('{{limit}}', limit)
