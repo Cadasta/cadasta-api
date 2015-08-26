@@ -17,7 +17,7 @@ describe('common.js module', function() {
                 columns: 'a,b',
                 geometryColumn: null,
                 limit: 'LIMIT 2',
-                order_by: 'ORDER BY a,b'
+                order_by: 'ORDER BY a,b DESC'
             };
 
             assert.equal(equal(result,expectedResult), true);
