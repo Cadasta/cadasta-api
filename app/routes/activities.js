@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
-var pgUtils = require('../pg-utils');
 var common = require('../common.js');
 
 /**
@@ -60,7 +59,7 @@ var common = require('../common.js');
  */
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    var sql = pgUtils.featureCollectionSQL("show_activity", req.queryModifiers);
+    var sql = common.featureCollectionSQL("show_activity", req.queryModifiers);
 
     pgb.queryDeferred(sql)
         .then(function(result){

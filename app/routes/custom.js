@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
-var pgUtils = require('../pg-utils');
-var throwjs = require('throw.js');
 var common = require('../common.js');
 
 /**
@@ -63,14 +61,14 @@ var common = require('../common.js');
 }
  *
  * */
-router.get('/get_parcels_list', function(req, res, next) {
+router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, next) {
 
     //var args = common.getArguments(req);
 
     // All columns in table with the exception of the geometry column
     var nonGeomColumns = "id,time_created,area, num_relationships";
 
-    var sql = pgUtils.featureCollectionSQL("show_parcel_list", nonGeomColumns, null);
+    var sql = common.featureCollectionSQL("show_parcel_list", req.queryModifiers);
     var preparedStatement = {
         name: "get_parcel_list",
         text: sql,

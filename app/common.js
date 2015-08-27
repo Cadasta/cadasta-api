@@ -122,3 +122,27 @@ common.parseQueryOptions = function(req, res, next) {
     next();
 
 };
+
+common.featureCollectionSQL = function(table, mods, where){
+
+    var modifiers = mods || {};
+    var geomFragment = (typeof modifiers.geometryColumn === "undefined" || modifiers.geometryColumn === null) ? "NULL" : "ST_AsGeoJSON(t." + modifiers.geometryColumn + ")::json";
+    var limit = modifiers.limit || '';
+    var order_by = modifiers.order_by || '';
+    var whereClause = where || '';
+    var columns = modifiers.fields;
+
+    var sql = "SELECT row_to_json(fc) AS response "
+        + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
+        + "FROM (SELECT 'Feature' As type "
+        + ", {{geometry}} As geometry "
+        + ", row_to_json((SELECT l FROM (select {{columns}}) As l "
+        + ")) As properties "
+        + "FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+
+    return sql.replace('{{columns}}', columns)
+        .replace('{{geometry}}', geomFragment)
+        .replace('{{where}}', whereClause)
+        .replace('{{limit}}', limit)
+        .replace('{{order_by}}', order_by);
+};
