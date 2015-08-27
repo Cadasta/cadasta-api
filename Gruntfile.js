@@ -127,8 +127,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-text-replace');
 
     grunt.registerTask('updateDocs', [
-        'apidoc:docs',
-        'shell:markdownDocs',
+        'apidoc:docs'
+        //'shell:markdownDocs',
     ]);
 
     // The build and 'deploy' task

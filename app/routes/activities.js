@@ -8,6 +8,13 @@ var common = require('../common.js');
  * @apiName GetActivities
  * @apiGroup Activities
  *
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects

@@ -8,6 +8,12 @@ var common = require('../common.js');
  * @apiName GetParcels
  * @apiGroup Parcels
  *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
@@ -18,7 +24,7 @@ var common = require('../common.js');
  * @apiSuccess {Number} response.features.properties.spatial_source integer code for the spatial source of the parcel
  * @apiSuccess {String} response.features.properties.user_id user id that created parcel
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
- * @apiSuccess {String} response.features.properties.time_created Time stamp of last update
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
  *
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/parcels
@@ -90,6 +96,12 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
  * @apiGroup Parcels
  *
  * @apiParam {Number} id parcel's unique ID.
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
  *
  * @apiSuccess {Object} response A feature collection with one parcel feature
  * @apiSuccess {String} response.type "Feature Collection"

@@ -29,7 +29,6 @@
     "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master"
   },
   "devDependencies": {
-    "apidoc-markdown": "^0.2.0",
     "chai": "^3.2.0",
     "chai-http": "^1.0.0",
     "chai-things": "^0.2.0",
