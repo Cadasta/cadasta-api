@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
-var pgUtils = require('../pg-utils');
-var throwjs = require('throw.js');
 var common = require('../common.js');
 
 /**
@@ -70,8 +68,7 @@ var common = require('../common.js');
 }
  *
  * */
-
-router.get('/get_parcels_list', function (req, res, next) {
+router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, next) {
 
     var args = common.getArguments(req);
     var options = {};
@@ -80,27 +77,26 @@ router.get('/get_parcels_list', function (req, res, next) {
 
     if (args.tenure_type) {
         obj = createWhereClause(args.tenure_type);
-        options.whereClause = 'WHERE tenure_type IN (' + obj.str + ')';
+        options.whereClause = 'WHERE ' + obj.str + '';
     } else {
         obj.uriList = [];
     }
 
-    // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,time_created,area,tenure_type,num_relationships";
-
-    var sql = pgUtils.featureCollectionSQL("show_parcel_list", nonGeomColumns, options);
+    var sql = common.featureCollectionSQL("show_parcels_list", req.queryModifiers, options.whereClause);
 
     // Handle bad requests; arg must tenure_type
     if (Object.keys(args).length > 0 && Object.keys(args).indexOf('tenure_type') == -1) {
         res.status(400).json({error: "Bad Request; invalid 'tenure_type' option"});
     } else {
-        pgb.queryDeferred(sql, {paramValues: obj.uriList})
-            .then(function (result) {
-                res.status(200).json(result[0].response);
-            })
-            .catch(function (err) {
-                next(err);
-            });
+    pgb.queryDeferred(sql, {paramValues:obj.uriList})
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        });
     }
 
 });
@@ -113,9 +109,9 @@ function createWhereClause(arr) {
 
     obj.uriList.forEach(function (val, i) {
         if (i < obj.uriList.length - 1) {
-            obj.str += '$' + (i + 1) + ', ';
+            obj.str += 'tenure_type::text[] @> ARRAY[$' + (i + 1) +'] OR ';
         } else {
-            obj.str += '$' + (i + 1) + '';
+            obj.str += 'tenure_type::text[] @> ARRAY[$' + (i + 1) + ']';
         }
     });
 

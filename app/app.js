@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 // Logging packages
 var rollbar = require('rollbar');
 var winston = require('winston');
+var common = require('./common.js');
 require('winston-rollbar').Rollbar;
 require('./console-winston');
 
@@ -73,6 +74,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Static directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+//app.use(common.parseQueryOptions);
 
 // Endpoint configuration
 var routes = require('./routes/index');

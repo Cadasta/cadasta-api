@@ -55,7 +55,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/parcels?fields=id,user_id&limit=2&order_by=id&order=DESC')
+                    .get('/parcels?fields=id,user_id&limit=2&sort_by=id&sort_dir=DESC')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -88,7 +88,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/parcels/1?returnGeom=true')
+                    .get('/parcels/1?returnGeometry=true')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds

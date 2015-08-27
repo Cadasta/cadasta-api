@@ -92,6 +92,7 @@ var q4 = fs.readFileSync('node_modules/cadasta-db/sql/4_db-views.sql');
 var q5 = fs.readFileSync(__dirname + '/truncate-db-tables.sql', 'utf8');
 
 return nukeDB()
+    /*
     .then(function(response){
         return query(q1);
 
@@ -102,7 +103,7 @@ return nukeDB()
         return query(q2);
     })
 
-    /* Scripts 3 and 4 not working here
+
     .then(function(){
 
         console.log('2_survey-tables.sql complete.');

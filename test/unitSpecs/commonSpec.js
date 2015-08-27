@@ -4,38 +4,26 @@
 
 var moduleUnderTest = require("../../app/common.js")
 var assert = require('chai').assert;
-var equal = require('deep-equal');
 
 describe('common.js module', function() {
-    describe('parseQueryOptions', function () {
-        it('should return expected Object with properties and values', function () {
+    describe('featureCollectionSQL', function () {
+        it('should return expected SQL string with all options (geom and where clause)', function () {
 
-            var result = moduleUnderTest.parseQueryOptions({fields:'a,b', limit: 2, order_by: 'a,b', order:'DESC', returnGeom:'false'},'a,b,c', {
-                geometryColumn: null });
+            var result = moduleUnderTest.featureCollectionSQL("testTable",{fields: "testCol1,testCol2", geometryColumn: "testGeomCol"}, 'WHERE id = $1');
 
-            var expectedResult = {
-                columns: 'a,b',
-                geometryColumn: null,
-                limit: 'LIMIT 2',
-                order_by: 'ORDER BY a,b DESC'
-            };
+            var expectedResult = "SELECT row_to_json(fc) AS response FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(t.testGeomCol)::json As geometry , row_to_json((SELECT l FROM (select testCol1,testCol2) As l )) As properties FROM testTable As t WHERE id = $1  ) As f )  As fc;";
 
-            assert.equal(equal(result,expectedResult), true);
+            assert.equal(result, expectedResult);
 
         });
 
-        it('should return expected Object with properties and values', function () {
+        it('should return expect SQL string with no options (no geom or where clause)', function () {
 
-            var result = moduleUnderTest.parseQueryOptions({},'a,b,c', {
-                columns: 'a,b,c',
-                geometryColumn: 'geom'});
+            var result = moduleUnderTest.featureCollectionSQL("testTable",{fields: "testCol1,testCol2"});
 
-            var expectedResult = {
-                columns: 'a,b,c',
-                geometryColumn: null
-            };
+            var expectedResult = "SELECT row_to_json(fc) AS response FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , NULL As geometry , row_to_json((SELECT l FROM (select testCol1,testCol2) As l )) As properties FROM testTable As t   ) As f )  As fc;";
 
-            assert.equal(equal(result,expectedResult), true);
+            assert.equal(result, expectedResult);
 
         });
 
