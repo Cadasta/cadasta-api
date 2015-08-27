@@ -138,7 +138,6 @@ module.exports = function(grunt) {
         'copy:publish',
         'apidoc:docs',
         'replace:docs',
-        'shell:markdownDocs',
         'file_append:deploy',
         'shell:compress',
         'shell:scp'
