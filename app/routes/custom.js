@@ -22,6 +22,7 @@ var common = require('../common.js');
  * @apiSuccess {Integer} response.features.properties.id parcel id
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp with timezone
  * @apiSuccess {Numeric} response.features.properties.area area of parcel geometry
+ * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/custom/get_parcels_list
@@ -36,30 +37,33 @@ var common = require('../common.js');
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "id": 12,
-                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "id": 45,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
-                "num_relationships": 1
+                "tenure_type": "own",
+                "num_relationships": 6
             }
         },
         {
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "id": 10,
-                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "id": 44,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
+                "tenure_type": "lease",
+                "num_relationships": 5
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 43,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "occupy",
                 "num_relationships": 2
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "id": 11,
-                "time_created": "2015-08-20T13:29:27.309732-07:00",
-                "area": null,
-                "num_relationships": 1
             }
         }
     ]
@@ -90,7 +94,7 @@ router.get('/get_parcels_list', function (req, res, next) {
     if (Object.keys(args).length > 0 && Object.keys(args).indexOf('tenure_type') == -1) {
         res.status(400).json({error: "Bad Request; invalid 'tenure_type' option"});
     } else {
-        pgb.queryDeferred(sql, {sqlParams: obj.uriList})
+        pgb.queryDeferred(sql, {paramValues: obj.uriList})
             .then(function (result) {
                 res.status(200).json(result[0].response);
             })

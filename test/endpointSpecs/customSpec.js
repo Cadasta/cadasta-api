@@ -1,3 +1,6 @@
+/**
+ * Created by DBaah on 8/26/15.
+ */
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var expect = require('chai').expect;
@@ -7,13 +10,13 @@ var testUtils = require('../test-utils/test-utils.js');
 
 module.exports = function(app) {
 
-    describe('Relationships suite', function () {
+    describe('Custom suite', function () {
 
-        describe('GET /relationships', function () {
+        describe('GET /custom/get_parcels_list', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/relationships')
+                    .get('/custom/get_parcels_list')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -30,15 +33,11 @@ module.exports = function(app) {
 
                             // Ensure features have correct properties
                             features.forEach(function(feature){
-
-                                expect(feature).to.have.deep.property('properties.relationship_id');
-                                expect(feature).to.have.deep.property('properties.spatial_source');
-                                expect(feature).to.have.deep.property('properties.relationship_type');
-                                expect(feature).to.have.deep.property('properties.parcel_id');
-                                expect(feature).to.have.deep.property('properties.party_id');
-                                expect(feature).to.have.deep.property('properties.first_name');
-                                expect(feature).to.have.deep.property('properties.last_name');
+                                expect(feature).to.have.deep.property('properties.id');
                                 expect(feature).to.have.deep.property('properties.time_created');
+                                expect(feature).to.have.deep.property('properties.area');
+                                expect(feature).to.have.deep.property('properties.tenure_type');
+                                expect(feature).to.have.deep.property('properties.num_relationships');
                             });
                         }
 
@@ -48,11 +47,11 @@ module.exports = function(app) {
             });
         });
 
-        describe('GET /relationships/1', function () {
+        describe('GET /custom/get_parcels_list?tenure_type=own', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/relationships/1')
+                    .get('/custom/get_parcels_list?tenure_type=own')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -64,28 +63,25 @@ module.exports = function(app) {
                         //  Get the GeoJSON features for further testing
                         var features = res.body.features;
 
-                        // Make sure only one feature returned
-                        expect(features).with.length(1);
+                        // This endpoint, when pointed to test DB, should return several features
+                        if(features.length > 0) {
 
-                        // Check properties
-                        var featureProperties = features[0].properties;
-                        expect(featureProperties).to.have.property('relationship_id', 1);
-                        expect(featureProperties).to.have.property('spatial_source', "survey_sketch");
-                        expect(featureProperties).to.have.property('relationship_type', 'own');
-                        expect(featureProperties).to.have.property('party_id', 1);
-                        expect(featureProperties).to.have.property('first_name', 'Oprah');
-                        expect(featureProperties).to.have.property('last_name', 'Winfrey');
-                        expect(featureProperties).to.have.property('parcel_id', 1);
-                        expect(featureProperties).to.have.property('time_created');
-
-                        var featureGeometry = features[0].geometry;
-
+                            // Ensure features have correct properties
+                            features.forEach(function(feature){
+                                expect(feature).to.have.deep.property('properties.id');
+                                expect(feature).to.have.deep.property('properties.time_created');
+                                expect(feature).to.have.deep.property('properties.area');
+                                expect(feature).to.have.deep.property('properties.tenure_type', 'own');
+                                expect(feature).to.have.deep.property('properties.num_relationships');
+                            });
+                        }
 
                         done();
                     });
 
             });
         });
+
     });
 
 };

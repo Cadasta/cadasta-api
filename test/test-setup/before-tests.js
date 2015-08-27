@@ -80,7 +80,7 @@ module.exports = function(){
             // clean up form data
             var results = sanitize(JSON.stringify(testData.form.results));
 
-            return ingestion_engine.dataProcessor.load(surveyId,results);
+            return ingestion_engine.dataProcessor.load(results);
         })
         .then(function(response){
 
