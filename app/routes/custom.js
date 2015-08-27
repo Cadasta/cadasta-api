@@ -4,10 +4,13 @@ var pgb = require('../pg-binding');
 var common = require('../common.js');
 
 /**
- * @api {get} /custom/get_parcels_list Parcel/Num relationships List
- * @apiName get_parcels_list
+ * @api {get} /custom_get_parcels_list Parcel/Num relationships List
+ * @apiName custom_get_parcels_list
  * @apiGroup Custom
  *
+ * @apiParam {String} tenure_type Options: own, lease, occupy, informal occupy
+ * @apiParamExample  Query String Example:
+ *  curl -i http://localhost/custom/get_parcels_list?tenure_type=own,lease
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
@@ -17,9 +20,10 @@ var common = require('../common.js');
  * @apiSuccess {Integer} response.features.properties.id parcel id
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp with timezone
  * @apiSuccess {Numeric} response.features.properties.area area of parcel geometry
+ * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/custom/get_parcels_list
+ *     curl -i http://localhost/custom_get_parcels_list
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -31,50 +35,60 @@ var common = require('../common.js');
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "id": 12,
-                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "id": 45,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
-                "num_relationships": 1
+                "tenure_type": "own",
+                "num_relationships": 6
             }
         },
         {
             "type": "Feature",
             "geometry": null,
             "properties": {
-                "id": 10,
-                "time_created": "2015-08-20T13:29:27.309732-07:00",
+                "id": 44,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
+                "tenure_type": "lease",
+                "num_relationships": 5
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 43,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "occupy",
                 "num_relationships": 2
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "id": 11,
-                "time_created": "2015-08-20T13:29:27.309732-07:00",
-                "area": null,
-                "num_relationships": 1
             }
         }
     ]
 }
  *
  * */
-router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, next) {
+router.get('/custom_get_parcels_list', common.parseQueryOptions, function(req, res, next) {
 
-    //var args = common.getArguments(req);
+    var args = common.getArguments(req);
+    var options = {};
+    var tenure_type;
+    var obj = {};
 
-    // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,time_created,area, num_relationships";
+    if (args.tenure_type) {
+        obj = createWhereClause(args.tenure_type);
+        options.whereClause = 'WHERE ' + obj.str + '';
+    } else {
+        obj.uriList = [];
+    }
 
-    var sql = common.featureCollectionSQL("show_parcel_list", req.queryModifiers);
-    var preparedStatement = {
-        name: "get_parcel_list",
-        text: sql,
-        values:[]};
+    var sql = common.featureCollectionSQL("show_parcels_list", req.queryModifiers, options.whereClause);
 
-    pgb.queryDeferred(preparedStatement)
+    // Handle bad requests; arg must tenure_type
+    if (Object.keys(args).length > 0 && Object.keys(args).indexOf('tenure_type') == -1) {
+        res.status(400).json({error: "Bad Request; invalid 'tenure_type' option"});
+    } else {
+    pgb.queryDeferred(sql, {paramValues:obj.uriList})
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -83,8 +97,25 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
         .catch(function(err){
             next(err);
         });
+    }
 
 });
 
+function createWhereClause(arr) {
+    var obj = {};
+
+    obj.str = '';
+    obj.uriList = arr.split(',');
+
+    obj.uriList.forEach(function (val, i) {
+        if (i < obj.uriList.length - 1) {
+            obj.str += 'tenure_type::text[] @> ARRAY[$' + (i + 1) +'] OR ';
+        } else {
+            obj.str += 'tenure_type::text[] @> ARRAY[$' + (i + 1) + ']';
+        }
+    });
+
+    return obj;
+}
 
 module.exports = router;
