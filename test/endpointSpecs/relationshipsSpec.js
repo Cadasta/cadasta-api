@@ -70,8 +70,8 @@ module.exports = function(app) {
                         // Check properties
                         var featureProperties = features[0].properties;
                         expect(featureProperties).to.have.property('relationship_id', 1);
-                        expect(featureProperties).to.have.property('spatial_source', "survey_grade_gps");
-                        expect(featureProperties).to.have.property('relationship_type', 'Own');
+                        expect(featureProperties).to.have.property('spatial_source', "survey_sketch");
+                        expect(featureProperties).to.have.property('relationship_type', 'own');
                         expect(featureProperties).to.have.property('party_id', 1);
                         expect(featureProperties).to.have.property('first_name', 'Oprah');
                         expect(featureProperties).to.have.property('last_name', 'Winfrey');

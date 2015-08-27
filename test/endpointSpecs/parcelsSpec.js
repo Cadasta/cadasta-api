@@ -88,7 +88,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/parcels/1?returnGeom=true')
+                    .get('/parcels/1?returnGeometry=true')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -107,7 +107,7 @@ module.exports = function(app) {
                         var featureProperties = features[0].properties;
 
                         expect(featureProperties).to.have.property('id', 1);
-                        expect(featureProperties).to.have.property('spatial_source', 4);
+                        expect(featureProperties).to.have.property('spatial_source', 1);
                         expect(featureProperties).to.have.property('user_id', "11");
                         expect(featureProperties).to.have.property('area');
                         expect(featureProperties).to.have.property('land_use');

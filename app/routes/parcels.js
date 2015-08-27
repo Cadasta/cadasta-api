@@ -3,7 +3,6 @@ var router = express.Router();
 var pgb = require('../pg-binding');
 var pgUtils = require('../pg-utils');
 var common = require('../common.js');
-var throwjs = require('throw.js');
 
 /**
  * @api {get} /parcels Request all parcels
@@ -70,26 +69,9 @@ var throwjs = require('throw.js');
     ]
 }
  */
-router.get('', function(req, res, next) {
+router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
-
-    var queryOptions = {
-        columns: nonGeomColumns,
-        geometryColumn: 'geom',
-        order_by: '',
-        limit: '',
-        whereClause: ''
-    };
-
-    try{
-        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
-    } catch (e) {
-        return res.status(400).send(e);
-    }
-
-    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
+    var sql = pgUtils.featureCollectionSQL("parcel", req.queryModifiers);
 
     pgb.queryDeferred(sql)
         .then(function(result){
@@ -171,26 +153,9 @@ router.get('', function(req, res, next) {
 }
  */
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
-    // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "id,spatial_source,user_id,area,land_use,gov_pin,active,time_created,time_updated,created_by,updated_by";
-
-    var queryOptions = {
-        columns: nonGeomColumns,
-        geometryColumn: 'geom',
-        order_by: '',
-        limit: '',
-        whereClause: 'WHERE id = $1'
-    };
-
-    try{
-        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
-    } catch (e) {
-        return res.status(400).send(e);
-    }
-
-    var sql = pgUtils.featureCollectionSQL("parcel", nonGeomColumns, queryOptions);
+    var sql = pgUtils.featureCollectionSQL("parcel", req.queryModifiers, 'WHERE id = $1');
 
     pgb.queryDeferred(sql, {paramValues: [req.params.id]})
         .then(function(result){

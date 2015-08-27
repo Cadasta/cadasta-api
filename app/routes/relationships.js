@@ -75,26 +75,9 @@ var common = require('../common.js');
   ]
 }
  */
-router.get('', function(req, res, next) {
+router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
-
-    var queryOptions = {
-        columns: nonGeomColumns,
-        geometryColumn: 'geom',
-        order_by: '',
-        limit: '',
-        whereClause: ''
-    };
-
-    try{
-        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
-    } catch (e) {
-        return res.status(400).send(e);
-    }
-
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
+    var sql = pgUtils.featureCollectionSQL("show_relationships", req.queryModifiers);
 
     pgb.queryDeferred(sql)
         .then(function(result){
@@ -162,26 +145,10 @@ router.get('', function(req, res, next) {
           ]
         }
  */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
-    // All columns in table with the exception of the geometry column
-    var nonGeomColumns = "relationship_id,relationship_type,parcel_id,spatial_source,party_id,first_name,last_name,time_created";
 
-    var queryOptions = {
-        columns: nonGeomColumns,
-        geometryColumn: 'geom',
-        order_by: '',
-        limit: '',
-        whereClause: 'WHERE relationship_id = $1'
-    };
-
-    try{
-        queryOptions = common.parseQueryOptions(req.query, nonGeomColumns, queryOptions)
-    } catch (e) {
-        return res.status(400).send(e);
-    }
-
-    var sql = pgUtils.featureCollectionSQL("show_relationships", nonGeomColumns, queryOptions);
+    var sql = pgUtils.featureCollectionSQL("show_relationships", req.queryModifiers, "WHERE relationship_id = $1");
 
     pgb.queryDeferred(sql, {paramValues: [req.params.id]})
         .then(function(result){

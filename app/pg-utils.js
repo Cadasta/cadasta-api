@@ -7,19 +7,19 @@
  *
  * @type {Function}
  * @param {String} propertyColumns comma delimited of string of all non-geometric table columns to appear in GeoJSON "properties"
- * @param {Object} opts object containing optional parameters
- * @param {String} opts.geometryColumn the name of the geometry column
- * @param {String} opts.whereClause the SQL where clause by which to limit the records returned
+ * @param {Object} mods, where object containing optional parameters
+ * @param {String} mods, where.geometryColumn the name of the geometry column
+ * @param {String} mods, where.whereClause the SQL where clause by which to limit the records returned
  * @return {String} The SQL query for generating GeoJSON
  */
-module.exports.featureCollectionSQL = function(table, propertyColumns, opts){
+module.exports.featureCollectionSQL = function(table, mods, where){
 
-    var options = opts || {};
-    var geomFragment = (typeof options.geometryColumn === "undefined" || options.geometryColumn === null) ? "NULL" : "ST_AsGeoJSON(t." + options.geometryColumn + ")::json";
-    var limit = options.limit || '';
-    var order_by = options.order_by || '';
-    var whereClause = options.whereClause || '';
-    var columns = options.columns || propertyColumns;
+    var modifiers = mods || {};
+    var geomFragment = (typeof modifiers.geometryColumn === "undefined" || modifiers.geometryColumn === null) ? "NULL" : "ST_AsGeoJSON(t." + modifiers.geometryColumn + ")::json";
+    var limit = modifiers.limit || '';
+    var order_by = modifiers.order_by || '';
+    var whereClause = where || '';
+    var columns = modifiers.fields;
 
     var sql = "SELECT row_to_json(fc) AS response "
         + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
