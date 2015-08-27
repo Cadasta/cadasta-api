@@ -12,11 +12,11 @@ module.exports = function(app) {
 
     describe('Custom suite', function () {
 
-        describe('GET /custom/get_parcels_list', function () {
+        describe('GET /custom_get_parcels_list', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/custom/get_parcels_list')
+                    .get('/custom_get_parcels_list')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -47,7 +47,7 @@ module.exports = function(app) {
             });
         });
 
-        describe('GET /custom/get_parcels_list?tenure_type=own', function () {
+        describe('GET /custom_get_parcels_list?tenure_type=own', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)

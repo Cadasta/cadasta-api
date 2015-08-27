@@ -140,7 +140,7 @@ common.featureCollectionSQL = function(table, mods, where){
         + ")) As properties "
         + "FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
 
-    return sqlreplace('{{columns}}', columns)
+    return sql.replace('{{columns}}', columns)
         .replace('{{geometry}}', geomFragment)
         .replace('{{where}}', whereClause)
         .replace('{{limit}}', limit)

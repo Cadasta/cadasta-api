@@ -78,19 +78,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use(common.parseQueryOptions);
 
 // Endpoint configuration
-var routes = require('./routes/index');
+var custom = require('./routes/custom');
 var parcels = require('./routes/parcels');
 var relationships = require('./routes/relationships');
 var activities = require('./routes/activities');
-var custom = require('./routes/custom');
 
 
-app.use('/', routes);
+app.use(custom);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);
 app.use('/relationships', relationships);
 app.use('/activities', activities);
-app.use('/custom', custom);
 
 
 // Environment-specific configuration

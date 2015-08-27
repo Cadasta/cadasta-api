@@ -4,8 +4,8 @@ var pgb = require('../pg-binding');
 var common = require('../common.js');
 
 /**
- * @api {get} /custom/get_parcels_list Parcel/Num relationships List
- * @apiName get_parcels_list
+ * @api {get} /custom_get_parcels_list Parcel/Num relationships List
+ * @apiName custom_get_parcels_list
  * @apiGroup Custom
  *
  * @apiParam {String} tenure_type Options: own, lease, occupy, informal occupy
@@ -23,7 +23,7 @@ var common = require('../common.js');
  * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/custom/get_parcels_list
+ *     curl -i http://localhost/custom_get_parcels_list
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -68,7 +68,7 @@ var common = require('../common.js');
 }
  *
  * */
-router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, next) {
+router.get('/custom_get_parcels_list', common.parseQueryOptions, function(req, res, next) {
 
     var args = common.getArguments(req);
     var options = {};
