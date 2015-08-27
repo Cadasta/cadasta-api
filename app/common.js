@@ -82,7 +82,7 @@ common.parseQueryOptions = function(req, res, next) {
 
             orderByArr.every(function(field){
 
-                if(colArr.indexOf(field) === -1) {
+                if(allFields.indexOf(field) === -1) {
                     throw new OptionError("Bad Request; invalid 'order_by' option");
                 }
 
