@@ -12,6 +12,10 @@
 	- [Request one parcel](#request-one-parcel)
 	- [Request all parcels](#request-all-parcels)
 	
+- [Providers](#providers)
+	- [Show list of all providers](#show-list-of-all-providers)
+	- [Upload data in a &quot;provider-defined&quot; format](#upload-data-in-a-&quot;provider-defined&quot;-format)
+	
 - [Relationships](#relationships)
 	- [Request one relationship](#request-one-relationship)
 	- [Request all relationships](#request-all-relationships)
@@ -267,6 +271,64 @@ Success-Response:
         }
     ]
 }
+```
+# Providers
+
+## Show list of all providers
+
+
+
+	POST /providers
+
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/providers
+```
+
+### Success Response
+
+Success-Response:
+
+```
+HTTP/1.1 200 OK
+
+{ "providers": "csv" }
+```
+## Upload data in a &quot;provider-defined&quot; format
+
+
+
+	POST /providers/:provider
+
+
+### Parameters
+
+| Name    | Type      | Description                          |
+|---------|-----------|--------------------------------------|
+| provider			| <p>String</p> 			|  <p>name/type of provider, e.g. csv</p> 							|
+| postdata			| <p>Object</p> 			|  <p>the POST data</p> 							|
+| postdata.file_upload			| <p>file</p> 			|  <p>the data file uploaded</p> 							|
+
+### Examples
+
+Example usage:
+
+```
+curl -i http://localhost/providers/csv
+```
+
+### Success Response
+
+Success-Response:
+
+```
+HTTP/1.1 200 OK
+
+{ "status": "Data Loaded." }
 ```
 # Relationships
 
