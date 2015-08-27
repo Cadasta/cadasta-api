@@ -302,7 +302,7 @@ HTTP/1.1 200 OK
 
 
 
-	POST /providers/:provider
+	POST /providers/:provider/load
 
 
 ### Parameters

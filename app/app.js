@@ -5,6 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var compression = require('compression')
 var bodyParser = require('body-parser');
+var cors = require("cors");
 // Logging packages
 var rollbar = require('rollbar');
 var winston = require('winston');
@@ -67,6 +68,9 @@ app.set('view engine', 'hbs');
 
 // compress all requests: gzip/deflate
 app.use(compression());
+
+// CORS
+app.use(cors());
 
 // Body parser
 app.use(bodyParser.json());

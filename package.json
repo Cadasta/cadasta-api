@@ -7,8 +7,14 @@
   },
   "dependencies": {
     "body-parser": "~1.13.2",
+    "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
+    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
+    "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master",
+    "cadasta-provider-geojson": "https://github.com/Cadasta/cadasta-provider-geojson/tarball/master",
+    "cadasta-provider-ona": "https://github.com/Cadasta/cadasta-provider-ona/tarball/master",
     "compression": "^1.5.1",
     "cookie-parser": "~1.3.5",
+    "cors": "^2.7.1",
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "hbs": "~3.1.0",
@@ -20,12 +26,7 @@
     "serve-favicon": "~2.3.0",
     "throw.js": "^1.0.0",
     "winston": "^1.0.1",
-    "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master",
-    "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
-    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
-    "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master",
-    "cadasta-provider-geojson": "https://github.com/Cadasta/cadasta-provider-geojson/tarball/master",
-    "cadasta-provider-ona": "https://github.com/Cadasta/cadasta-provider-ona/tarball/master"
+    "winston-rollbar": "https://github.com/spatialdev/winston-rollbar/tarball/master"
   },
   "devDependencies": {
     "apidoc-markdown": "^0.2.0",
