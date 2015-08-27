@@ -16,7 +16,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/custom_get_parcels_list')
+                    .get('/custom/custom_get_parcels_list')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -51,7 +51,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/custom/get_parcels_list?tenure_type=own')
+                    .get('/custom/custom_get_parcels_list?tenure_type=own')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -71,8 +71,10 @@ module.exports = function(app) {
                                 expect(feature).to.have.deep.property('properties.id');
                                 expect(feature).to.have.deep.property('properties.time_created');
                                 expect(feature).to.have.deep.property('properties.area');
-                                expect(feature).to.have.deep.property('properties.tenure_type', 'own');
+                                expect(feature).to.have.deep.property('properties.tenure_type');
                                 expect(feature).to.have.deep.property('properties.num_relationships');
+
+                                expect(feature.properties.tenure_type).to.be.instanceof(Array);
                             });
                         }
 

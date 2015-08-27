@@ -84,7 +84,7 @@ var relationships = require('./routes/relationships');
 var activities = require('./routes/activities');
 
 
-app.use(custom);
+app.use('/custom', custom);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);
 app.use('/relationships', relationships);

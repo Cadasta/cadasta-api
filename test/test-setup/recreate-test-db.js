@@ -84,12 +84,12 @@ function query(queryStr) {
 };
 
 
-
+/*
 var q1 = fs.readFileSync('node_modules/cadasta-db/sql/1_db.sql', 'utf8');
 var q2 = fs.readFileSync('node_modules/cadasta-db/sql/2_field-data-tables.sql');
 var q3 = fs.readFileSync('node_modules/cadasta-db/sql/3_db-functions.sql');
 var q4 = fs.readFileSync('node_modules/cadasta-db/sql/4_db-views.sql');
-var q5 = fs.readFileSync(__dirname + '/truncate-db-tables.sql', 'utf8');
+ */var q5 = fs.readFileSync(__dirname + '/truncate-db-tables.sql', 'utf8');
 
 return nukeDB()
     /*

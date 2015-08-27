@@ -122,8 +122,8 @@ module.exports = function(app) {
 
                         expect(featureGeometry).to.have.property('coordinates');
                         expect(featureGeometry.coordinates).with.length(2);
-                        expect(featureGeometry.coordinates[0]).to.equal(-119.698062);
-                        expect(featureGeometry.coordinates[1]).to.equal(34.41484);
+                        expect(featureGeometry.coordinates[0]).to.equal(-73.724739);
+                        expect(featureGeometry.coordinates[1]).to.equal(40.588342);
 
 
                         done();
