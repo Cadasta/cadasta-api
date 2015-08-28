@@ -82,6 +82,7 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
         obj.uriList = [];
     }
 
+    req.queryModifiers.sort_by = "ORDER BY time_created DESC";
     var sql = common.featureCollectionSQL("show_parcels_list", req.queryModifiers, options.whereClause);
 
     // Handle bad requests; arg must tenure_type

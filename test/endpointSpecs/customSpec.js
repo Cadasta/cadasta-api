@@ -16,7 +16,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/custom/custom_get_parcels_list')
+                    .get('/custom/get_parcels_list')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -51,7 +51,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/custom/custom_get_parcels_list?tenure_type=own')
+                    .get('/custom/get_parcels_list?tenure_type=own')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
