@@ -88,21 +88,31 @@ common.parseQueryOptions = function(req, res, next) {
             });
 */
             queryModifiers.order_by = 'ORDER BY ' + req.query.sort_by;
+
+            if(req.query.hasOwnProperty('sort_dir')) {
+
+                var orders = ['ASC', 'DESC'];
+
+                if(orders.indexOf(req.query.sort_dir) === -1) {
+                    throw new OptionError("Bad Request; invalid 'sort_dir' option");
+                }
+
+                queryModifiers.order_by = 'ORDER BY ';
+
+                queryModifiers.order_by += req.query.sort_by
+                    .split(',')
+                    .map(function(sortField) {
+
+                    return sortField + ' ' + req.query.sort_dir;
+                    })
+                    .join(',');
+
+            }
+
         }
 
 
-        if(req.query.hasOwnProperty('sort_dir')) {
 
-            var orders = ['ASC', 'DESC'];
-
-            if(orders.indexOf(req.query.sort_dir) === -1) {
-                throw new OptionError("Bad Request; invalid 'order' option");
-            }
-
-            if(queryModifiers.order_by) {
-                queryModifiers.order_by = queryModifiers.order_by + ' ' + req.query.sort_dir;
-            }
-        }
     }
     catch(e){
 
