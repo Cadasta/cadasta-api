@@ -1,5 +1,4 @@
-var columnLookup = require('./endpoint-column-lookup.js');
-var common = module.exports = {};
+var common = {};
 
 common.getArguments = function (req) {
     var args;
@@ -29,14 +28,14 @@ common.parseQueryOptions = function(req, res, next) {
 
     var queryModifiers = {};
 
-    var allFields = columnLookup[req.baseUrl].properties || null;
+    //var allFields = columnLookup[req.baseUrl].properties || null;
     
     try {
 
-        queryModifiers.fields = allFields.join(',');
+        //queryModifiers.fields = allFields.join(',');
 
-        if(req.query.hasOwnProperty('fields') && allFields) {
-
+        if(req.query.hasOwnProperty('fields')/* && allFields*/) {
+            /*
             var selectedFieldsArr = req.query.fields.split(',');
 
             selectedFieldsArr.forEach(function(field){
@@ -46,15 +45,15 @@ common.parseQueryOptions = function(req, res, next) {
                 }
 
             });
-
-            queryModifiers.fields = req.query.fields;
+            */
+            queryModifiers.fields = req.query.fields.split(',');
 
         }
 
         queryModifiers.returnGeometry = false;
-        queryModifiers.geometryColumn = null;
+        //queryModifiers.geometryColumn = null;
 
-        if(req.query.hasOwnProperty('returnGeometry') && columnLookup[req.baseUrl].geometry ) {
+        if(req.query.hasOwnProperty('returnGeometry')/* && columnLookup[req.baseUrl].geometry*/ ) {
 
             if(['true', 'false'].indexOf(req.query.returnGeometry) === -1) {
                 throw new OptionError("Bad Request; invalid 'returnGeom' option");
@@ -62,7 +61,7 @@ common.parseQueryOptions = function(req, res, next) {
 
             if(req.query.returnGeometry=== 'true') {
                 queryModifiers.returnGeometry = true;
-                queryModifiers.geometryColumn = columnLookup[req.baseUrl].geometry;
+                //queryModifiers.geometryColumn = columnLookup[req.baseUrl].geometry;
             }
         }
 
@@ -77,7 +76,7 @@ common.parseQueryOptions = function(req, res, next) {
         }
 
         if(req.query.hasOwnProperty('sort_by')) {
-
+/*
             var orderByArr = req.query.sort_by.split(',');
 
             orderByArr.every(function(field){
@@ -87,7 +86,7 @@ common.parseQueryOptions = function(req, res, next) {
                 }
 
             });
-
+*/
             queryModifiers.order_by = 'ORDER BY ' + req.query.sort_by;
         }
 
@@ -126,19 +125,28 @@ common.parseQueryOptions = function(req, res, next) {
 common.featureCollectionSQL = function(table, mods, where){
 
     var modifiers = mods || {};
-    var geomFragment = (typeof modifiers.geometryColumn === "undefined" || modifiers.geometryColumn === null) ? "NULL" : "ST_AsGeoJSON(t." + modifiers.geometryColumn + ")::json";
+    var geomFragment = (modifiers.returnGeometry) ? "ST_AsGeoJSON(t.geom)::json" :"NULL";
     var limit = modifiers.limit || '';
     var order_by = modifiers.order_by || '';
     var whereClause = where || '';
-    var columns = modifiers.fields;
+
+    var paramValues = [];
+    var fieldParameters = [];
+
+    if(typeof modifiers.fields !== 'undefined') {
+
+        modifiers.fields.forEach(function(field, index){
+            fieldParameters.push('$f' + index);
+            paramValues.push(field);
+        });
+
+    }
+    var columns = typeof modifiers.fields === 'undefined' ? 't.*' : '(SELECT l FROM (select ' + modifiers.fields + ') As l)';
 
     var sql = "SELECT row_to_json(fc) AS response "
         + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
-        + "FROM (SELECT 'Feature' As type "
-        + ", {{geometry}} As geometry "
-        + ", row_to_json((SELECT l FROM (select {{columns}}) As l "
-        + ")) As properties "
-        + "FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+        + "FROM (SELECT 'Feature' As type, {{geometry}} As geometry "
+        + ", row_to_json({{columns}})  As properties FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
 
     return sql.replace('{{columns}}', columns)
         .replace('{{geometry}}', geomFragment)
@@ -146,3 +154,16 @@ common.featureCollectionSQL = function(table, mods, where){
         .replace('{{limit}}', limit)
         .replace('{{order_by}}', order_by);
 };
+
+common.sanitize = function (val) {
+    // we want a null to still be null, not a string
+    if (typeof val === 'string' && val !== 'null') {
+        // $nh9$ is using $$ with an arbitrary tag. $$ in pg is a safe way to quote something,
+        // because all escape characters are ignored inside of it.
+        var esc = settings.escapeStr;
+        return "$" + esc + "$" + val + "$" + esc + "$";
+    }
+    return val;
+};
+
+module.exports = common;

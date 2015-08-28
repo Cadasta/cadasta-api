@@ -135,8 +135,15 @@ module.exports = app;
 function printStackTrace(app){
     // will print stacktrace
     app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.json({
+
+        //Bad Db column request
+        if(err.code === "42703") {
+            err.status = 400;
+            err.message = "Bad request: " + err.message;
+
+        }
+
+        res.status(err.status || 500).json({
             message: err.message,
             error: err
         });
@@ -146,8 +153,7 @@ function printStackTrace(app){
 function hideStackTrace(app){
     // will print stacktrace
     app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.json({
+        res.status(err.status || 500).json({
             message: err.message,
             error: {}
         });
