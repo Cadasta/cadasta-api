@@ -18,7 +18,7 @@ dictionary['/relationships'] = {
     geometry: null
 };
 
-dictionary['/custom_get_parcels_list'] = {
+dictionary['/custom'] = {
     properties: ['id','time_created','area','tenure_type','num_relationships'] ,
     geometry: null
 };
