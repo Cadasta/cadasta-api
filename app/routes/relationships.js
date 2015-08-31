@@ -82,9 +82,13 @@ var common = require('../common.js');
  */
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    var sql = common.featureCollectionSQL("show_relationships", req.queryModifiers);
+    common.tableColumnQuery("show_relationships")
+        .then(function(response){
 
-    pgb.queryDeferred(sql)
+            var sql = common.featureCollectionSQL("show_relationships", req.modifiers);
+
+            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
+        })
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -92,7 +96,8 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
         })
         .catch(function(err){
             next(err);
-        });
+        })
+        .done();
 
 });
 
@@ -159,9 +164,13 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
 
-    var sql = common.featureCollectionSQL("show_relationships", req.queryModifiers, "WHERE relationship_id = $1");
+    common.tableColumnQuery("show_relationships")
+        .then(function(response){
 
-    pgb.queryDeferred(sql, {paramValues: [req.params.id]})
+            var sql = common.featureCollectionSQL("show_relationships",  req.queryModifiers, "WHERE relationship_id = $1");
+
+            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
+        })
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -169,8 +178,8 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
         })
         .catch(function(err){
             next(err);
-        });
-
+        })
+        .done();
 });
 
 module.exports = router;
