@@ -85,10 +85,10 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
     req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
     req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
 
-    common.tableColumnQuery("show_parcel_list")
+    common.tableColumnQuery("show_parcels_list")
         .then(function(response){
 
-            var sql = common.featureCollectionSQL("show_parcel_list", req.queryModifiers, options.whereClause);
+            var sql = common.featureCollectionSQL("show_parcels_list", req.queryModifiers, options.whereClause);
 
             return pgb.queryDeferred(sql,{paramValues:obj.uriList});
         })
@@ -106,18 +106,17 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
 });
 
 function createWhereClause(arr) {
-    var obj = {};
 
-    obj.str = '';
+    var obj = {};
+    
     obj.uriList = arr.split(',');
 
-    obj.uriList.forEach(function (val, i) {
-        if (i < obj.uriList.length - 1) {
-            obj.str += 'tenure_type::text[] @> ARRAY[$' + (i + 1) +'] OR ';
-        } else {
-            obj.str += 'tenure_type::text[] @> ARRAY[$' + (i + 1) + ']';
-        }
-    });
+    obj.str = obj.uriList.map(function (val, i) {
+
+            return 'tenure_type::text[] @> ARRAY[$' + (i + 1) + ']';
+
+        })
+        .join(' OR ');
 
     return obj;
 }
