@@ -87,7 +87,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 
             var sql = common.featureCollectionSQL("show_relationships", req.modifiers);
 
-            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
+            return pgb.queryDeferred(sql);
         })
         .then(function(result){
 
@@ -183,13 +183,13 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 });
 
 
-router.get('/:id', common.parseQueryOptions, function(req, res, next) {
+router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
 
 
     common.tableColumnQuery("relationship_history")
         .then(function(response){
 
-            var sql = common.featureCollectionSQL("relationship_history",  req.queryModifiers, "WHERE id = $1");
+            var sql = common.featureCollectionSQL("relationship_history",  req.queryModifiers, "WHERE relationship_id = $1");
 
             return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
         })
