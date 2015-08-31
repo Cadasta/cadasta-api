@@ -68,7 +68,7 @@ var common = require('../common.js');
 }
  *
  * */
-router.get('/custom_get_parcels_list', common.parseQueryOptions, function(req, res, next) {
+router.get('', common.parseQueryOptions, function(req, res, next) {
 
     var args = common.getArguments(req);
     var options = {};
