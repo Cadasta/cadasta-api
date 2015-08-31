@@ -143,8 +143,6 @@ common.featureCollectionSQL = function(table, mods, where){
 
 common.tableColumnQuery = function(tablename) {
 
-
-
     var deferred = Q.defer();
 
     // First time here, load column names into lookup file

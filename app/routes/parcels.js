@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var common = require('../common.js');
+var ctrlCommon = require('../controllers/common.js');
 
 /**
  * @api {get} /parcels Request all parcels
@@ -76,13 +77,7 @@ var common = require('../common.js');
  */
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    common.tableColumnQuery("parcel")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("parcel", req.queryModifiers);
-
-            return pgb.queryDeferred(sql);
-        })
+    ctrlCommon.getAll("parcel", req.queryModifiers)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -171,13 +166,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 
 router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
-    common.tableColumnQuery("parcel")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("parcel", req.queryModifiers, 'WHERE id = $1');
-
-            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
-        })
+    ctrlCommon.getWithId('parcel', 'id', req.params.id, req.queryModifiers)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -252,17 +241,10 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
         }
  */
 router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
-
-
+    
     req.queryModifiers.returnGeometry = false;
 
-    common.tableColumnQuery("parcel_history")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("parcel_history",  req.queryModifiers, "WHERE parcel_id = $1");
-
-            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
-        })
+    ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, req.queryModifiers)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -272,6 +254,7 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
             next(err);
         })
         .done();
+
 });
 
 module.exports = router;

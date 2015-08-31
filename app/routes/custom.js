@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var common = require('../common.js');
+var Q = require('q');
 
 /**
  * @api {get} /custom_get_parcels_list Parcel/Num relationships List
@@ -76,7 +77,7 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
     var obj = {};
 
     if (args.tenure_type) {
-        obj = createWhereClause(args.tenure_type);
+        obj = createTenureTypeWhereClause(args.tenure_type);
         options.whereClause = 'WHERE ' + obj.str + '';
     } else {
         obj.uriList = [];
@@ -105,7 +106,7 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
 
 });
 
-function createWhereClause(arr) {
+function createTenureTypeWhereClause(arr) {
 
     var obj = {};
 
@@ -120,5 +121,35 @@ function createWhereClause(arr) {
 
     return obj;
 }
+
+router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, res, next) {
+
+    // Get Parcel table record
+    var parcelSQL = "SELECT * FROM parcel WHERE id = $1"
+
+    // Get parcel history records
+    var parcelHistorySQL = "SELECT * FROM parcel_history WHERE parcel_id = $1"
+
+    // Get relationship records
+    var parcelRelationshipSQL = "SELECT * FROM relationships WHERE parcel_id = $1"
+
+    Q.allSettled([
+        pgb.queryDeferred(parcelSQL,{paramValues: [req.params.id]}),
+        pgb.queryDeferred(parcelHistorySQL,{paramValues: [req.params.id]}),
+        pgb.queryDeferred(parcelHistorySQL,{paramValues: [req.params.id]})
+        ])
+        .then(function (results) {
+            console.log(results);
+            res.status(200).json({message: "success"});
+        })
+        .catch(function(err){
+            console.error(err);
+        })
+        .done();
+
+
+
+});
+
 
 module.exports = router;
