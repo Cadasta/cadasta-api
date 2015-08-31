@@ -190,34 +190,6 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
 });
 
-/*
-
-:	1
-
-relationship_id	:	1
-
-origin_id	:	1
-
-version	:	1
-
-parent_id	:	null
-
-expiration_date	:	null
-
-description	:	History
-
-date_modified	:	2015-08-31
-
-active	:	true
-
-time_created	:	2015-08-31T13:00:18.339167-07:00
-
-time_updated	:	null
-
-created_by	:	11
-
-updated_by	:	null
-*/
 
 /**
  * @api {get} /parcels/:id Request one parcel
