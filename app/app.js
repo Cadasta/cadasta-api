@@ -79,12 +79,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Endpoint configuration
+var index = require('./routes/index');
 var custom = require('./routes/custom');
 var parcels = require('./routes/parcels');
 var relationships = require('./routes/relationships');
 var activities = require('./routes/activities');
 
-
+app.use('/', index);
 app.use('/custom', custom);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);

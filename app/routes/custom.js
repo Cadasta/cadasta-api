@@ -108,7 +108,7 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
 function createWhereClause(arr) {
 
     var obj = {};
-    
+
     obj.uriList = arr.split(',');
 
     obj.str = obj.uriList.map(function (val, i) {
