@@ -256,7 +256,7 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
 
     req.queryModifiers.returnGeometry = false;
 
-    common.tableColumnQuery("relationship_history")
+    common.tableColumnQuery("parcel_history")
         .then(function(response){
 
             var sql = common.featureCollectionSQL("parcel_history",  req.queryModifiers, "WHERE parcel_id = $1");
