@@ -80,7 +80,7 @@ common.parseQueryOptions = function(req, res, next) {
     }
     catch(e){
 
-        if (e instanceof OptionError) {
+        if (e instanceof errors.OptionError) {
             console.error(e.stack);
             res.status(400).json({message: e.message});
         } else {
