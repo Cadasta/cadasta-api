@@ -241,7 +241,7 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
         }
  */
 router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
-    
+
     req.queryModifiers.returnGeometry = false;
 
     ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, req.queryModifiers)
