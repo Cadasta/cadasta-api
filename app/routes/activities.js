@@ -66,9 +66,13 @@ var common = require('../common.js');
  */
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    var sql = common.featureCollectionSQL("show_activity", req.queryModifiers);
+    common.tableColumnQuery("show_activity")
+        .then(function(response){
 
-    pgb.queryDeferred(sql)
+            var sql = common.featureCollectionSQL("show_activity", req.queryModifiers);
+
+            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
+        })
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -76,7 +80,8 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
         })
         .catch(function(err){
             next(err);
-        });
+        })
+        .done();
 
 });
 

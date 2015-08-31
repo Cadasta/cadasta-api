@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var common = require('../common.js');
+var settings = require
 
 /**
  * @api {get} /custom_get_parcels_list Parcel/Num relationships List
@@ -89,15 +90,23 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
     if (Object.keys(args).length > 0 && Object.keys(args).indexOf('tenure_type') == -1) {
         res.status(400).json({error: "Bad Request; invalid 'tenure_type' option"});
     } else {
-    pgb.queryDeferred(sql, {paramValues:obj.uriList})
-        .then(function(result){
 
-            res.status(200).json(result[0].response);
+        common.tableColumnQuery("show_parcel_list")
+            .then(function(response){
 
-        })
-        .catch(function(err){
-            next(err);
-        });
+                var sql = common.featureCollectionSQL("show_parcel_list", req.queryModifiers, options.whereClause);
+
+                return pgb.queryDeferred(sql,{paramValues:obj.uriList});
+            })
+            .then(function(result){
+
+                res.status(200).json(result[0].response);
+
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
     }
 
 });

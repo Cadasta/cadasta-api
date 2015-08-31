@@ -1,5 +1,9 @@
+var Q = require('q');
+var pgBinding = require('./pg-binding');
+var settings = require('./settings/settings.js');
 var columnLookup = require('./endpoint-column-lookup.js');
-var common = module.exports = {};
+var errors = require('./errors.js');
+var common = {};
 
 common.getArguments = function (req) {
     var args;
@@ -21,48 +25,26 @@ common.isInteger = function(x){
 
 common.parseQueryOptions = function(req, res, next) {
 
-    function OptionError(message) {
-        this.name = 'URL option error';
-        this.message = message || 'Error.';
-        this.stack = (new Error()).stack;
-    }
-
     var queryModifiers = {};
-
-    var allFields = columnLookup[req.baseUrl].properties || null;
     
     try {
 
-        queryModifiers.fields = allFields.join(',');
-
-        if(req.query.hasOwnProperty('fields') && allFields) {
-
-            var selectedFieldsArr = req.query.fields.split(',');
-
-            selectedFieldsArr.forEach(function(field){
-
-                if(allFields.indexOf(field) === -1) {
-                    throw new OptionError("Bad Request; invalid 'fields' option");
-                }
-
-            });
+        if(req.query.hasOwnProperty('fields')) {
 
             queryModifiers.fields = req.query.fields;
 
         }
 
         queryModifiers.returnGeometry = false;
-        queryModifiers.geometryColumn = null;
 
-        if(req.query.hasOwnProperty('returnGeometry') && columnLookup[req.baseUrl].geometry ) {
+        if(req.query.hasOwnProperty('returnGeometry')/* && columnLookup[req.baseUrl].geometry*/ ) {
 
             if(['true', 'false'].indexOf(req.query.returnGeometry) === -1) {
-                throw new OptionError("Bad Request; invalid 'returnGeom' option");
+                throw new errors.OptionError("Bad Request; invalid 'returnGeom' option");
             }
 
             if(req.query.returnGeometry=== 'true') {
                 queryModifiers.returnGeometry = true;
-                queryModifiers.geometryColumn = columnLookup[req.baseUrl].geometry;
             }
         }
 
@@ -70,7 +52,7 @@ common.parseQueryOptions = function(req, res, next) {
 
             if(!common.isInteger(Number(req.query.limit))) {
 
-                throw new OptionError("Bad Request; invalid 'limit' option");
+                throw new errors.OptionError("Bad Request; invalid 'limit' option");
             }
 
             queryModifiers.limit = "LIMIT " + req.query.limit;
@@ -78,17 +60,8 @@ common.parseQueryOptions = function(req, res, next) {
 
         if(req.query.hasOwnProperty('sort_by')) {
 
-            var orderByArr = req.query.sort_by.split(',');
+            queryModifiers.sort_by = req.query.sort_by;
 
-            orderByArr.every(function(field){
-
-                if(allFields.indexOf(field) === -1) {
-                    throw new OptionError("Bad Request; invalid 'order_by' option");
-                }
-
-            });
-
-            queryModifiers.order_by = 'ORDER BY ' + req.query.sort_by;
         }
 
 
@@ -97,13 +70,13 @@ common.parseQueryOptions = function(req, res, next) {
             var orders = ['ASC', 'DESC'];
 
             if(orders.indexOf(req.query.sort_dir) === -1) {
-                throw new OptionError("Bad Request; invalid 'order' option");
+                throw new errors.OptionError("Bad Request; invalid 'sort_dir' option");
             }
 
-            if(queryModifiers.order_by) {
-                queryModifiers.order_by = queryModifiers.order_by + ' ' + req.query.sort_dir;
-            }
+            queryModifiers.sort_dir = req.query.sort_dir;
+
         }
+
     }
     catch(e){
 
@@ -126,23 +99,85 @@ common.parseQueryOptions = function(req, res, next) {
 common.featureCollectionSQL = function(table, mods, where){
 
     var modifiers = mods || {};
-    var geomFragment = (typeof modifiers.geometryColumn === "undefined" || modifiers.geometryColumn === null) ? "NULL" : "ST_AsGeoJSON(t." + modifiers.geometryColumn + ")::json";
+    var geomFragment = (modifiers.returnGeometry) ? "ST_AsGeoJSON(t.geom)::json" :"NULL";
     var limit = modifiers.limit || '';
-    var order_by = modifiers.order_by || '';
     var whereClause = where || '';
-    var columns = modifiers.fields;
+
+    var order_by ='';
+    var columns = 't.*';
+
+    if(typeof modifiers.fields !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.fields);
+
+        columns = '(SELECT l FROM (select ' + modifiers.fields + ') As l)';
+
+    }
+
+    if(typeof modifiers.sort_by !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.sort_by);
+
+        order_by = 'ORDER BY ' + modifiers.sort_by.split(',')
+                                            .map(function(col){
+                                                return col + ' ' + modifiers.sort_dir;
+                                            })
+                                            .join(',');
+
+    }
 
     var sql = "SELECT row_to_json(fc) AS response "
         + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
-        + "FROM (SELECT 'Feature' As type "
-        + ", {{geometry}} As geometry "
-        + ", row_to_json((SELECT l FROM (select {{columns}}) As l "
-        + ")) As properties "
-        + "FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+        + "FROM (SELECT 'Feature' As type, {{geometry}} As geometry "
+        + ", row_to_json({{columns}})  As properties FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
 
-    return sql.replace('{{columns}}', columns)
+
+    sql = sql.replace('{{columns}}', columns)
         .replace('{{geometry}}', geomFragment)
         .replace('{{where}}', whereClause)
         .replace('{{limit}}', limit)
         .replace('{{order_by}}', order_by);
+
+    return sql;
 };
+
+common.tableColumnQuery = function(tablename) {
+
+
+
+    var deferred = Q.defer();
+
+    // First time here, load column names into lookup file
+    if(columnLookup.hasOwnProperty(tablename)) {
+        deferred.resolve(true);
+        return deferred.promise;
+
+    }
+
+    var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"
+
+    pgBinding.queryDeferred(sql)
+        .then(function(response){
+            columnLookup[tablename] = response[0].column_name;
+            deferred.resolve(true);
+        })
+        .catch(function(e){
+            deferred.reject(e)
+        })
+        .done();
+
+    return deferred.promise;
+};
+
+common.sanitize = function (val) {
+    // we want a null to still be null, not a string
+    if (typeof val === 'string' && val !== 'null') {
+        // $nh9$ is using $$ with an arbitrary tag. $$ in pg is a safe way to quote something,
+        // because all escape characters are ignored inside of it.
+        var esc = settings.pg.escapeStr;
+        return "$" + esc + "$" + val + "$" + esc + "$";
+    }
+    return val;
+};
+
+module.exports = common;
