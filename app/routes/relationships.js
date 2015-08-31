@@ -182,4 +182,25 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
         .done();
 });
 
+
+router.get('/:id', common.parseQueryOptions, function(req, res, next) {
+
+
+    common.tableColumnQuery("relationship_history")
+        .then(function(response){
+
+            var sql = common.featureCollectionSQL("relationship_history",  req.queryModifiers, "WHERE id = $1");
+
+            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
+        })
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+});
 module.exports = router;
