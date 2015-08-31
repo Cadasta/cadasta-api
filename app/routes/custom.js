@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var common = require('../common.js');
-var settings = require
 
 /**
  * @api {get} /custom_get_parcels_list Parcel/Num relationships List
