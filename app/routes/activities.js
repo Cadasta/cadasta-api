@@ -71,7 +71,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 
             var sql = common.featureCollectionSQL("show_activity", req.queryModifiers);
 
-            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
+            return pgb.queryDeferred(sql);
         })
         .then(function(result){
 
