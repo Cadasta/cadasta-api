@@ -83,31 +83,26 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
         obj.uriList = [];
     }
 
-    req.queryModifiers.sort_by = "ORDER BY time_created DESC";
-    var sql = common.featureCollectionSQL("show_parcels_list", req.queryModifiers, options.whereClause);
+    req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
+    req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
 
-    // Handle bad requests; arg must tenure_type
-    if (Object.keys(args).length > 0 && Object.keys(args).indexOf('tenure_type') == -1) {
-        res.status(400).json({error: "Bad Request; invalid 'tenure_type' option"});
-    } else {
+    common.tableColumnQuery("show_parcel_list")
+        .then(function(response){
 
-        common.tableColumnQuery("show_parcel_list")
-            .then(function(response){
+            var sql = common.featureCollectionSQL("show_parcel_list", req.queryModifiers, options.whereClause);
 
-                var sql = common.featureCollectionSQL("show_parcel_list", req.queryModifiers, options.whereClause);
+            return pgb.queryDeferred(sql,{paramValues:obj.uriList});
+        })
+        .then(function(result){
 
-                return pgb.queryDeferred(sql,{paramValues:obj.uriList});
-            })
-            .then(function(result){
+            res.status(200).json(result[0].response);
 
-                res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
 
-            })
-            .catch(function(err){
-                next(err);
-            })
-            .done();
-    }
 
 });
 
