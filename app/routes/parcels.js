@@ -192,7 +192,7 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
  * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
  *
- * @apiSuccess {Object} response A feature collection with feature per parcel history record
+ * @apiSuccess {Object} response A feature collection with one feature per parcel history record
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
  * @apiSuccess {String} response.features.type "Feature"
