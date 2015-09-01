@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var common = require('../common.js');
+var ctrlCommon = require('../controllers/common.js');
 
 /**
  * @api {get} /relationships Request all relationships
@@ -80,15 +81,10 @@ var common = require('../common.js');
   ]
 }
  */
+
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    common.tableColumnQuery("show_relationships")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("show_relationships", req.modifiers);
-
-            return pgb.queryDeferred(sql);
-        })
+    ctrlCommon.getAll("show_relationships", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -161,16 +157,10 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
           ]
         }
  */
+
 router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
-
-    common.tableColumnQuery("show_relationships")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("show_relationships",  req.queryModifiers, "WHERE relationship_id = $1");
-
-            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
-        })
+    ctrlCommon.getWithId('show_relationships', 'relationship_id', req.params.id, req.queryModifiers)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -180,37 +170,9 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
             next(err);
         })
         .done();
+
 });
 
-
-/*
-
- :	1
-
- relationship_id	:	1
-
- origin_id	:	1
-
- version	:	1
-
- parent_id	:	null
-
- expiration_date	:	null
-
- description	:	History
-
- date_modified	:	2015-08-31
-
- active	:	true
-
- time_created	:	2015-08-31T13:00:18.339167-07:00
-
- time_updated	:	null
-
- created_by	:	11
-
- updated_by	:	null
- */
 
 /**
  * @api {get} /parcels/:id Request one parcel
@@ -275,14 +237,9 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  */
 router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
 
+    req.queryModifiers.returnGeometry = false;
 
-    common.tableColumnQuery("relationship_history")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("relationship_history",  req.queryModifiers, "WHERE relationship_id = $1");
-
-            return pgb.queryDeferred(sql,{paramValues: [req.params.id]});
-        })
+    ctrlCommon.getWithId('relationship_history', 'relationship_id', req.params.id, req.queryModifiers)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -292,5 +249,6 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
             next(err);
         })
         .done();
+    
 });
 module.exports = router;

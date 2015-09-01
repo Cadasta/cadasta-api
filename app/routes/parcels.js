@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var pgb = require('../pg-binding');
 var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
 
@@ -75,6 +74,7 @@ var ctrlCommon = require('../controllers/common.js');
     ]
 }
  */
+
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
     ctrlCommon.getAll("parcel", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
