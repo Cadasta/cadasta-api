@@ -242,7 +242,7 @@ router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, re
     Q.all([
         ctrlCommon.getWithId('parcel', 'id', req.params.id, {queryModifiers: {returnGeometry: true}, outputFormat: "GeoJSON"}),
         ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, {queryModifiers: {limit: 'LIMIT 10', sort_by: 'time_updated', sort_dir: 'DESC'}}),
-        ctrlCommon.getWithId('relationship', 'parcel_id', req.params.id, {queryModifiers: {limit: 'LIMIT 10', sort_by: 'time_updated', sort_dir: 'DESC'}})
+        ctrlCommon.getWithId('show_relationships', 'parcel_id', req.params.id, {queryModifiers: {limit: 'LIMIT 10', sort_by: 'time_created', sort_dir: 'DESC'}})
         ])
         .then(function (results) {
 
@@ -255,8 +255,8 @@ router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, re
             }
 
             // Add properties to parcel's geojson
-            geoJSON.features[0].properties.parcel_history = results[1][0];
-            geoJSON.features[0].properties.relationships = results[2][0];
+            geoJSON.features[0].properties.parcel_history = results[1];
+            geoJSON.features[0].properties.relationships = results[2];
 
             res.status(200).json(geoJSON);
         })
