@@ -104,7 +104,7 @@ common.featureCollectionSQL = function(table, mods, where){
     var whereClause = where || '';
 
     var order_by ='';
-    var columns = 't.*';
+    var columns = '(SELECT l FROM (select ' + columnLookup[table].join(',') + ') As l)';
 
     if(typeof modifiers.fields !== 'undefined') {
 
@@ -134,6 +134,53 @@ common.featureCollectionSQL = function(table, mods, where){
 
     sql = sql.replace('{{columns}}', columns)
         .replace('{{geometry}}', geomFragment)
+        .replace('{{where}}', whereClause)
+        .replace('{{limit}}', limit)
+        .replace('{{order_by}}', order_by);
+
+    return sql;
+};
+
+common.objectArraySQL = function(table, mods, where){
+
+    var modifiers = mods || {};
+    var geomFragment = (modifiers.returnGeometry) ? "ST_AsGeoJSON(t.geom)::json" : null;
+    var limit = modifiers.limit || '';
+    var whereClause = where || '';
+
+    var order_by ='';
+    var columns = columnLookup[table];
+
+    if(typeof modifiers.fields !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.fields);
+
+        columns = '(SELECT l FROM (select ' + modifiers.fields + ') As l)';
+
+    }
+
+    if(geomFragment) {
+        columns += ',' + geomFragment;
+    }
+
+
+    if(typeof modifiers.sort_by !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.sort_by);
+
+        order_by = 'ORDER BY ' + modifiers.sort_by.split(',')
+                .map(function(col){
+                    return col + ' ' + modifiers.sort_dir;
+                })
+                .join(',');
+
+    }
+
+    var sql = "SELECT {{columns}} FROM {{table}} {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+
+
+    sql = sql.replace('{{columns}}', columns)
+        .replace('{{table}}', table)
         .replace('{{where}}', whereClause)
         .replace('{{limit}}', limit)
         .replace('{{order_by}}', order_by);

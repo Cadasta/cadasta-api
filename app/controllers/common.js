@@ -5,14 +5,23 @@ var pgb = require('../pg-binding.js');
 
 var controller = {};
 
-controller.getAll = function(tablename, queryModifiers){
+controller.getAll = function(tablename, opts){
+
+    var options = opts || {};
+    options.queryModifiers = options.queryModifiers || {};
+    options.outputFormat  = options.outputFormat || "object array";
 
     var deferred = Q.defer();
 
     common.tableColumnQuery(tablename)
         .then(function(response){
 
-            var sql = common.featureCollectionSQL(tablename,  queryModifiers);
+            var sql;
+
+            if(options.outputFormat === 'GeoJSON')
+                sql = common.featureCollectionSQL(tablename,  options.queryModifiers)
+            else
+                sql = common.objectArraySQL(tablename,  options.queryModifiers)
 
             return pgb.queryDeferred(sql);
         })

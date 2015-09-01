@@ -77,7 +77,7 @@ var ctrlCommon = require('../controllers/common.js');
  */
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getAll("parcel", req.queryModifiers)
+    ctrlCommon.getAll("parcel", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);

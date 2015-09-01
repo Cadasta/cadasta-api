@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var pgb = require('../pg-binding');
 var common = require('../common.js');
+var ctrlCommon = require('../controllers/common.js');
+
 var Q = require('q');
 
 /**
@@ -134,9 +136,9 @@ router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, re
     var parcelRelationshipSQL = "SELECT * FROM relationships WHERE parcel_id = $1"
 
     Q.allSettled([
-        pgb.queryDeferred(parcelSQL,{paramValues: [req.params.id]}),
-        pgb.queryDeferred(parcelHistorySQL,{paramValues: [req.params.id]}),
-        pgb.queryDeferred(parcelHistorySQL,{paramValues: [req.params.id]})
+        ctrlCommon.getWithId('parcel', 'id', req.params.id, {}),
+        ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, {}),
+        ctrlCommon.getWithId('relationships', 'parcel_id', req.params.id, {})
         ])
         .then(function (results) {
             console.log(results);
