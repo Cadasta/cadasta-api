@@ -117,7 +117,7 @@ function createTenureTypeWhereClause(arr) {
 }
 
 /**
- * @api {get} /custom/get_parcel_details/:id Request parcel details for UI rendering
+ * @api {get} /custom/get_parcel_details/:id Request parcel details for UI rendering; limits relationships and history to 10 items
  * @apiName GetParcelDetails
  * @apiGroup Custom
  *
@@ -239,15 +239,15 @@ function createTenureTypeWhereClause(arr) {
  */
 router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, res, next) {
 
-    Q.allSettled([
+    Q.all([
         ctrlCommon.getWithId('parcel', 'id', req.params.id, {queryModifiers: {returnGeometry: true}, outputFormat: "GeoJSON"}),
-        ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id),
-        ctrlCommon.getWithId('relationship', 'parcel_id', req.params.id)
+        ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, {queryModifiers: {limit: 'LIMIT 10', sort_by: 'time_updated', sort_dir: 'DESC'}}),
+        ctrlCommon.getWithId('relationship', 'parcel_id', req.params.id, {queryModifiers: {limit: 'LIMIT 10', sort_by: 'time_updated', sort_dir: 'DESC'}})
         ])
         .then(function (results) {
 
             //Process results: Add parcel history and relationships to Parcel GeoJSON
-            var geoJSON = results[0].value[0].response;
+            var geoJSON = results[0][0].response;
 
             // If Id return no parcel, message the user
             if(geoJSON.features.length === 0) {
@@ -255,8 +255,8 @@ router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, re
             }
 
             // Add properties to parcel's geojson
-            geoJSON.features[0].properties.parcel_history = results[1].value;
-            geoJSON.features[0].properties.relationships = results[2].value;
+            geoJSON.features[0].properties.parcel_history = results[1][0];
+            geoJSON.features[0].properties.relationships = results[2][0];
 
             res.status(200).json(geoJSON);
         })
