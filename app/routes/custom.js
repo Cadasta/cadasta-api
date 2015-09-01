@@ -74,13 +74,12 @@ var Q = require('q');
 router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, next) {
 
     var args = common.getArguments(req);
-    var options = {};
-    var tenure_type;
+    var whereClause = '';
     var obj = {};
 
     if (args.tenure_type) {
         obj = createTenureTypeWhereClause(args.tenure_type);
-        options.whereClause = 'WHERE ' + obj.str + '';
+        whereClause = 'WHERE ' + obj.str + '';
     } else {
         obj.uriList = [];
     }
@@ -88,13 +87,7 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
     req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
     req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
 
-    common.tableColumnQuery("show_parcels_list")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("show_parcels_list", req.queryModifiers, options.whereClause);
-
-            return pgb.queryDeferred(sql,{paramValues:obj.uriList});
-        })
+    ctrlCommon.getAll("show_parcels_list", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', whereClause: whereClause, whereClauseValues: obj.uriList})
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -104,7 +97,6 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
             next(err);
         })
         .done();
-
 
 });
 
@@ -126,26 +118,29 @@ function createTenureTypeWhereClause(arr) {
 
 router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, res, next) {
 
-    // Get Parcel table record
-    var parcelSQL = "SELECT * FROM parcel WHERE id = $1"
-
-    // Get parcel history records
-    var parcelHistorySQL = "SELECT * FROM parcel_history WHERE parcel_id = $1"
-
-    // Get relationship records
-    var parcelRelationshipSQL = "SELECT * FROM relationships WHERE parcel_id = $1"
-
     Q.allSettled([
-        ctrlCommon.getWithId('parcel', 'id', req.params.id, {}),
-        ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, {}),
-        ctrlCommon.getWithId('relationships', 'parcel_id', req.params.id, {})
+        ctrlCommon.getWithId('parcel', 'id', req.params.id, {queryModifiers: {returnGeometry: true}, outputFormat: "GeoJSON"}),
+        ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id),
+        ctrlCommon.getWithId('relationship', 'parcel_id', req.params.id)
         ])
         .then(function (results) {
-            console.log(results);
-            res.status(200).json({message: "success"});
+
+            //Process results: Add parcel history and relationships to Parcel GeoJSON
+            var geoJSON = results[0].value[0].response;
+
+            // If Id return no parcel, message the user
+            if(geoJSON.features.length === 0) {
+                return res.status(200).json({message: "no parcel"});
+            }
+
+            // Add properties to parcel's geojson
+            geoJSON.features[0].properties.parcel_history = results[1].value;
+            geoJSON.features[0].properties.relationships = results[2].value;
+
+            res.status(200).json(geoJSON);
         })
         .catch(function(err){
-            console.error(err);
+            next(err)
         })
         .done();
 

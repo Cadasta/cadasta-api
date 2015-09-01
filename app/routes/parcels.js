@@ -166,7 +166,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 
 router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getWithId('parcel', 'id', req.params.id, req.queryModifiers)
+    ctrlCommon.getWithId('parcel', 'id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -244,7 +244,7 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
 
     req.queryModifiers.returnGeometry = false;
 
-    ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, req.queryModifiers)
+    ctrlCommon.getWithId('parcel_history', 'parcel_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);

@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var pgb = require('../pg-binding');
 var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
 
@@ -160,7 +159,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 
 router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getWithId('show_relationships', 'relationship_id', req.params.id, req.queryModifiers)
+    ctrlCommon.getWithId('show_relationships', 'relationship_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -239,7 +238,7 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
 
     req.queryModifiers.returnGeometry = false;
 
-    ctrlCommon.getWithId('relationship_history', 'relationship_id', req.params.id, req.queryModifiers)
+    ctrlCommon.getWithId('relationship_history', 'relationship_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -249,6 +248,6 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
             next(err);
         })
         .done();
-    
+
 });
 module.exports = router;

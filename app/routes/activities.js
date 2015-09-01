@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var pgb = require('../pg-binding');
 var common = require('../common.js');
+var ctrlCommon = require('../controllers/common.js');
 
 /**
  * @api {get} /activities Request all activities
@@ -66,13 +66,7 @@ var common = require('../common.js');
  */
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    common.tableColumnQuery("show_activity")
-        .then(function(response){
-
-            var sql = common.featureCollectionSQL("show_activity", req.queryModifiers);
-
-            return pgb.queryDeferred(sql);
-        })
+    ctrlCommon.getAll("show_activity", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);

@@ -149,13 +149,13 @@ common.objectArraySQL = function(table, mods, where){
     var whereClause = where || '';
 
     var order_by ='';
-    var columns = columnLookup[table];
+    var columns = columnLookup[table].join(',');
 
     if(typeof modifiers.fields !== 'undefined') {
 
         columnLookup._validate(table, modifiers.fields);
 
-        columns = '(SELECT l FROM (select ' + modifiers.fields + ') As l)';
+        columns = modifiers.fields;
 
     }
 
@@ -176,7 +176,7 @@ common.objectArraySQL = function(table, mods, where){
 
     }
 
-    var sql = "SELECT {{columns}} FROM {{table}} {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+    var sql = "SELECT {{columns}} FROM {{table}} {{where}} {{order_by}} {{limit}};"
 
 
     sql = sql.replace('{{columns}}', columns)
