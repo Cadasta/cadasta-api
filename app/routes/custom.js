@@ -78,7 +78,7 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
     var obj = {};
 
     if (args.tenure_type) {
-        obj = createTenureTypeWhereClause(args.tenure_type);
+        obj = createDynamicInClause('tenure_type', 'text', args.tenure_type);
         whereClause = 'WHERE ' + obj.str + '';
     } else {
         obj.uriList = [];
@@ -100,15 +100,15 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
 
 });
 
-function createTenureTypeWhereClause(arr) {
+function createDynamicInClause(key, dataType, valArr) {
 
     var obj = {};
 
-    obj.uriList = arr.split(',');
+    obj.uriList = valArr.split(',');
 
     obj.str = obj.uriList.map(function (val, i) {
 
-            return 'tenure_type::text[] @> ARRAY[$' + (i + 1) + ']';
+            return key + '::' + dataType + '[] @> ARRAY[$' + (i + 1) + ']';
 
         })
         .join(' OR ');
@@ -237,6 +237,7 @@ function createTenureTypeWhereClause(arr) {
           ]
         }
  */
+
 router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, res, next) {
 
     Q.all([
