@@ -157,7 +157,7 @@ common.featureCollectionSQL = function(table, mods, where){
     }
 
     var sql = "SELECT row_to_json(fc) AS response "
-        + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
+        + "FROM ( SELECT 'FeatureCollection' As type, COALESCE(array_to_json(array_agg(f)), '[]') As features "
         + "FROM (SELECT 'Feature' As type, {{geometry}} As geometry "
         + ", row_to_json({{columns}})  As properties FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
 
