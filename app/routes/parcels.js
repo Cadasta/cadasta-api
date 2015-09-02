@@ -291,7 +291,7 @@ router.get('/:id/show_relationship_history', common.parseQueryOptions, function(
 
     req.queryModifiers.returnGeometry = false;
 
-    ctrlCommon.getAll('relationship_history', options)
+    ctrlCommon.getAll('show_relationship_history', options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
