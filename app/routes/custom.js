@@ -75,23 +75,19 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
 
     var args = common.getArguments(req);
     var whereClause = '';
-    var obj = {};
+    var whereClauseValues = [];
 
     if (args.tenure_type) {
-        obj = createDynamicInClause('tenure_type', 'text', args.tenure_type);
-        whereClause = 'WHERE ' + obj.str + '';
-    } else {
-        obj.uriList = [];
+        whereClause = 'WHERE ' + common.createDynamicInArrayClause('tenure_type', 'text', args.tenure_type);
+        whereClauseValues = args.tenure_type.split(',');
     }
 
     req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
     req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
 
-    ctrlCommon.getAll("show_parcels_list", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', whereClause: whereClause, whereClauseValues: obj.uriList})
+    ctrlCommon.getAll("show_parcels_list", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', whereClause: whereClause, whereClauseValues: whereClauseValues})
         .then(function(result){
-
             res.status(200).json(result[0].response);
-
         })
         .catch(function(err){
             next(err);
@@ -100,21 +96,6 @@ router.get('/get_parcels_list', common.parseQueryOptions, function(req, res, nex
 
 });
 
-function createDynamicInClause(key, dataType, valArr) {
-
-    var obj = {};
-
-    obj.uriList = valArr.split(',');
-
-    obj.str = obj.uriList.map(function (val, i) {
-
-            return key + '::' + dataType + '[] @> ARRAY[$' + (i + 1) + ']';
-
-        })
-        .join(' OR ');
-
-    return obj;
-}
 
 /**
  * @api {get} /custom/get_parcel_details/:id Request parcel details for UI rendering; limits relationships and history to 10 items
@@ -237,7 +218,6 @@ function createDynamicInClause(key, dataType, valArr) {
           ]
         }
  */
-
 router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, res, next) {
 
     Q.all([
@@ -269,6 +249,5 @@ router.get('/get_parcel_details/:id', common.parseQueryOptions, function(req, re
 
 
 });
-
 
 module.exports = router;

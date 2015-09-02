@@ -257,4 +257,51 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
 
 });
 
+router.get('/:id/show_relationship_history', common.parseQueryOptions, function(req, res, next) {
+
+    // harvest endpoint specific URI query params
+    var activeFilter = req.query.active || null;
+    var typeFilters = req.query.relationship_type || null;
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    //  Begin building composite, parameterized where clause;  this endpoint will always have parcel_id filter
+    whereClauseArr.push('parcel_id = $1');
+    whereClauseValues.push(req.params.id);
+
+    // If any "relationship_type" filters submitted, add them to composite parameterized where clause
+    if (typeFilters) {
+        whereClauseArr.push(common.createDynamicInClause('relationship_type', typeFilters, whereClauseValues.length));
+        typeFilters.split(',').forEach(function(val){ whereClauseValues.push(val)});
+    }
+
+    // If "active" filter submitted, add it to composite parameterized where clause
+    if (activeFilter) {
+        whereClauseArr.push('active = $' + (whereClauseValues.length + 1))
+        whereClauseValues.push(activeFilter);
+    }
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON',
+        whereClause: 'WHERE ' + whereClauseArr.join(' AND '),
+        whereClauseValues: whereClauseValues
+    };
+
+    req.queryModifiers.returnGeometry = false;
+
+    ctrlCommon.getAll('relationship_history', options)
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
 module.exports = router;

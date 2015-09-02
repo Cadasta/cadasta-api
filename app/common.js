@@ -1,7 +1,7 @@
 var Q = require('q');
 var pgBinding = require('./pg-binding');
 var settings = require('./settings/settings.js');
-var columnLookup = require('./endpoint-column-lookup.js');
+var columnLookup = require('./column-lookup.js');
 var errors = require('./errors.js');
 var common = {};
 
@@ -21,6 +21,36 @@ common.getArguments = function (req) {
 
 common.isInteger = function(x){
     return Math.round(x) === x;
+};
+
+common.createDynamicInArrayClause = function(key, dataType, vals, startIndex) {
+
+    startIndex = startIndex || 0;
+
+    var str = vals.split(',')
+                .map(function (val, i) {
+
+                    return key + '::' + dataType + '[] @> ARRAY[$' + (startIndex + i + 1) + ']';
+
+                })
+                .join(' OR ');
+
+    return '(' + str + ')';
+};
+
+common.createDynamicInClause = function(key, vals, startIndex) {
+
+    startIndex = startIndex || 0;
+
+    var str = vals.split(',')
+        .map(function (val, i) {
+
+            return '$' + (startIndex + i + 1);
+
+        })
+        .join(',');
+
+    return key + ' IN (' + str + ')';
 };
 
 common.parseQueryOptions = function(req, res, next) {
@@ -197,6 +227,31 @@ common.tableColumnQuery = function(tablename) {
         deferred.resolve(true);
         return deferred.promise;
 
+    }
+
+    var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"
+
+    pgBinding.queryDeferred(sql)
+        .then(function(response){
+            columnLookup[tablename] = response[0].column_name;
+            deferred.resolve(true);
+        })
+        .catch(function(e){
+            deferred.reject(e)
+        })
+        .done();
+
+    return deferred.promise;
+};
+
+common.tableValueQuery = function(tablename) {
+
+    var deferred = Q.defer();
+
+    // First time here, load column names into lookup file
+    if(columnLookup.hasOwnProperty(tablename)) {
+        deferred.resolve(true);
+        return deferred.promise;
     }
 
     var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"

@@ -28,4 +28,5 @@ dictionary._validate = function(tablename, columns){
 
     return true;
 };
+
 module.exports = dictionary;
