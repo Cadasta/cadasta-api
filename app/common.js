@@ -1,5 +1,4 @@
 var Q = require('q');
-var pgBinding = require('./pg-binding');
 var settings = require('./settings/settings.js');
 var columnLookup = require('./column-lookup.js');
 var errors = require('./errors.js');
@@ -218,66 +217,5 @@ common.objectArraySQL = function(table, mods, where){
     return sql;
 };
 
-common.tableColumnQuery = function(tablename) {
-
-    var deferred = Q.defer();
-
-    // First time here, load column names into lookup file
-    if(columnLookup.hasOwnProperty(tablename)) {
-        deferred.resolve(true);
-        return deferred.promise;
-
-    }
-
-    var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"
-
-    pgBinding.queryDeferred(sql)
-        .then(function(response){
-            columnLookup[tablename] = response[0].column_name;
-            deferred.resolve(true);
-        })
-        .catch(function(e){
-            deferred.reject(e)
-        })
-        .done();
-
-    return deferred.promise;
-};
-
-common.tableValueQuery = function(tablename) {
-
-    var deferred = Q.defer();
-
-    // First time here, load column names into lookup file
-    if(columnLookup.hasOwnProperty(tablename)) {
-        deferred.resolve(true);
-        return deferred.promise;
-    }
-
-    var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"
-
-    pgBinding.queryDeferred(sql)
-        .then(function(response){
-            columnLookup[tablename] = response[0].column_name;
-            deferred.resolve(true);
-        })
-        .catch(function(e){
-            deferred.reject(e)
-        })
-        .done();
-
-    return deferred.promise;
-};
-
-common.sanitize = function (val) {
-    // we want a null to still be null, not a string
-    if (typeof val === 'string' && val !== 'null') {
-        // $nh9$ is using $$ with an arbitrary tag. $$ in pg is a safe way to quote something,
-        // because all escape characters are ignored inside of it.
-        var esc = settings.pg.escapeStr;
-        return "$" + esc + "$" + val + "$" + esc + "$";
-    }
-    return val;
-};
 
 module.exports = common;

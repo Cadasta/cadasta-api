@@ -5,6 +5,34 @@ var pgb = require('../pg-binding.js');
 
 var controller = {};
 
+
+var tableColumnQuery = controller.tableColumnQuery = function(tablename) {
+
+    var deferred = Q.defer();
+
+    // First time here, load column names into lookup file
+    if(columnLookup.hasOwnProperty(tablename)) {
+        deferred.resolve(true);
+        return deferred.promise;
+
+    }
+
+    var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"
+
+    pgb.queryDeferred(sql)
+        .then(function(response){
+            columnLookup[tablename] = response[0].column_name;
+            deferred.resolve(true);
+        })
+        .catch(function(e){
+            deferred.reject(e)
+        })
+        .done();
+
+    return deferred.promise;
+};
+
+
 controller.getAll = function(tablename, opts){
 
     var options = opts || {};
@@ -15,7 +43,7 @@ controller.getAll = function(tablename, opts){
 
     var deferred = Q.defer();
 
-    common.tableColumnQuery(tablename)
+    tableColumnQuery(tablename)
         .then(function(response){
 
             var sql;
@@ -49,7 +77,7 @@ controller.getWithId = function(tablename, idKey, idValue, opts){
 
     var deferred = Q.defer();
 
-    common.tableColumnQuery(tablename)
+    tableColumnQuery(tablename)
         .then(function(response){
 
             var sql;
@@ -75,5 +103,6 @@ controller.getWithId = function(tablename, idKey, idValue, opts){
     return deferred.promise;
 
 };
+
 
 module.exports = controller;
