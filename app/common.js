@@ -66,7 +66,7 @@ common.parseQueryOptions = function(req, res, next) {
 
         queryModifiers.returnGeometry = false;
 
-        if(req.query.hasOwnProperty('returnGeometry')/* && columnLookup[req.baseUrl].geometry*/ ) {
+        if(req.query.hasOwnProperty('returnGeometry') ) {
 
             if(['true', 'false'].indexOf(req.query.returnGeometry) === -1) {
                 throw new errors.OptionError("Bad Request; invalid 'returnGeom' option");

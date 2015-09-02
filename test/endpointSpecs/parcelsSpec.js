@@ -133,7 +133,54 @@ module.exports = function(app) {
             });
         });
 
-        describe('GET /parcels/1/history', function () {
+        describe('GET /parcels/:id/show_relationship_history', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .get('/parcels/1/show_relationship_history?relationship_type=own&active=true')
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        // Test that it returns GeoJSON
+                        testUtils.expectFeatureCollection(res.body);
+
+                        //  Get the GeoJSON features for further testing
+                        var features = res.body.features;
+
+                        // Make sure only one feature returned
+                        expect(features).with.length(1);
+
+                        // Check properties
+                        var featureProperties = features[0].properties;
+
+                        expect(featureProperties).to.have.property('relationship_id');
+                        expect(featureProperties).to.have.property('parcel_id');
+                        expect(featureProperties).to.have.property('origin_id');
+                        expect(featureProperties).to.have.property('parent_id');
+                        expect(featureProperties).to.have.property('version');
+                        expect(featureProperties).to.have.property('description');
+                        expect(featureProperties).to.have.property('date_modified');
+                        expect(featureProperties).to.have.property('expiration_date');
+                        expect(featureProperties).to.have.property('active');
+                        expect(featureProperties).to.have.property('time_created');
+                        expect(featureProperties).to.have.property('time_updated');
+                        expect(featureProperties).to.have.property('created_by');
+                        expect(featureProperties).to.have.property('updated_by');
+                        expect(featureProperties).to.have.property('spatial_source');
+                        expect(featureProperties).to.have.property('relationship_type');
+                        expect(featureProperties).to.have.property('party_id');
+                        expect(featureProperties).to.have.property('first_name');
+                        expect(featureProperties).to.have.property('last_name');
+
+                        done();
+                    });
+
+            });
+        });
+
+        describe('GET /parcels/:id/history', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)

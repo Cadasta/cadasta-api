@@ -1,5 +1,5 @@
 var Q = require('q');
-
+var columnLookup = require('../column-lookup.js');
 var common = require('../common.js');
 var pgb = require('../pg-binding.js');
 
