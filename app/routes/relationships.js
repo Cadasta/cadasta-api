@@ -5,10 +5,10 @@ var ctrlCommon = require('../controllers/common.js');
 
 
 /**
- * @api {get} /relationships/:id/history Get relationship history
+ * @api {get} /relationships/:id/relationship_history Get relationship's history
  * @apiName GetRelationshipHistory
  * @apiGroup Relationships
- * @apiDescription Get relationship history records for a give relationship_id
+ * @apiDescription Get relationship history records for a given relationship_id
  * @apiParam {Number} id relationship's unique ID.
  *
  * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
@@ -36,7 +36,7 @@ var ctrlCommon = require('../controllers/common.js');
  * @apiSuccess {Number} response.features.properties.updated_by id of updater
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/parcels/1/history
+ *     curl -i http://localhost/relationships/1/relationship_history
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -65,7 +65,7 @@ var ctrlCommon = require('../controllers/common.js');
       ]
     }
  */
-router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
+router.get('/:id/relationship_history', common.parseQueryOptions, function(req, res, next) {
 
     req.queryModifiers.returnGeometry = false;
 

@@ -300,7 +300,7 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
  * @apiSuccess {String} response.features.properties.last_name last_name of creator
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/parcels/1/history
+ *     curl -i http://localhost/parcels/:id/show_relationship_history
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -437,7 +437,7 @@ router.get('/:id/show_relationship_history', common.parseQueryOptions, function(
  * @apiSuccess {Number} response.features.properties.relationships.updated_by
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/custom/get_parcel_detailss/1
+ *     curl -i http://localhost/parcels/1/details
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
