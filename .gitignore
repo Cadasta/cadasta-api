@@ -12,3 +12,4 @@ app/public/docs/
 ship/**
 deploy/**
 
+s3-test.js
