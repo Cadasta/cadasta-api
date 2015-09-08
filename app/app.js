@@ -5,10 +5,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var compression = require('compression')
 var bodyParser = require('body-parser');
+var cors = require("cors");
 // Logging packages
 var rollbar = require('rollbar');
 var winston = require('winston');
-var common = require('./common.js');
 require('winston-rollbar').Rollbar;
 require('./console-winston');
 
@@ -68,6 +68,9 @@ app.set('view engine', 'hbs');
 // compress all requests: gzip/deflate
 app.use(compression());
 
+// CORS
+app.use(cors());
+
 // Body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -75,16 +78,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Static directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use(common.parseQueryOptions);
-
 // Endpoint configuration
+var index = require('./routes/index');
 var custom = require('./routes/custom');
 var parcels = require('./routes/parcels');
 var relationships = require('./routes/relationships');
 var activities = require('./routes/activities');
 
-
-app.use('/custom', custom);
+app.use('/', index);
+app.use('/', custom);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);
 app.use('/relationships', relationships);
@@ -131,8 +133,15 @@ module.exports = app;
 function printStackTrace(app){
     // will print stacktrace
     app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.json({
+
+        //Bad Db column request
+        if(err.code === "42703") {
+            err.status = 400;
+            err.message = "Bad request: " + err.message;
+
+        }
+
+        res.status(err.status || 500).json({
             message: err.message,
             error: err
         });
@@ -142,8 +151,7 @@ function printStackTrace(app){
 function hideStackTrace(app){
     // will print stacktrace
     app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.json({
+        res.status(err.status || 500).json({
             message: err.message,
             error: {}
         });

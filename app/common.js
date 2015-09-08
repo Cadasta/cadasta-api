@@ -1,5 +1,8 @@
-var columnLookup = require('./endpoint-column-lookup.js');
-var common = module.exports = {};
+var Q = require('q');
+var settings = require('./settings/settings.js');
+var columnLookup = require('./column-lookup.js');
+var errors = require('./errors.js');
+var common = {};
 
 common.getArguments = function (req) {
     var args;
@@ -19,50 +22,58 @@ common.isInteger = function(x){
     return Math.round(x) === x;
 };
 
+common.createDynamicInArrayClause = function(key, dataType, vals, startIndex) {
+
+    startIndex = startIndex || 0;
+
+    var str = vals.split(',')
+                .map(function (val, i) {
+
+                    return key + '::' + dataType + '[] @> ARRAY[$' + (startIndex + i + 1) + ']';
+
+                })
+                .join(' OR ');
+
+    return '(' + str + ')';
+};
+
+common.createDynamicInClause = function(key, vals, startIndex) {
+
+    startIndex = startIndex || 0;
+
+    var str = vals.split(',')
+        .map(function (val, i) {
+
+            return '$' + (startIndex + i + 1);
+
+        })
+        .join(',');
+
+    return key + ' IN (' + str + ')';
+};
+
 common.parseQueryOptions = function(req, res, next) {
 
-    function OptionError(message) {
-        this.name = 'URL option error';
-        this.message = message || 'Error.';
-        this.stack = (new Error()).stack;
-    }
-
     var queryModifiers = {};
-
-    var allFields = columnLookup[req.baseUrl].properties || null;
     
     try {
 
-        queryModifiers.fields = allFields.join(',');
-
-        if(req.query.hasOwnProperty('fields') && allFields) {
-
-            var selectedFieldsArr = req.query.fields.split(',');
-
-            selectedFieldsArr.forEach(function(field){
-
-                if(allFields.indexOf(field) === -1) {
-                    throw new OptionError("Bad Request; invalid 'fields' option");
-                }
-
-            });
+        if(req.query.hasOwnProperty('fields')) {
 
             queryModifiers.fields = req.query.fields;
 
         }
 
         queryModifiers.returnGeometry = false;
-        queryModifiers.geometryColumn = null;
 
-        if(req.query.hasOwnProperty('returnGeometry') && columnLookup[req.baseUrl].geometry ) {
+        if(req.query.hasOwnProperty('returnGeometry') ) {
 
             if(['true', 'false'].indexOf(req.query.returnGeometry) === -1) {
-                throw new OptionError("Bad Request; invalid 'returnGeom' option");
+                throw new errors.OptionError("Bad Request; invalid 'returnGeom' option");
             }
 
             if(req.query.returnGeometry=== 'true') {
                 queryModifiers.returnGeometry = true;
-                queryModifiers.geometryColumn = columnLookup[req.baseUrl].geometry;
             }
         }
 
@@ -70,7 +81,7 @@ common.parseQueryOptions = function(req, res, next) {
 
             if(!common.isInteger(Number(req.query.limit))) {
 
-                throw new OptionError("Bad Request; invalid 'limit' option");
+                throw new errors.OptionError("Bad Request; invalid 'limit' option");
             }
 
             queryModifiers.limit = "LIMIT " + req.query.limit;
@@ -78,17 +89,8 @@ common.parseQueryOptions = function(req, res, next) {
 
         if(req.query.hasOwnProperty('sort_by')) {
 
-            var orderByArr = req.query.sort_by.split(',');
+            queryModifiers.sort_by = req.query.sort_by;
 
-            orderByArr.every(function(field){
-
-                if(allFields.indexOf(field) === -1) {
-                    throw new OptionError("Bad Request; invalid 'order_by' option");
-                }
-
-            });
-
-            queryModifiers.order_by = 'ORDER BY ' + req.query.sort_by;
         }
 
 
@@ -97,17 +99,17 @@ common.parseQueryOptions = function(req, res, next) {
             var orders = ['ASC', 'DESC'];
 
             if(orders.indexOf(req.query.sort_dir) === -1) {
-                throw new OptionError("Bad Request; invalid 'order' option");
+                throw new errors.OptionError("Bad Request; invalid 'sort_dir' option");
             }
 
-            if(queryModifiers.order_by) {
-                queryModifiers.order_by = queryModifiers.order_by + ' ' + req.query.sort_dir;
-            }
+            queryModifiers.sort_dir = req.query.sort_dir;
+
         }
+
     }
     catch(e){
 
-        if (e instanceof OptionError) {
+        if (e instanceof errors.OptionError) {
             console.error(e.stack);
             res.status(400).json({message: e.message});
         } else {
@@ -126,23 +128,94 @@ common.parseQueryOptions = function(req, res, next) {
 common.featureCollectionSQL = function(table, mods, where){
 
     var modifiers = mods || {};
-    var geomFragment = (typeof modifiers.geometryColumn === "undefined" || modifiers.geometryColumn === null) ? "NULL" : "ST_AsGeoJSON(t." + modifiers.geometryColumn + ")::json";
+    var geomFragment = (modifiers.returnGeometry) ? "ST_AsGeoJSON(t.geom)::json" :"NULL";
     var limit = modifiers.limit || '';
-    var order_by = modifiers.order_by || '';
     var whereClause = where || '';
-    var columns = modifiers.fields;
+
+    var order_by ='';
+    var columns = '(SELECT l FROM (select ' + columnLookup[table].join(',') + ') As l)';
+
+    if(typeof modifiers.fields !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.fields);
+
+        columns = '(SELECT l FROM (select ' + modifiers.fields + ') As l)';
+
+    }
+
+    if(typeof modifiers.sort_by !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.sort_by);
+
+        order_by = 'ORDER BY ' + modifiers.sort_by.split(',')
+                                            .map(function(col){
+                                                return col + ' ' + modifiers.sort_dir;
+                                            })
+                                            .join(',');
+
+    }
 
     var sql = "SELECT row_to_json(fc) AS response "
-        + "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "
-        + "FROM (SELECT 'Feature' As type "
-        + ", {{geometry}} As geometry "
-        + ", row_to_json((SELECT l FROM (select {{columns}}) As l "
-        + ")) As properties "
-        + "FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+        + "FROM ( SELECT 'FeatureCollection' As type, COALESCE(array_to_json(array_agg(f)), '[]') As features "
+        + "FROM (SELECT 'Feature' As type, {{geometry}} As geometry "
+        + ", row_to_json({{columns}})  As properties FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
 
-    return sql.replace('{{columns}}', columns)
+
+    sql = sql.replace('{{columns}}', columns)
         .replace('{{geometry}}', geomFragment)
         .replace('{{where}}', whereClause)
         .replace('{{limit}}', limit)
         .replace('{{order_by}}', order_by);
+
+    return sql;
 };
+
+common.objectArraySQL = function(table, mods, where){
+
+    var modifiers = mods || {};
+    var geomFragment = (modifiers.returnGeometry) ? "ST_AsGeoJSON(t.geom)::json" : null;
+    var limit = modifiers.limit || '';
+    var whereClause = where || '';
+
+    var order_by ='';
+    var columns = columnLookup[table].join(',');
+
+    if(typeof modifiers.fields !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.fields);
+
+        columns = modifiers.fields;
+
+    }
+
+    if(geomFragment) {
+        columns += ',' + geomFragment;
+    }
+
+
+    if(typeof modifiers.sort_by !== 'undefined') {
+
+        columnLookup._validate(table, modifiers.sort_by);
+
+        order_by = 'ORDER BY ' + modifiers.sort_by.split(',')
+                .map(function(col){
+                    return col + ' ' + modifiers.sort_dir;
+                })
+                .join(',');
+
+    }
+
+    var sql = "SELECT {{columns}} FROM {{table}} {{where}} {{order_by}} {{limit}};"
+
+
+    sql = sql.replace('{{columns}}', columns)
+        .replace('{{table}}', table)
+        .replace('{{where}}', whereClause)
+        .replace('{{limit}}', limit)
+        .replace('{{order_by}}', order_by);
+
+    return sql;
+};
+
+
+module.exports = common;

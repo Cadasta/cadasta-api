@@ -37,12 +37,12 @@ module.exports = function(grunt) {
 
         apidoc: {
             docs: {
-                src: "app",
+                src: ["app", "node_modules/cadasta-data-transformer/src/ingestion"],
                 dest: "app/public/docs/",
                 options: {
                     debug: true,
                     includeFilters: [ ".*\\.js$" ],
-                    excludeFilters: [ "node_modules/", "ship/" ]
+                    excludeFilters: [  "ship/" ]
                 }
             }
         },
@@ -127,8 +127,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-text-replace');
 
     grunt.registerTask('updateDocs', [
-        'apidoc:docs',
-        'shell:markdownDocs',
+        'apidoc:docs'
+        //'shell:markdownDocs',
     ]);
 
     // The build and 'deploy' task
@@ -138,7 +138,6 @@ module.exports = function(grunt) {
         'copy:publish',
         'apidoc:docs',
         'replace:docs',
-        'shell:markdownDocs',
         'file_append:deploy',
         'shell:compress',
         'shell:scp'
