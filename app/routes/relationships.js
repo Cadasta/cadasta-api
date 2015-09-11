@@ -81,4 +81,84 @@ router.get('/:id/relationship_history', common.parseQueryOptions, function(req, 
         .done();
 
 });
+
+/**
+ * @api {get} /relationships Get all
+ * @apiName GetRelationships
+ * @apiGroup Relationships
+ *
+ * @apiDescription Get all relationships (from the relationship table)
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.id Relationship id
+ * @apiSuccess {Integer} response.features.properties.project_id Project id
+ * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
+ * @apiSuccess {Integer} response.features.properties.party_id Party id
+ * @apiSuccess {Integer} response.features.properties.geom_id Geometry id
+ * @apiSuccess {String} response.features.properties.tenure_type Type of tenure (own, lease, occupy, informal occupy)
+ * @apiSuccess {String} response.features.properties.acquired_date Date of acquisition
+ * @apiSuccess {String} response.features.properties.how_acquired Description of how relationship was acquired
+ * @apiSuccess {Boolean} response.features.properties.active Status of relationship
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Integer} response.features.properties.created_by id of creator
+ * @apiSuccess {Integer} response.features.properties.updated_by id of updater
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/relationships
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 1,
+                "project_id": 1,
+                "parcel_id": 1,
+                "party_id": 1,
+                "geom_id": null,
+                "tenure_type": 1,
+                "acquired_date": "2015-08-03",
+                "how_acquired": "lease",
+                "active": true,
+                "sys_delete": false,
+                "time_created": "2015-09-08T15:15:37.470562-07:00",
+                "time_updated": "2015-09-08T15:15:37.470562-07:00",
+                "created_by": 11,
+                "updated_by": null
+            }
+        }
+    ]
+}
+ */
+
+router.get('', common.parseQueryOptions, function(req, res, next) {
+
+    ctrlCommon.getAll("relationship", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
 module.exports = router;

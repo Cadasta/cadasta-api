@@ -4,13 +4,36 @@ var multer = require('multer');
 var common = require('../common.js');
 var upload = multer();
 var settings = require('../settings/settings.js');
+var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
-
 
 var AWS = require('aws-sdk');
 AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: settings.s3.awsSecretKey});
 
-// CREATE
+/**
+ * @api {get} /resources/project_id/resource_type/resource_type_id Upload
+ * @apiName UploadResource
+ * @apiGroup Resources
+ *
+ * @apiDescription Upload parcel, party, or relationship project resource
+ *
+ * @apiParam (Optional query string parameters) {String} [project_id] Options: Project id integer
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiSuccess {Object} response an Object message property
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i -F name=test -F filedata=@newfile.rtf localhost:9000/resources/1/parcel/3
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {"message":"Thanks for the upload."}
+ */
+
+// Upload Resource
 router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function (req, res, next) {
 
     // grab all req params
@@ -24,12 +47,10 @@ router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function 
 
     getOrg(project_id)
         .then(function (res) {
-            return res[0];
-        }).then(function (res) {
 
-            var org_id = res.id;
-            var org_title = res.title;
-            var project_title = res.project_title;
+            var org_id = res[0].id;
+            var org_title = res[0].title;
+            var project_title = res[0].project_title;
             var path = org_title + '-' + org_id + '/' + project_title + '-' + project_id + '/' + resource_type + '/' + file_name + '-' + resource_type_id;
 
             return uploadS3(path,file);
@@ -37,11 +58,14 @@ router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function 
             console.log('Successfully uploaded resource.');
             //create resource in DB
             return createResource(project_id, resource_type, resource_type_id, path);
-        }).then(function(res){
-            console.log('Successfully uploaded resource id:' + res[0].cd_create_resource + ' to DB.');
-            res.status(200).json({message: 'Thanks for the upload.'});
+        }).then(function(result){
+            console.log('Successfully uploaded resource id:' + result[0].cd_create_resource + ' to DB.');
+            res.status(200).json({message: "Thanks for the upload."});
 
-        });
+        }).catch(function(err){
+            //console.log(err);
+            next(err);
+        }).done();
 
     return deferred.promise;
 
@@ -123,7 +147,7 @@ router.get('/:id', function (req, res, next) {
 
     //  Use ID to get S3 bucket file path and file name; to be built, just pasting in filename
     var s3File = 'upload-me.txt';
-    var downloadFileName = "theFile.txt"
+    var downloadFileName = "theFile.txt";
 
     var s3 = new AWS.S3();
 
@@ -164,6 +188,95 @@ router.delete('/:id', function (req, res, next) {
             res.status(200).json({message: "File deleted."});
         }
     });
+
+});
+
+/**
+ * @api {get} /resources Get all
+ * @apiName GetResources
+ * @apiGroup Resources
+ *
+ * @apiDescription Get all resources (from the resource table)
+ *
+ * @apiParam (Optional query string parameters) {String} [project_id] Options: Project id integer
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.id resource id
+ * @apiSuccess {Integer} response.features.properties.project_id resource project id
+ * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
+ * @apiSuccess {String} response.features.properties.url resource download url
+ * @apiSuccess {String} response.features.properties.description resource description
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/resources
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 2,
+                "type": null,
+                "url": "http://www.cadasta.org/2/parcel",
+                "description": null,
+                "active": true,
+                "sys_delete": false,
+                "time_created": "2015-09-09T14:57:34.398855-07:00",
+                "time_updated": "2015-09-09T14:57:34.398855-07:00",
+                "created_by": null,
+                "updated_by": null,
+                "project_id": 1
+            }
+        }
+    ]
+}
+ */
+
+// GET ALL DB RECORDS
+router.get('', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.project_id) {
+        whereClauseArr.push('project_id = $1');
+        whereClauseValues.push(parseInt(req.query.project_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("resource", options)
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
 
 });
 
