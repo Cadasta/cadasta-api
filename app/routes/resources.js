@@ -40,7 +40,7 @@ router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function 
     var project_id = parseInt(req.params.project_id);
     var resource_type = req.params.type;
     var resource_type_id = parseInt(req.params.type_id);
-    var file_name = req.body.name;
+    var file_name = req.file.originalname;
     var file = req.file.buffer;
 
     var deferred = Q.defer();
