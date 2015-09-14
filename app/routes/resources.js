@@ -63,7 +63,7 @@ router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function 
             res.status(200).json({message: "Thanks for the upload."});
 
         }).catch(function(err){
-            //console.log(err);
+            console.log(err);
             next(err);
         }).done();
 
