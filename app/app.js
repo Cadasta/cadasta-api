@@ -93,6 +93,8 @@ var parcels = require('./routes/parcels');
 var relationships = require('./routes/relationships');
 var activities = require('./routes/activities');
 var resources = require('./routes/resources');
+var projects = require('./routes/projects');
+var organizations = require('./routes/organizations');
 
 app.use('/', index);
 app.use('/', custom);
@@ -101,6 +103,9 @@ app.use('/providers', ingestion_engine.router);
 app.use('/relationships', relationships);
 app.use('/activities', activities);
 app.use('/resources', resources);
+app.use('/projects', projects);
+app.use('/organizations', organizations);
+
 
 
 // Environment-specific configuration
