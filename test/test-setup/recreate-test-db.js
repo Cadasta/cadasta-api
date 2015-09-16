@@ -1,4 +1,4 @@
-var pg = require('pg').native;
+var pg = require('pg');
 var Q = require('q');
 var fs = require('fs');
 var exec = require('child_process').exec;
@@ -25,7 +25,7 @@ function nukeDB() {
     var deferred = Q.defer();
 
     var db = settings.database;
-    var kill = 'psql -d ' + db + ' -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = \'' + db
+    var kill = 'psql -d ' + db + ' -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = \'' + db
         + '\' AND pid <> pg_backend_pid()";';
     var drop = 'dropdb ' + db;
     var create = 'createdb ' + db + ' -O ' + settings.user;
@@ -114,13 +114,13 @@ var q6 = fs.readFileSync(__dirname + '/truncate-db-tables.sql', 'utf8');
 return nukeDB()
 
     .then(function(response){
-        return runDeferredPsql('psql -U postgres -d cadasta-testing -q -f ../../node_modules/cadasta-db/sql/1_db.sql');
+        return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ../../node_modules/cadasta-db/sql/1_db.sql');
 
     })
     .then(function(){
 
         console.log('1_db.sql complete.');
-            return runDeferredPsql('psql -U postgres -d cadasta-testing -q -f ../../node_modules/cadasta-db/sql/2_field-data-tables.sql');
+            return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ../../node_modules/cadasta-db/sql/2_field-data-tables.sql');
 
         })
 
@@ -128,25 +128,31 @@ return nukeDB()
     .then(function(){
 
         console.log('2_survey-tables.sql complete.');
-            return runDeferredPsql('psql -U postgres -d cadasta-testing -q -f ../../node_modules/cadasta-db/sql/3_db-functions.sql');
+            return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ../../node_modules/cadasta-db/sql/3_db-functions.sql');
 
 
         })
     .then(function(){
 
         console.log('3_db-functions.sql complete.');
-            return runDeferredPsql('psql -U postgres -d cadasta-testing -q -f ../../node_modules/cadasta-db/sql/4_db-views.sql');
+            return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ../../node_modules/cadasta-db/sql/4_db-views.sql');
 
         })
     .then(function(){
         console.log("4_db-view is complete.")
-            return runDeferredPsql('psql -U postgres -d cadasta-testing -q -f ../../node_modules/cadasta-db/sql/5_validation-functions.sql');
+        return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ../../node_modules/cadasta-db/sql/5_validation-functions.sql');
 
-        })
+    })
+    .then(function(){
+        console.log("5_validation-functions.sql is complete.")
+        return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ../../node_modules/cadasta-db/sql/6_test-data.sql');
+
+    })
+
     .then(function(){
 
-        console.log('5_validation-functions.sql is complete.');
-            return runDeferredPsql('psql -U postgres -d cadasta-testing -q -f ./truncate-db-tables.sql');
+        console.log('6_test-data.sql is complete.');
+            return runDeferredPsql('psql -U postgres -d ' + settings.database + ' -q -f ./truncate-db-tables.sql');
 
 
         })
