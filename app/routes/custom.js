@@ -108,7 +108,8 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
  * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
  * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
  * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
- *
+ * @apiParam (Optional query string parameters) {Integer} [project_id] integer of project_id
+ * 
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
@@ -160,7 +161,22 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
  */
 router.get('/show_activity', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getAll("show_activity", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.project_id) {
+        whereClauseArr.push('project_id = $1');
+        whereClauseValues.push(parseInt(req.query.project_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("show_activity", options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
