@@ -628,8 +628,8 @@ router.get('/show_relationship_resources', common.parseQueryOptions, function(re
 
 router.get('/project_overview/:id', common.parseQueryOptions, function(req, res, next) {
 
-    var opts =  {queryModifiers: {limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
-    var geomopts =  {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
+    var opts = {queryModifiers: {limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
+    var geomopts = {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
 
     Q.all([
         ctrlCommon.getWithId('show_project_extents', 'id', req.params.id, geomopts),
@@ -643,7 +643,7 @@ router.get('/project_overview/:id', common.parseQueryOptions, function(req, res,
             var geoJSON = results[0][0].response;
 
             // If Id return no parcel, message the user
-            if(geoJSON.features.length === 0) {
+            if (geoJSON.features.length === 0) {
                 return res.status(200).json({message: "no parcel"});
             } else {
                 // Add properties to parcel's geojson
@@ -653,14 +653,17 @@ router.get('/project_overview/:id', common.parseQueryOptions, function(req, res,
 
                 res.status(200).json(geoJSON);
 
-            };
+            }
+            ;
 
-                //llop through results[2][0].response.EACH -- add geom and prop to array
+            //llop through results[2][0].response.EACH -- add geom and prop to array
         })
-        .catch(function(err){
+        .catch(function (err) {
             next(err)
         })
         .done();
+
+});
 
 
 module.exports = router;
