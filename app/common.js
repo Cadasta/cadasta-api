@@ -1,8 +1,18 @@
 var Q = require('q');
 var settings = require('./settings/settings.js');
+var envSettings = require('./settings/environment-settings.js');
 var columnLookup = require('./column-lookup.js');
 var errors = require('./errors.js');
 var common = {};
+var pg = require('pg');
+
+// PostGIS Connection String
+var conString = "postgres://" +
+    envSettings.development.pg.user + ":" +
+    envSettings.development.pg.password + "@" +
+    envSettings.development.pg.server + ":" +
+    envSettings.development.pg.port + "/" +
+    envSettings.development.pg.database;
 
 common.getArguments = function (req) {
     var args;
@@ -215,6 +225,27 @@ common.objectArraySQL = function(table, mods, where){
         .replace('{{order_by}}', order_by);
 
     return sql;
+};
+
+common.query = function (queryStr, cb) {
+    pg.connect(conString, function (err, client, done) {
+        if (err) {
+            console.error('error fetching client from pool', err);
+        }
+
+        client.on('notification', function(msg){
+            console.log(msg);
+        });
+
+        client.query(queryStr, function (queryerr, result) {
+            done();
+            if (queryerr) {
+                console.error('ERROR RUNNING QUERY:', queryStr, queryerr);
+            }
+            cb((err || queryerr), (result && result.rows ? result.rows : result));
+        });
+
+    });
 };
 
 

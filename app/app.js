@@ -38,7 +38,15 @@ try {
     return;
 }
 
-// Copy the Environment specific Postgres settings to the settings module, then they will be available whereever settings module is required.
+// Copy the Environment specific to the settings module, then they will be available wherever settings module is required.
+for (var i in envSettings) {
+
+    if(settings.hasOwnProperty(i)){
+        throw Error("Environment settings cannot overwrite runtime settings.")
+    }
+
+    settings[i] = envSettings[i];
+}
 settings.pg = envSettings.pg;
 
 var DataTransformer = require('cadasta-data-transformer');
@@ -83,14 +91,19 @@ var index = require('./routes/index');
 var custom = require('./routes/custom');
 var parcels = require('./routes/parcels');
 var relationships = require('./routes/relationships');
-var activities = require('./routes/activities');
+var resources = require('./routes/resources');
+var projects = require('./routes/projects');
+var organizations = require('./routes/organizations');
 
 app.use('/', index);
 app.use('/', custom);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);
 app.use('/relationships', relationships);
-app.use('/activities', activities);
+app.use('/resources', resources);
+app.use('/projects', projects);
+app.use('/organizations', organizations);
+
 
 
 // Environment-specific configuration

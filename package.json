@@ -6,6 +6,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "aws-sdk": "^2.1.49",
     "body-parser": "~1.13.2",
     "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
     "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
@@ -20,6 +21,7 @@
     "hbs": "~3.1.0",
     "minimist": "^1.1.3",
     "morgan": "~1.6.1",
+    "multer": "^1.0.3",
     "pg": "^4.4.1",
     "q": "^1.4.1",
     "rollbar": "^0.5.4",
@@ -45,5 +47,4 @@
     "mocha": "^2.2.5",
     "superagent": "^1.3.0"
   }
-
 }

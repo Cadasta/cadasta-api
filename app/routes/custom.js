@@ -7,7 +7,7 @@ var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
 
 /**
- * @api {get} /show_parcels_list show_parcels_list - get all
+ * @api {get} /show_parcels_list Parcel List - get all
  * @apiName show_parcels_list
  * @apiGroup Custom Views
  * @apiDescription Get records from the show_parcels_list database view
@@ -98,7 +98,7 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
 });
 
 /**
- * @api {get} /show_activity show_activity - get all
+ * @api {get} /show_activity Activity - get all
  * @apiName show_activity_all
  * @apiGroup Custom Views
  * @apiDescription Get records from the show_activity database view
@@ -108,7 +108,8 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
  * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
  * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
  * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
- *
+ * @apiParam (Optional query string parameters) {Integer} [project_id] integer of project_id
+ * 
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
@@ -160,7 +161,22 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
  */
 router.get('/show_activity', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getAll("show_activity", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.project_id) {
+        whereClauseArr.push('project_id = $1');
+        whereClauseValues.push(parseInt(req.query.project_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("show_activity", options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -175,7 +191,7 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
 
 
 /**
- * @api {get} /show_relationships show_relationships - get all
+ * @api {get} /show_relationships Relationships - get all
  * @apiName show_relationships_all
  * @apiGroup Custom Views
  * @apiDescription Get records from the show_relationships database view
@@ -269,7 +285,7 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
 });
 
 /**
- * @api {get} /show_relationships/:id show_relationships - get one
+ * @api {get} /show_relationships/:id Relationships - get one
  * @apiName show_relationships_one
  * @apiGroup Custom Views
  * @apiDescription Get a record from the show_relationships database view
@@ -344,6 +360,271 @@ router.get('/show_relationships/:id', common.parseQueryOptions, function(req, re
 
 });
 
+/**
+ * @api {get} /show_parcel_resources Parcel Resources - get all
+ * @apiName GetParcelResources
+ * @apiGroup Custom Views
+ *
+ * @apiDescription Get all parcel resources (from the resource_parcel table)
+ *
+ * @apiParam (Optional query string parameters) {String} [parcel_id] Options: Parcel id integer
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.resource_id resource id
+ * @apiSuccess {Integer} response.features.properties.parcel_id resource parcel id
+ * @apiSuccess {Integer} response.features.properties.project_id resource project id
+ * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
+ * @apiSuccess {String} response.features.properties.url resource download url
+ * @apiSuccess {String} response.features.properties.description resource description
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/show_parcel_resources
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "parcel_id": 2,
+                "resource_id": 32,
+                "type": null,
+                "url": "http://www.cadasta.org/32/parcel",
+                "description": null,
+                "active": true,
+                "sys_delete": false,
+                "time_created": "2015-09-09T14:57:34.398855-07:00",
+                "time_updated": "2015-09-09T14:57:34.398855-07:00",
+                "created_by": null,
+                "updated_by": null,
+                "project_id": 1
+            }
+        }
+    ]
+}
+ */
+
+router.get('/show_parcel_resources', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.parcel_id) {
+        whereClauseArr.push('parcel_id = $1');
+        whereClauseValues.push(parseInt(req.query.parcel_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("show_parcel_resources", options)
+        .then(function(result){
+            res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+/**
+ * @api {get} /show_party_resources Party Resources - get all
+ * @apiName GetPartyResources
+ * @apiGroup Custom Views
+ *
+ * @apiDescription Get all party resources (from the resource_party table)
+ *
+ * @apiParam (Optional query string parameters) {String} [party_id] Options: Party id integer
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.resource_id resource id
+ * @apiSuccess {Integer} response.features.properties.party_id resource party id
+ * @apiSuccess {Integer} response.features.properties.project_id resource project id
+ * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
+ * @apiSuccess {String} response.features.properties.url resource download url
+ * @apiSuccess {String} response.features.properties.description resource description
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/show_party_resources
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "party_id": 2,
+                "resource_id": 32,
+                "type": null,
+                "url": "http://www.cadasta.org/32/party",
+                "description": null,
+                "active": true,
+                "sys_delete": false,
+                "time_created": "2015-09-09T14:57:34.398855-07:00",
+                "time_updated": "2015-09-09T14:57:34.398855-07:00",
+                "created_by": null,
+                "updated_by": null,
+                "project_id": 1
+            }
+        }
+    ]
+}
+ */
+
+router.get('/show_party_resources', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.party_id) {
+        whereClauseArr.push('party_id = $1');
+        whereClauseValues.push(parseInt(req.query.party_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("show_party_resources", options)
+        .then(function(result){
+            res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+/**
+ * @api {get} /show_relationship_resources Relationship Resources - get all
+ * @apiName GetRelationshipResources
+ * @apiGroup Custom Views
+ *
+ * @apiDescription Get all relationship resources (from the resource_relationship table)
+ *
+ * @apiParam (Optional query string parameters) {String} [relationship_id] Options: Parcel id integer
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.resource_id resource id
+ * @apiSuccess {Integer} response.features.properties.relationship_id resource parcel id
+ * @apiSuccess {Integer} response.features.properties.project_id resource project id
+ * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
+ * @apiSuccess {String} response.features.properties.url resource download url
+ * @apiSuccess {String} response.features.properties.description resource description
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/show_relationship_resources
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "relationship_id": 2,
+                "resource_id": 32,
+                "type": null,
+                "url": "http://www.cadasta.org/32/relationship",
+                "description": null,
+                "active": true,
+                "sys_delete": false,
+                "time_created": "2015-09-09T14:57:34.398855-07:00",
+                "time_updated": "2015-09-09T14:57:34.398855-07:00",
+                "created_by": null,
+                "updated_by": null,
+                "project_id": 1
+            }
+        }
+    ]
+}
+ */
+
+router.get('/show_relationship_resources', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.relationship_id) {
+        whereClauseArr.push('relationship_id = $1');
+        whereClauseValues.push(parseInt(req.query.relationship_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("show_relationship_resources", options)
+        .then(function(result){
+            res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+
 
 router.get('/project_overview/:id', common.parseQueryOptions, function(req, res, next) {
 
@@ -380,10 +661,6 @@ router.get('/project_overview/:id', common.parseQueryOptions, function(req, res,
             next(err)
         })
         .done();
-
-
-
-});
 
 
 module.exports = router;

@@ -16,6 +16,7 @@ var Q = require('q');
  * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
  * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
  * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ * @apiParam (Optional query string parameters) {Integer} [project_id] integer of project_id
  *
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
@@ -24,10 +25,19 @@ var Q = require('q');
  * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
  * @apiSuccess {String} response.features.properties.id parcel id
+ * @apiSuccess {String} response.features.properties.project_id project id
  * @apiSuccess {Number} response.features.properties.spatial_source integer code for the spatial source of the parcel
  * @apiSuccess {String} response.features.properties.user_id user id that created parcel
+ * @apiSuccess {Number} response.features.properties.area Area (meters) of Polygon
+ * @apiSuccess {Number} response.features.properties.length Length (meters) of LineString
+ * @apiSuccess {String} response.features.properties.land_use Options: Commercial, Real Estate
+ * @apiSuccess {String} response.features.properties.gov_pin government pin
+ * @apiSuccess {Boolean} response.features.properties.active organization status
+ * @apiSuccess {Boolean} response.features.properties.sys_delete db status
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {String} response.features.properties.created_by user id of creator
+ * @apiSuccess {String} response.features.properties.updated_by user if of updater
  *
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/parcels
@@ -80,7 +90,22 @@ var Q = require('q');
 
 router.get('', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getAll("parcel", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    if(req.query.project_id) {
+        whereClauseArr.push('project_id = $1');
+        whereClauseValues.push(parseInt(req.query.project_id));
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll("parcel", options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
