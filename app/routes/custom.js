@@ -625,10 +625,112 @@ router.get('/show_relationship_resources', common.parseQueryOptions, function(re
 });
 
 
+/**
+ * @api {get} /project_overview/:id Project Overview - get one
+ * @apiName Project Overview
+ * @apiGroup Custom Views
+ *
+ * @apiDescription Get activity,resources, project extent and parcel geometries for a single project
+ * @apiParam {Number} [project_id] Options: Project id number
+ * @apiSuccess {Object} response A feature collection with one feature representing a project
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry.type Polygon
+ * @apiSuccess {Object} response.features.geometry.type GeoJSON geometry object of project extent
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Number} response.features.properties.id project id
+ * @apiSuccess {Number} response.features.properties.organization_id organization id
+ * @apiSuccess {String} response.features.properties.title title
+ * @apiSuccess {Number} response.features.properties.ckan_id ckan id
+ * @apiSuccess {Boolean} response.features.properties.active active/archived flag
+ * @apiSuccess {Boolean} response.features.properties.sys_delete delete flag
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+
+
+ * @apiSuccess {Array} response.features.properties.project_resources array of project resources
+ * @apiSuccess {Array} response.features.properties.project_resources.type "Feature"
+ * @apiSuccess {Array} response.features.properties.project_resources.geometry always null
+ * @apiSuccess {Array} response.features.properties.project_resources.properties GeoJSON feature's properties
+ * @apiSuccess {Number} response.features.properties.project_resources.properties.id resource id
+ * @apiSuccess {Number} response.features.properties.project_resources.properties.project_id project id
+ * @apiSuccess {Number} response.features.properties.project_resources.properties.url resource url
+ * @apiSuccess {Number} response.features.properties.project_resources.properties.type resource type
+ * @apiSuccess {String} response.features.properties.project_resources.properties.description resource description
+ * @apiSuccess {Boolean} response.features.properties.project_resources.properties.active active/archived flag
+ * @apiSuccess {Boolean} response.features.properties.project_resources.properties.sys_delete delete flag
+ * @apiSuccess {String} response.features.properties.project_resources.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.project_resources.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.project_resources.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.project_resources.properties.updated_by id of updater
+ * @apiSuccess {Array} response.features.properties.project_activity array of project activities
+ * @apiSuccess {Array} response.features.properties.project_activity.type "Feature"
+ * @apiSuccess {Array} response.features.properties.project_activity.geometry always null
+ * @apiSuccess {Array} response.features.properties.project_activity.properties GeoJSON feature's properties
+ * @apiSuccess {Number} response.features.properties.project_activity.properties.activity_type activity type
+ * @apiSuccess {Number} response.features.properties.project_activity.properties.id activity id
+ * @apiSuccess {Number} response.features.properties.project_activity.properties.type type of activity
+ * @apiSuccess {String} response.features.properties.project_activity.properties.name activity name
+ * @apiSuccess {Boolean} response.features.properties.project_activity.properties.parcel_id parcel id
+ * @apiSuccess {String} response.features.properties.project_activity.properties.time_created Time stamp of creation
+ *
+ *
+ * @apiSuccess {Array} response.features.properties.parcels array of project parcels
+ * @apiSuccess {Array} response.features.properties.parcels.type parcel type
+ * @apiSuccess {Array} response.features.properties.parcels.geometry parcel geometry
+ * @apiSuccess {Array} response.features.properties.parcels.properties GeoJSON feature's properties
+ * @apiSuccess {Number} response.features.properties.parcels.properties.id resource id
+ * @apiSuccess {Number} response.features.properties.parcels.properties.project_id project id
+ * @apiSuccess {Number} response.features.properties.parcels.properties.url resource url
+ * @apiSuccess {Number} response.features.properties.parcels.properties.type resource type
+ * @apiSuccess {String} response.features.properties.parcels.properties.description resource description
+ * @apiSuccess {Boolean} response.features.properties.parcels.properties.active active/archived flag
+ * @apiSuccess {Boolean} response.features.properties.parcels.properties.sys_delete delete flag
+ * @apiSuccess {String} response.features.properties.parcels.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.parcels.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.parcels.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.parcels.properties.updated_by id of updater
+
+ *
+ *
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/show_relationship_resources
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "relationship_id": 2,
+                "resource_id": 32,
+                "type": null,
+                "url": "http://www.cadasta.org/32/relationship",
+                "description": null,
+                "active": true,
+                "sys_delete": false,
+                "time_created": "2015-09-09T14:57:34.398855-07:00",
+                "time_updated": "2015-09-09T14:57:34.398855-07:00",
+                "created_by": null,
+                "updated_by": null,
+                "project_id": 1
+            }
+        }
+    ]
+}
+ */
+
 
 router.get('/project_overview/:id', common.parseQueryOptions, function(req, res, next) {
 
-    var opts = {queryModifiers: {limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
+    var opts = {queryModifiers: {limit: 'LIMIT 10', project_id:req.params.id, sort_by: 'time_created', sort_dir: 'DESC'}, outputFormat: 'GeoJSON'};
     var geomopts = {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
 
     Q.all([
