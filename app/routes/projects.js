@@ -5,6 +5,8 @@ var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
 var pgb = require('../pg-binding.js');
 
+var Q = require('q');
+
 /**
  * @api {get} /projects Get all
  * @apiName GetProjects
@@ -233,7 +235,7 @@ router.post('', function(req, res, next) {
 });
 
 
-
+//Get a project overview
 /**
  * @api {get} /project_overview/:id Project Overview - get one
  * @apiName Project Overview
