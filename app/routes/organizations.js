@@ -176,7 +176,34 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 });
 
 
+
 // CREATE A ORGANIZATION RECORD
+
+
+/**
+ * @api {post} /organizations Create one
+ * @apiName PostOrganization
+ * @apiGroup Organizations
+ * @apiDescription Create a organization
+ *
+ *
+ * @apiParam {String} ckan_id The id of the organization in the CKAN application database
+ * @apiParam {String} ckan_title The title of the organization in the CKAN application database
+ * @apiParam {String} ckan_description The description of the organization in the CKAN application database
+
+ *
+ * @apiSuccess {Object} cadasta_organization_id The cadasta database id of the created organization
+
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X POST -d '{"ckan_id":"my-org","ckan_title":"My Org", "ckan_description": "My description"}' http://localhost/organizations
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            "cadasta_organization_id": 1
+        }
+ */
 router.post('', function(req, res, next) {
 
     var ckan_id = req.body.ckan_id;
