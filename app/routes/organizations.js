@@ -3,7 +3,7 @@ var router = express.Router();
 var common = require('../common.js');
 var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
-var Q = require('q');
+var pgb = require('../pg-binding.js');
 
 /**
  * @api {get} /organizations Get all
@@ -175,4 +175,53 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
 });
 
+
+
+// CREATE A ORGANIZATION RECORD
+/**
+ * @api {post} /organizations Create one
+ * @apiName PostOrganization
+ * @apiGroup Organizations
+ * @apiDescription Create a organization
+ *
+ *
+ * @apiParam {String} ckan_id The id of the organization in the CKAN application database
+ * @apiParam {String} ckan_title The title of the organization in the CKAN application database
+ * @apiParam {String} ckan_description The description of the organization in the CKAN application database
+
+ *
+ * @apiSuccess {Object} cadasta_organization_id The cadasta database id of the created organization
+
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X POST -d '{"ckan_id":"my-org","ckan_title":"My Org", "ckan_description": "My description"}' http://localhost/organizations
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            "cadasta_organization_id": 1
+        }
+ */
+router.post('', function(req, res, next) {
+
+    var ckan_id = req.body.ckan_id;
+    var ckan_title = req.body.ckan_title;
+    var ckan_description = req.body.ckan_description;
+
+    if(ckan_id === undefined || ckan_title === undefined || ckan_description === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "SELECT * FROM cd_create_organization($1,$2,$3)";
+
+    pgb.queryDeferred(sql,{paramValues: [ckan_id, ckan_title, ckan_description]})
+        .then(function(response){
+            res.status(200).json({cadasta_organization_id: response[0]})
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
 module.exports = router;
