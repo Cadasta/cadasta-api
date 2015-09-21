@@ -66,11 +66,11 @@ If you want to author tests for endpoints, create spec files in the [/test/test/
 
 All tests:  
       
-    mocha test/test-runners/endpoint-tests.js  --reporter spec
+    mocha test/test-runners/endpoint-tests.js  --reporter spec --delay
 
 Specific Test(s): 
 
-    mocha test/test-runners/endpoint-tests.js  --testFiles exampleEndpointSpec.js --reporter spec  
+    mocha test/test-runners/endpoint-tests.js  --testFiles exampleEndpointSpec.js --reporter spec  --delay
 
 Note the option "testFiles".  You can provide it a comma-delimited-list of files from  the unitSpecs directory to test (no spaces, e.g., `spec1.js,spec2.js,spec3.js`).
     
