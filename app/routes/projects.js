@@ -187,6 +187,28 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 });
 
 // CREATE A PROJECT RECORD
+/**
+ * @api {post} /projects Create one
+ * @apiName PostProjects
+ * @apiGroup Projects
+ * @apiDescription Create a project
+ *
+ * @apiParam {Integer} cadasta_organization_id The cadasta id of the project's "parent"
+ * @apiParam {String} ckan_id The id of the project in the CKAN application database
+ * @apiParam {String} ckan_title The title of the project in the CKAN application database
+ *
+ * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
+
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id", "ckan_id":"my-org","ckan_title":"My Org"}' http://localhost/projects
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            "cadasta_project_id": 1
+        }
+ */
 router.post('', function(req, res, next) {
 
     var cadasta_organization_id = req.body.cadasta_organization_id;

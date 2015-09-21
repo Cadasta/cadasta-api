@@ -10,6 +10,7 @@ module.exports = function(app) {
 
     describe('Project suite', function () {
 
+
         it('should have status 200 and contain specified data structure', function (done) {
 
             chai.request(app)

@@ -178,8 +178,6 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
 
 // CREATE A ORGANIZATION RECORD
-
-
 /**
  * @api {post} /organizations Create one
  * @apiName PostOrganization
