@@ -3,7 +3,7 @@ var router = express.Router();
 var common = require('../common.js');
 var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
-var Q = require('q');
+var pgb = require('../pg-binding.js');
 
 /**
  * @api {get} /projects Get all
@@ -178,6 +178,30 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
     ctrlCommon.getWithId('show_project_extents', 'id', req.params.id, options)
         .then(function(result){
             res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+// CREATE A PROJECT RECORD
+router.post('', function(req, res, next) {
+
+    var cadasta_organization_id = req.body.cadasta_organization_id;
+    var ckan_id = req.body.ckan_id;
+    var ckan_title = req.body.ckan_title;
+
+    if(cadasta_organization_id === undefined || ckan_id === undefined || ckan_title === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "SELECT * FROM cd_create_project($1,$2,$3)";
+
+    pgb.queryDeferred(sql,{paramValues: [cadasta_organization_id, ckan_id, ckan_title]})
+        .then(function(response){
+            res.status(200).json({cadasta_project_id: response[0]})
         })
         .catch(function(err){
             next(err);
