@@ -237,7 +237,7 @@ router.post('', function(req, res, next) {
 
 //Get a project overview
 /**
- * @api {get} /projects/overview/:id Project Overview - get one
+ * @api {get} /projects/:id/overview Project Overview - get one
  * @apiName Project Overview
  * @apiGroup Projects
 
@@ -306,7 +306,7 @@ router.post('', function(req, res, next) {
  * @apiSuccess {Number} response.features.properties.parcels.properties.updated_by id of updater
 
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/projects/overview/1
+ *     curl -i http://localhost/projects/1/overview
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -421,7 +421,7 @@ router.post('', function(req, res, next) {
  */
 
 
-router.get('/overview/:id', common.parseQueryOptions, function(req, res, next) {
+router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
     var opts = {queryModifiers: {limit: 'LIMIT 10', project_id:req.params.id, sort_by: 'time_created', sort_dir: 'DESC'}, outputFormat: 'GeoJSON'};
     var geomopts = {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};

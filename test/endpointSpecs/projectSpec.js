@@ -31,11 +31,11 @@ module.exports = function(app) {
     });
 
 
-    describe('GET /projects/overview/1', function () {
+    describe('GET /projects/1/overview', function () {
         it('should have status 200 and contain specified data structure', function (done) {
 
             chai.request(app)
-                .get('/projects/overview/1')
+                .get('/projects/1/overview')
                 .end(function (res) {
 
                      //Test that the endpoint exists and responds
