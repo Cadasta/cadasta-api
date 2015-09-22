@@ -118,7 +118,7 @@ if (app.get('env') === 'development') {
     // print stack trace
     printStackTrace(app);
 
-} else if (app.get('env') === 'staging' || pp.get('env') === 'demo') {
+} else if (app.get('env') === 'staging' || app.get('env') === 'demo') {
 
     // print stack trace and log warnings and errors to Rollbar logging dashboard
     printStackTrace(app);
