@@ -27,7 +27,7 @@ module.exports = function(grunt) {
     }
 
 
-    if(env === 'production' || env === 'staging') {
+    if(env === 'production' || env === 'staging' || 'demo') {
         envSettings = envSettings[env];
     }
 
