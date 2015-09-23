@@ -93,6 +93,7 @@ var parcels = require('./routes/parcels');
 var relationships = require('./routes/relationships');
 var resources = require('./routes/resources');
 var projects = require('./routes/projects');
+var parties = require('./routes/parties');
 var organizations = require('./routes/organizations');
 
 app.use('/', index);
@@ -103,6 +104,7 @@ app.use('/relationships', relationships);
 app.use('/resources', resources);
 app.use('/projects', projects);
 app.use('/organizations', organizations);
+app.use('/parties', parties);
 
 
 
