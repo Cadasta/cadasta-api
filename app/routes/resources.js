@@ -51,13 +51,13 @@ router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function 
             var org_id = res[0].id;
             var org_title = res[0].title;
             var project_title = res[0].project_title;
-            var path = org_title + '-' + org_id + '/' + project_title + '-' + project_id + '/' + resource_type + '/' + file_name + '-' + resource_type_id;
+            var path = org_title + '-' + org_id + '/' + project_title + '-' + project_id + '/' + resource_type + '/' + resource_type_id + '-' +file_name;
 
             return uploadS3(path,file);
         }).then(function (path) {
             console.log('Successfully uploaded resource.');
             //create resource in DB
-            return createResource(project_id, resource_type, resource_type_id, path);
+            return createResource(project_id, resource_type, resource_type_id, path,file_name);
         }).then(function(result){
             console.log('Successfully uploaded resource id:' + result[0].cd_create_resource + ' to DB.');
             res.status(200).json({message: "Thanks for the upload."});
@@ -83,7 +83,7 @@ function uploadS3 (path,file){
 
     var s3 = new AWS.S3();
     s3.putObject({
-        Bucket: 'cadasta-test-space',
+        Bucket: settings.s3.bucket,
         Key: path,
         Body: file,
         ACL: 'public-read'
@@ -102,13 +102,13 @@ function uploadS3 (path,file){
 
 }
 
-function createResource(p_id, type, type_id, path) {
+function createResource(p_id, type, type_id, path,filename) {
 
     var deferred = Q.defer();
 
     var rootURL = 'https://s3.amazonaws.com/cadasta-test-space/';
     var url = rootURL + path;
-    var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "',null)";
+    var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "',null, '" + filename + "')";
 
     common.query(sql, function (err, res) {
         if (err) {
