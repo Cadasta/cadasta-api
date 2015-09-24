@@ -33,8 +33,9 @@ AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: setti
  *     {"message":"Thanks for the upload."}
  */
 
+
 // Upload Resource
-router.post('/:project_id/:type/:type_id/', upload.single('filedata'), function (req, res, next) {
+router.post('/:project_id/:type/:type_id', upload.single('filedata'), function (req, res, next) {
 
     // grab all req params
     var project_id = parseInt(req.params.project_id);
