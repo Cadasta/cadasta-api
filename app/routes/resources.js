@@ -6,6 +6,8 @@ var upload = multer();
 var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
+var pgb = require('../pg-binding.js');
+
 
 var AWS = require('aws-sdk');
 AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: settings.s3.awsSecretKey});
@@ -26,7 +28,7 @@ AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: setti
  * @apiSuccess {Object} response an Object message property
  *
  * @apiExample {curl} Example usage:
- *     curl -i -F name=test -F filedata=@newfile.rtf localhost:9000/resources/1/parcel/3
+ *     curl -i -F name=test -F filedata=@newfile.rtf http://localhost:9000/resources/1/parcel/3
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -110,7 +112,7 @@ function createResource(p_id, type, type_id, path,filename) {
     var url = rootURL + path;
     var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "',null, '" + filename + "')";
 
-    common.query(sql, function (err, res) {
+    pgb.queryCallback(sql, function (err, res) {
         if (err) {
             deferred.reject(err);
         } else {
@@ -131,7 +133,7 @@ function getOrg(p_id) {
 
     var sql = 'SELECT o.id,o.title,p.title as project_title FROM organization o, project p WHERE o.id = (SELECT organization_id FROM project where id = ' + p_id + ') and p.organization_id = o.id and p.id = ' + p_id;
 
-    common.query(sql, function (err, res) {
+    pgb.queryCallback(sql, function (err, res) {
         if (err) {
             deferred.reject(err);
         } else {
