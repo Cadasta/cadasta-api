@@ -124,13 +124,13 @@ if (app.get('env') === 'development') {
 
     // print stack trace and log warnings and errors to Rollbar logging dashboard
     printStackTrace(app);
-    addLogging(app, envSettings);
+    addLogging(app, settings);
 
 } else if (app.get('env') === 'production') {
 
     // hide stack trace and log warnings and errors to Rollbar logging dashboard
     hideStackTrace(app);
-    addLogging(app, envSettings);
+    addLogging(app, settings);
 }
 
 
@@ -176,8 +176,8 @@ function hideStackTrace(app){
 function addLogging(app,settings){
 
     if(settings.useRollbar) {
-        app.use(rollbar.errorHandler(envSettings.rollbarKey));
-        winston.add(winston.transports.Rollbar, { rollbarAccessToken: envSettings.rollbarKey, level:'warn' });
-        rollbar.handleUncaughtExceptions(envSettings.rollbar, { exitOnUncaughtException: true });
+        app.use(rollbar.errorHandler(settings.rollbarKey));
+        winston.add(winston.transports.Rollbar, { rollbarAccessToken: settings.rollbarKey, level:'warn' });
+        rollbar.handleUncaughtExceptions(settings.rollbar, { exitOnUncaughtException: true });
     }
 }
