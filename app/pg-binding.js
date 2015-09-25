@@ -24,10 +24,10 @@ module.exports.queryCallback = function(sql, cb, opts) {
         if(err) {
             console.error('error fetching client from pool', err);
         }
-        client.query(sql, paramValues, function(queryerr, result) {
+        client.query(sql, parameterizedQueryValues, function(queryerr, result) {
             done();
             if(queryerr) {
-                console.error('ERROR RUNNING QUERY:', sqlStr, queryerr);
+                console.error('ERROR RUNNING QUERY:', sql, queryerr);
             }
             cb((err || queryerr), (result && result.rows ? result.rows : result));
         });

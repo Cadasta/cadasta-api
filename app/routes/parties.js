@@ -8,7 +8,7 @@ var Q = require('q');
  *
  * @api {get} /parcels/:id/resources Get party resources
  * @apiName GetPartyResources
- * @apiGroup Party
+ * @apiGroup Parties
  *
  * @apiDescription Get all parcel resources (from the resource_parcel table)
  *
