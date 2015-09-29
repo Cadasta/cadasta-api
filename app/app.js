@@ -51,6 +51,7 @@ settings.pg = envSettings.pg;
 
 var DataTransformer = require('cadasta-data-transformer');
 var ingestion_engine = DataTransformer(settings);
+
 //Register the CSV Provider
 require("cadasta-provider-csv").register(ingestion_engine);
 
@@ -95,6 +96,8 @@ var resources = require('./routes/resources');
 var projects = require('./routes/projects');
 var parties = require('./routes/parties');
 var organizations = require('./routes/organizations');
+var field_data = require('./routes/field_data');
+
 
 app.use('/', index);
 app.use('/', custom);
@@ -105,6 +108,7 @@ app.use('/resources', resources);
 app.use('/projects', projects);
 app.use('/organizations', organizations);
 app.use('/parties', parties);
+app.use('/field_data', field_data);
 
 
 
