@@ -1,6 +1,12 @@
 ##Developer Documentation
 ###Running locally
- After git cloning, do a `npm install` at the repo root.  Then you need to add a app/settings/settings.js and a app/settings/environment-settings.js to the repo.  See example files for details. 
+ After git cloning, do a `npm install` at the repo root.
+ 
+ Clone [pyxform](https://github.com/XLSForm/pyxform) ```git clone https://github.com/XLSForm/pyxform.git``` to app/
+ 
+ In the root, ```sudo pip install -r requirements.txt``` to install python packages.
+ 
+ Next, you need to add a app/settings/settings.js and a app/settings/environment-settings.js to the repo.  See example files for details. 
  
  You can fire up the API (in development mode) with:
 
