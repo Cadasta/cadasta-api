@@ -27,7 +27,7 @@ var Q = require('q');
  * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/custom_get_parcels_list
+ *     curl -i http://localhost/show_parcels_list
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -124,7 +124,7 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/activities
+ *     curl -i http://localhost/show_activity
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -218,7 +218,7 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/relationships
+ *     curl -i http://localhost/show_relationships
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -313,7 +313,7 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/relationships
+ *     curl -i http://localhost/relationships/1
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK

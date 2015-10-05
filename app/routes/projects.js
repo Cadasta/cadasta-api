@@ -13,6 +13,7 @@ var Q = require('q');
  * @apiGroup Projects
  * @apiDescription Get all projects (from the project table)
  *
+ * @apiParam (Optional query string parameters) {String} [ckan_id] CKAN project id of the Cadasta DB project record
  * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
  * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
  * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
@@ -88,19 +89,30 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 
     var options =  {
         queryModifiers: req.queryModifiers,
-        outputFormat: 'GeoJSON'
+        outputFormat: req.query.outputFormat || 'GeoJSON'
     };
 
     if(req.query.organization_id) {
-        whereClauseArr.push('organization_id = $1');
         whereClauseValues.push(parseInt(req.query.organization_id));
+        whereClauseArr.push('organization_id = $' + whereClauseValues.length);
+    }
+
+    if(req.query.ckan_id) {
+        whereClauseValues.push(req.query.ckan_id);
+        whereClauseArr.push('ckan_id = $' + whereClauseValues.length);
+    }
+
+    if(whereClauseArr.length > 0) {
         options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
         options.whereClauseValues = whereClauseValues;
     }
 
     ctrlCommon.getAll("show_project_extents", options)
         .then(function(result){
-            res.status(200).json(result[0].response);
+
+            var result = result.length > 0 ? result[0].response || result : [];
+
+            res.status(200).json(result);
         })
         .catch(function(err){
             next(err);
