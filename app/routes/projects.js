@@ -4,6 +4,7 @@ var common = require('../common.js');
 var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
 var pgb = require('../pg-binding.js');
+var errors = require('../errors');
 
 var Q = require('q');
 
@@ -472,5 +473,118 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
 });
 
+
+// Get project parcel list
+/**
+ * @api {get} /projects/:id/parcels_list Project Parcel List - get all
+ * @apiName project_parcel_list
+ * @apiGroup Projects
+ * @apiDescription Get records from the show_parcels_list database view with a specific project id
+ *
+ * @apiParam {Number} id Project id number
+ *
+ * @apiParam (Optional query string parameters) {String} [tenure_type] Options: own, lease, occupy, informal occupy
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+
+ * @apiParamExample  Query String Example:
+ *  curl -i http://localhost/custom/get_parcels_list?tenure_type=own,lease
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.id parcel id
+ * @apiSuccess {Timestamp} response.features.properties.time_created timestamp with timezone
+ * @apiSuccess {Numeric} response.features.properties.area area of parcel geometry
+ * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
+ * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/show_parcels_list
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ * {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 45,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "own",
+                "num_relationships": 6
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 44,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "lease",
+                "num_relationships": 5
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 43,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "occupy",
+                "num_relationships": 2
+            }
+        }
+    ]
+}
+ *
+ * */
+router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, next) {
+
+    req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
+    req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    var whereClauseArr = ['project_id = $1'];
+    var whereClauseValues = [req.params.id];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: req.query.outputFormat || 'GeoJSON'
+    };
+
+    if(req.query.tenure_type) {
+        whereClauseValues = whereClauseValues.concat(req.query.tenure_type.split(','));
+        whereClauseArr.push(common.createDynamicInArrayClause('tenure_type', 'text', req.query.tenure_type, whereClauseArr.length));
+    }
+
+    if(whereClauseArr.length > 0) {
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+
+    ctrlCommon.getAll('show_parcels_list', options)
+        .then(function(result){
+            res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
 
 module.exports = router;
