@@ -407,7 +407,6 @@ router.get('/:id/show_relationship_history', common.parseQueryOptions, function(
 });
 
 
-
 /**
  * @api {get} /parcels/:id/details Get parcel details
  * @apiName GetParcelDetails

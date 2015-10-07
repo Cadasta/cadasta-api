@@ -761,7 +761,7 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
         outputFormat: 'GeoJSON'
     };
 
-    var whereClauseArr = ['project_id = $1', 'id = $2'];
+    var whereClauseArr = ['project_id = $1', 'parcel_id = $2'];
     var whereClauseValues = [req.params.id, req.params.parcel_id];
 
     var options =  {
@@ -773,7 +773,6 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
         options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
         options.whereClauseValues = whereClauseValues;
     }
-
 
     ctrlCommon.getWithId('show_parcel_history', 'parcel_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
@@ -787,5 +786,127 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
         .done();
 
 });
+
+
+/**
+ * @api {get} /projects/:id/parcels/:parcel_id/show_relationship_history Get parcel relationship history
+ * @apiName GetProjectParcelRelationshipHistory
+ * @apiGroup Projects
+ * @apiDescription Get a project parcel's relationship history (from the show_relationship_history view)
+ * @apiParam {Number} id project's unique ID.
+ * @apiParam {Number} parcel_id parcel's unique ID.
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with one feature per parcel history record
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object (always null here)
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Number} response.features.properties.relationship_id relationship id
+ * @apiSuccess {Number} response.features.properties.origin_id origin id
+ * @apiSuccess {String} response.features.properties.version version
+ * @apiSuccess {Number} response.features.properties.parent_id parent id
+ * @apiSuccess {Number} response.features.properties.parcel_id parcel id
+ * @apiSuccess {Number} response.features.properties.expiration_date expiration_date
+ * @apiSuccess {String} response.features.properties.description description
+ * @apiSuccess {String} response.features.properties.date_modified YYYY-MM-DD of last update
+ * @apiSuccess {Boolean} response.features.properties.active active/archived flag
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+ * @apiSuccess {String} response.features.properties.relationship_type relationship type
+ * @apiSuccess {String} response.features.properties.spatial_source spatial source
+ * @apiSuccess {String} response.features.properties.first_name first name of creator
+ * @apiSuccess {String} response.features.properties.last_name last_name of creator
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/projects/1/parcels/1/show_relationship_history
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": null,
+              "properties": {
+                "relationship_id": 1,
+                "origin_id": 1,
+                "version": 1,
+                "parent_id": null,
+                "parcel_id": 1,
+                "expiration_date": null,
+                "description": "History",
+                "date_modified": "2015-09-02",
+                "active": true,
+                "time_created": "2015-09-02T18:09:15.057843+00:00",
+                "time_updated": "2015-09-02T18:09:15.057843+00:00",
+                "created_by": 11,
+                "updated_by": null,
+                "relationship_type": "own",
+                "spatial_source": "survey_sketch",
+                "party_id": 1,
+                "first_name": "Thurmond",
+                "last_name": "Thomas"
+              }
+            }
+          ]
+        }
+ */
+router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQueryOptions, function(req, res, next) {
+
+    // harvest endpoint specific URI query params
+    var activeFilter = req.query.active || null;
+    var typeFilters = req.query.relationship_type || null;
+
+    // No need to return geometry
+    req.queryModifiers.returnGeometry = false;
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    // Where clause needs to limite by project and parcel ids
+    var whereClauseArr = ['project_id = $1', 'parcel_id = $2'];
+    var whereClauseValues = [req.params.id, req.params.parcel_id];
+
+    // If any "relationship_type" filters submitted, add them to composite parameterized where clause
+    if (typeFilters) {
+        whereClauseValues = whereClauseValues.concat(typeFilters.split(','));
+        whereClauseArr.push(common.createDynamicInClause('relationship_type', typeFilters, whereClauseValues.length));
+    }
+
+    // If "active" filter submitted, add it to composite parameterized where clause
+    if (activeFilter) {
+        whereClauseValues.push(activeFilter);
+        whereClauseArr.push('active = $' + (whereClauseValues.length))
+    }
+
+    if(whereClauseArr.length > 0) {
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getAll('show_relationship_history', options)
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
 
 module.exports = router;
