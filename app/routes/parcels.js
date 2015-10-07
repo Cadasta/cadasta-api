@@ -208,7 +208,6 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
 });
 
-
 /**
  * @api {get} /parcels/:id/history Get parcel history
  * @apiName GetParcelHistory
@@ -406,7 +405,6 @@ router.get('/:id/show_relationship_history', common.parseQueryOptions, function(
 
 });
 
-
 /**
  * @api {get} /parcels/:id/details Get parcel details
  * @apiName GetParcelDetails
@@ -559,7 +557,6 @@ router.get('/:id/details', common.parseQueryOptions, function(req, res, next) {
 });
 
 /**
- *
  * @api {get} /parcels/:id/resources Get parcel resources
  * @apiName GetParcelResources
  * @apiGroup Parcels
@@ -617,7 +614,6 @@ router.get('/:id/details', common.parseQueryOptions, function(req, res, next) {
     ]
 }
  */
-
 router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) {
 
     var whereClauseArr = [];
