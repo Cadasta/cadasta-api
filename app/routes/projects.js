@@ -588,7 +588,7 @@ router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, nex
 
 // Get project parcel
 /**
- * @api {get} projects/:id/parcels/:parcel_id Get one project parcel
+ * @api {get} projects/:id/parcels/:parcel_id Project Parcel - Get one
  * @apiName GetProjectParcel
  * @apiGroup Projects
  * @apiDescription Get a project specific parcel (from the parcels table)
