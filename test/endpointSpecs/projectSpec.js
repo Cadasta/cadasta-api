@@ -53,12 +53,12 @@ module.exports = function(app) {
                     // Check properties
                     var featureProperties = features[0].properties;
                     expect(featureProperties).to.have.property('id', 1);
-                    expect(featureProperties).to.have.property('organization_id', 1);
-                    expect(featureProperties).to.have.property('title', "Bolivia");
-                    expect(featureProperties).to.have.property('ckan_id');
+                    expect(featureProperties).to.have.property('organization_id');
+                    expect(featureProperties).to.have.property('title');
+                    //expect(featureProperties).to.have.property('ckan_id');
                     expect(featureProperties).to.have.property('active');
                     expect(featureProperties).to.have.property('sys_delete');
-                    expect(featureProperties).to.have.property('time_created', '2015-09-16T15:14:31.46313-07:00');
+                    expect(featureProperties).to.have.property('time_created');
                     expect(featureProperties).to.have.property('time_updated');
                     expect(featureProperties).to.have.property('created_by');
                     expect(featureProperties).to.have.property('updated_by');

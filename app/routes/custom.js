@@ -87,8 +87,8 @@ router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, ne
     };
 
     if(req.query.tenure_type) {
-        whereClauseValues.push(req.query.tenure_type.split(','));
-        whereClauseArr.push(common.createDynamicInArrayClause('tenure_type', 'text', req.query.tenure_type));
+        whereClauseValues = whereClauseValues.concat(req.query.tenure_type.split(','));
+        whereClauseArr.push(common.createDynamicInArrayClause('tenure_type', 'text', req.query.tenure_type, whereClauseArr.length));
     }
 
     if(req.query.project_id) {
