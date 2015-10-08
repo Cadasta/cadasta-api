@@ -472,7 +472,7 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
 // Get project parcel list
 /**
- * @api {get} /projects/:id/parcels_list Project Parcel List - get all
+ * @api {get} /projects/:id/parcels_list Project parcel List - get all
  * @apiName project_parcel_list
  * @apiGroup Projects
  * @apiDescription Get records from the show_parcels_list database view with a specific project id
@@ -585,7 +585,7 @@ router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, nex
 
 // Get project parcel
 /**
- * @api {get} projects/:id/parcels/:parcel_id Project Parcel - Get one
+ * @api {get} projects/:id/parcels/:parcel_id Project parcel - Get one
  * @apiName GetProjectParcel
  * @apiGroup Projects
  * @apiDescription Get a project specific parcel (from the parcels table)
@@ -687,7 +687,7 @@ router.get('/:id/parcels/:parcel_id', common.parseQueryOptions, function(req, re
 });
 
 /**
- * @api {get} projects/:id/parcels/:id/history Project parcel history
+ * @api {get} projects/:id/parcels/:id/history Project parcel relationship history
  * @apiName GetProjectParcelHistory
  * @apiGroup Projects
  *
@@ -905,7 +905,7 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
 });
 
 /**
- * @api {get} /projects/:id/parcels/:parcel_id/details Get Project parcel details
+ * @api {get} /projects/:id/parcels/:parcel_id/details Project parcel details
  * @apiName GetProjectParcelDetails
  * @apiGroup Projects
  * @apiDescription Get all details for a project parcel: parcel attributes, parcel history (most recent 10), relationships (most recent 10)
