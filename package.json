@@ -26,6 +26,7 @@
     "multer": "^1.0.3",
     "pg": "^4.4.1",
     "q": "^1.4.1",
+    "python-shell":"0.2.0",
     "rollbar": "^0.5.4",
     "serve-favicon": "~2.3.0",
     "throw.js": "^1.0.0",
