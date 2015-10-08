@@ -785,7 +785,7 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
 });
 
 /**
- * @api {get} /projects/:id/parcels/:parcel_id/show_relationship_history Get Project parcel relationship history
+ * @api {get} /projects/:id/parcels/:parcel_id/show_relationship_history Project parcel relationship history
  * @apiName GetProjectParcelRelationshipHistory
  * @apiGroup Projects
  * @apiDescription Get a project parcel's relationship history (from the show_relationship_history view)
