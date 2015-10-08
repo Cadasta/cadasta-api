@@ -2,7 +2,11 @@
 ###Running locally
  After git cloning, do a `npm install` and ```pip install -r requirements.txt``` at the repo root.
  
- Clone [pyxform](https://github.com/XLSForm/pyxform) ```git clone https://github.com/XLSForm/pyxform.git``` to app/
+ cd into node_modules/cadasta-data-transformer/ and Clone [pyxform](https://github.com/XLSForm/pyxform) ```git clone https://github.com/XLSForm/pyxform.git``` 
+ 
+ Inside pyxform/pyxform/xls2json.py, replace line 26 with:
+ 
+ ```print json.dumps(pyobj, indent=4)```
   
  Next, you need to add a app/settings/settings.js and a app/settings/environment-settings.js to the repo.  See example files for details. 
  
