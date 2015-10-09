@@ -909,7 +909,9 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
  * @apiName GetProjectParcelDetails
  * @apiGroup Projects
  * @apiDescription Get all details for a project parcel: parcel attributes, parcel history (most recent 10), relationships (most recent 10)
- * @apiParam {Number} id parcel's unique ID.
+ *
+ * @apiParam {Number} id project's unique ID.
+ * @apiParam {Number} parcel_id parcel's unique ID.
  *
  *
  * @apiSuccess {Object} response A feature collection with one feature representing a parcel
@@ -1084,11 +1086,14 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
 });
 
 /**
- * @api {get} /parcels/:id/resources Get parcel resources
- * @apiName GetParcelResources
- * @apiGroup Parcels
+ * @api {get} /parcels/:id/resources Get project parcel resources
+ * @apiName GetProjectParcelResources
+ * @apiGroup Project
  *
- * @apiDescription Get all parcel resources (from the resource_parcel table)
+ * @apiDescription Get a project parcels resources (from the resource_parcel table)
+ *
+ * @apiParam {Number} id project's unique ID.
+ * @apiParam {Number} parcel_id parcel's unique ID.
  *
  * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
  * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
@@ -1113,7 +1118,7 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
  * @apiSuccess {Number} response.features.properties.updated_by id of updater
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/parcels/1/resources
+ *     curl -i http://localhost/projects/1/parcels/1/resources
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -1165,6 +1170,100 @@ router.get('/:id/parcels/:parcel_id/resources', common.parseQueryOptions, functi
     ctrlCommon.getAll("show_parcel_resources", options)
         .then(function(result){
             res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+/**
+ * @api {get} /show_activity Project activity
+ * @apiName GetProjectActivity
+ * @apiGroup Projects
+ * @apiDescription Get a project's activity records
+ *
+ * @apiParam {Number} id project's unique ID.
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ * @apiParam (Optional query string parameters) {Integer} [project_id] integer of project_id
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {String} response.features.properties.activity_type activity type
+ * @apiSuccess {String} response.features.properties.type type
+ * @apiSuccess {Number} response.features.properties.id activity's id (could be parcel or relationship id)
+ * @apiSuccess {Number} response.features.properties.name activity creator's name
+ * @apiSuccess {Number} response.features.properties.id activity's id parcel id
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/projects/1/activity
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ * {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "activity_type": "parcel",
+        "id": 1,
+        "type": "survey_grade_gps",
+        "name": null,
+        "parcel_id": null,
+        "time_created": "2015-08-12T03:46:01.673153+00:00"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "activity_type": "parcel",
+        "id": 2,
+        "type": "survey_grade_gps",
+        "name": null,
+        "parcel_id": null,
+        "time_created": "2015-08-12T03:46:01.673153+00:00"
+      }
+    }
+  ]
+}
+ */
+router.get('/:id/activity', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    whereClauseArr.push('project_id = $1');
+    whereClauseValues.push(parseInt(req.params.id));
+
+    options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+    options.whereClauseValues = whereClauseValues;
+
+
+    ctrlCommon.getAll("show_activity", options)
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
         })
         .catch(function(err){
             next(err);

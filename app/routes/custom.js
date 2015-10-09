@@ -205,7 +205,6 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
 
 });
 
-
 /**
  * @api {get} /show_relationships Relationships - get all
  * @apiName show_relationships_all
