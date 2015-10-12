@@ -108,7 +108,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
         options.whereClauseValues = whereClauseValues;
     }
 
-    ctrlCommon.getAll("show_project_extents", options)
+    ctrlCommon.getAll("project", options)
         .then(function(result){
 
             var result = result.length > 0 ? result[0].response || result : [];
@@ -126,7 +126,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
  * @api {get} /projects/:id Get one
  * @apiName GetProject
  * @apiGroup Projects
- * @apiDescription Get a project (from the project table)
+ * @apiDescription Get project
  *
  * @apiParam {Number} id project's unique ID.
  *
@@ -181,8 +181,6 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
     ]
 }
  */
-
-// GET 1 DB RECORD
 router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
     var options =  {
@@ -1032,8 +1030,7 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
     var options =  {
         queryModifiers: req.queryModifiers,
         outputFormat: 'GeoJSON',
-        returnGeometry: true,
-
+        returnGeometry: true
     };
 
     // Where clause needs to be limited by project and parcel ids
@@ -1048,7 +1045,7 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
     };
 
     otherOpts.queryModifiers.limit = 'LIMIT 10';
-    otherOpts.queryModifiers.sort_by = 'time_updated';
+    otherOpts.queryModifiers.sort_by = 'time_created';
     otherOpts.queryModifiers.sort_dir =  'DESC';
 
     // Where clause needs to be limited by project and parcel ids
