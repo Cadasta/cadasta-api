@@ -481,9 +481,7 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
  * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
  * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
  * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
-
- * @apiParamExample  Query String Example:
- *  curl -i http://localhost/custom/get_parcels_list?tenure_type=own,lease
+ *
  * @apiSuccess {Object} response A feature collection with zero to many features
  * @apiSuccess {String} response.type "Feature Collection"
  * @apiSuccess {Object[]} response.features An array of feature objects
@@ -495,8 +493,12 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
  * @apiSuccess {Numeric} response.features.properties.area area of parcel geometry
  * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
+ *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/show_parcels_list
+ *     curl -i http://localhost/projects/1/parcels_list
+ *
+ * @apiParamExample  Query string example:
+ *     curl -i http://localhost/projects/1/parcels_list?tenure_type=own,lease
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -571,6 +573,119 @@ router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, nex
 
 
     ctrlCommon.getAll('show_parcels_list', options)
+        .then(function(result){
+            res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+// Get project resources
+/**
+ * @api {get} /projects/:id/resources Project resources - get all
+ * @apiName GetProjectResources
+ * @apiGroup Projects
+ * @apiDescription Get records from the resources table with a specific project id
+ *
+ * @apiParam {Number} id Project id number
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, project_id, url, file_name, type, description, active, time_created, time_updated, created_by, updated_by
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, project_id, url, file_name, type, description, active, time_created, time_updated, created_by, updated_by
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ *
+ * @apiParamExample  Query String Example:
+ *  curl -i http://localhost/custom/get_parcels_list?tenure_type=own,lease
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.id "Feature"
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.resource_id resource id
+ * @apiSuccess {Integer} response.features.properties.parcel_id resource parcel id
+ * @apiSuccess {Integer} response.features.properties.project_id resource project id
+ * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
+ * @apiSuccess {String} response.features.properties.url resource download url
+ * @apiSuccess {String} response.features.properties.file_name resource file name on S3
+ * @apiSuccess {String} response.features.properties.description resource description
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.updated_by id of updater
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/projects/1/resources
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ * {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 45,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "own",
+                "num_relationships": 6
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 44,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "lease",
+                "num_relationships": 5
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 43,
+                "time_created": "2015-08-24T14:03:27.144363-07:00",
+                "area": null,
+                "tenure_type": "occupy",
+                "num_relationships": 2
+            }
+        }
+    ]
+}
+ *
+ * */
+router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) {
+
+    req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
+    req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    var whereClauseArr = ['project_id = $1'];
+    var whereClauseValues = [req.params.id];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: req.query.outputFormat || 'GeoJSON'
+    };
+
+    if(whereClauseArr.length > 0) {
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+
+    ctrlCommon.getAll('resource', options)
         .then(function(result){
             res.status(200).json(result[0].response);
         })
@@ -1108,6 +1223,7 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
  * @apiSuccess {Integer} response.features.properties.project_id resource project id
  * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
  * @apiSuccess {String} response.features.properties.url resource download url
+ * @apiSuccess {String} response.features.properties.file_name resource file name on S3
  * @apiSuccess {String} response.features.properties.description resource description
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
