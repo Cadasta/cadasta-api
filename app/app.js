@@ -14,7 +14,7 @@ require('./console-winston');
 
 
 // Set the valid environments
-var validEnvironments = ['production', 'demo', 'staging', 'development', 'testing'];
+var validEnvironments = ['production', 'demo', 'staging', 'staging-trigger', 'development', 'testing'];
 
 // Get the runtime environment from the node app argument; default to development
 var environment = argv.env || 'development';
