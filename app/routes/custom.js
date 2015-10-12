@@ -74,19 +74,35 @@ var Q = require('q');
  * */
 router.get('/show_parcels_list', common.parseQueryOptions, function(req, res, next) {
 
-    var args = common.getArguments(req);
-    var whereClause = '';
+    var whereClauseArr = [];
     var whereClauseValues = [];
 
-    if (args.tenure_type) {
-        whereClause = 'WHERE ' + common.createDynamicInArrayClause('tenure_type', 'text', args.tenure_type);
-        whereClauseValues = args.tenure_type.split(',');
-    }
 
     req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
     req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
 
-    ctrlCommon.getAll("show_parcels_list", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', whereClause: whereClause, whereClauseValues: whereClauseValues})
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: req.query.outputFormat || 'GeoJSON'
+    };
+
+    if(req.query.tenure_type) {
+        whereClauseValues = whereClauseValues.concat(req.query.tenure_type.split(','));
+        whereClauseArr.push(common.createDynamicInArrayClause('tenure_type', 'text', req.query.tenure_type, whereClauseArr.length));
+    }
+
+    if(req.query.project_id) {
+        whereClauseValues.push(req.query.project_id);
+        whereClauseArr.push('project_id = $' + whereClauseValues.length);
+    }
+
+    if(whereClauseArr.length > 0) {
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+
+    ctrlCommon.getAll("show_parcels_list", options)
         .then(function(result){
             res.status(200).json(result[0].response);
         })
@@ -188,7 +204,6 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
         .done();
 
 });
-
 
 /**
  * @api {get} /show_relationships Relationships - get all
