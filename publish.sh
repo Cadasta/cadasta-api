@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -rf src
+rm -rf app
 rm -rf node_modules
 tar -zxf app.tar.gz
 cd app
