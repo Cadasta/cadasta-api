@@ -50,7 +50,7 @@ The "deploy" grunt task has several required parameters:
 
 Example
 
-    > grunt deploy -env staging --deployer rgwozdz -rev `git log -n 1 --pretty=format:"%H"` --pem /path/to/cadasta-api.pem
+    > grunt deploy --env staging --deployer rgwozdz -rev `git log -n 1 --pretty=format:"%H"` --pem /path/to/cadasta-api.pem
 
 ###Extracting, installing, and firing up the API code on the server
 When the task is complete you can SSH onto the deployment server and `cd` to the location of `deploy.tar.gz` and

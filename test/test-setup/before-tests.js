@@ -2,7 +2,7 @@ var pg = require('pg');
 var Q = require('q');
 var fs = require('fs');
 
-var testData = require('../../node_modules/cadasta-data-transformer/tests/data/form.js');
+var testData = require('../../node_modules/cadasta-data-transformer/tests/data/cjf-min.json');
 
 // Get DB settings for the requested environment
 var settings = require('../../app/settings/environment-settings.js').testing;
@@ -73,14 +73,14 @@ module.exports = function(){
         .then(function(response){
             console.log("Tables truncated.");
 
-            return ingestion_engine.formProcessor.load(testData.form);
+            return ingestion_engine.formProcessor.load(testData);
 
         })
         .then(function(surveyId){
             // clean up form data
-            var results = sanitize(JSON.stringify(testData.form.results));
+            //var results = sanitize(JSON.stringify(testData.data));
 
-            return ingestion_engine.dataProcessor.load(results);
+            return ingestion_engine.dataProcessor.load(testData.data);
         })
         .then(function(response){
 

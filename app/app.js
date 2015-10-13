@@ -14,7 +14,7 @@ require('./console-winston');
 
 
 // Set the valid environments
-var validEnvironments = ['production', 'demo', 'staging', 'development', 'testing'];
+var validEnvironments = ['production', 'demo', 'staging', 'staging-trigger', 'development', 'testing'];
 
 // Get the runtime environment from the node app argument; default to development
 var environment = argv.env || 'development';
@@ -59,7 +59,7 @@ require("cadasta-provider-csv").register(ingestion_engine);
 require("cadasta-provider-geojson").register(ingestion_engine);
 
 //Register the ONA-data Provider
-require("cadasta-provider-ona").register(ingestion_engine);
+require("cadasta-provider-ona").register(ingestion_engine, settings);
 
 // Create the express instance
 var app = express();
@@ -160,6 +160,7 @@ function printStackTrace(app){
 
         }
 
+        console.error(err);
         res.status(err.status || 500).json({
             message: err.message,
             error: err
@@ -170,6 +171,7 @@ function printStackTrace(app){
 function hideStackTrace(app){
     // will print stacktrace
     app.use(function(err, req, res, next) {
+        console.error(err);
         res.status(err.status || 500).json({
             message: err.message,
             error: {}

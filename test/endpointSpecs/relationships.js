@@ -50,6 +50,31 @@ module.exports = function(app) {
 
             });
         });
+
+
+        describe('GET /relationships/:id/resources', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .get('/relationships/1/resources')
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        // Test that it returns GeoJSON
+                        testUtils.expectFeatureCollection(res.body);
+
+                        //  Get the GeoJSON features for further testing
+                        var features = res.body.features;
+
+
+                        done();
+                    });
+
+            });
+        });
+
     });
 
 };
