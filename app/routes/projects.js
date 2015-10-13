@@ -1143,7 +1143,7 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
 router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function(req, res, next) {
 
     var options =  {
-        queryModifiers: {returnGeometry: true},
+        queryModifiers: {returnGeometry: true },
         outputFormat: 'GeoJSON'
     };
 
