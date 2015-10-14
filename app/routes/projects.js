@@ -1143,9 +1143,8 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
 router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function(req, res, next) {
 
     var options =  {
-        queryModifiers: req.queryModifiers,
-        outputFormat: 'GeoJSON',
-        returnGeometry: true
+        queryModifiers: {returnGeometry: true },
+        outputFormat: 'GeoJSON'
     };
 
     // Where clause needs to be limited by project and parcel ids
@@ -1185,8 +1184,8 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
             }
 
             // Add properties to parcel's geojson
-            geoJSON.features[0].properties.parcel_history = results[1];
-            geoJSON.features[0].properties.relationships = results[2];
+            geoJSON.features[0].properties.parcel_history = results[1][0].response.features;
+            geoJSON.features[0].properties.relationships = results[2][0].response.features;
 
             res.status(200).json(geoJSON);
         })

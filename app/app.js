@@ -160,7 +160,7 @@ function printStackTrace(app){
 
         }
 
-        console.error(err);
+        console.error(err, err.stack);
         res.status(err.status || 500).json({
             message: err.message,
             error: err
