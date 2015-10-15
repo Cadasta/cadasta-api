@@ -101,7 +101,7 @@ module.exports = function(grunt) {
         shell: {
 
             compress: {
-                command : 'tar -czf ship/app.tar.gz app/* package.json'
+                command : 'tar -czf ship/app.tar.gz app/* package.json requirements.txt'
             },
 
             scp : {
