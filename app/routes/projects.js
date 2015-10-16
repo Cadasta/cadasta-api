@@ -434,6 +434,9 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
     var opts = {queryModifiers: {limit: 'LIMIT 10', project_id:req.params.id, sort_by: 'time_created', sort_dir: 'DESC'}, outputFormat: 'GeoJSON'};
     var geomopts = {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
 
+    opts.whereClause = geomopts.whereClause = 'WHERE project_id = $1';
+    opts.whereClauseValues = geomopts.whereClauseValues = [req.params.id];
+
     Q.all([
         ctrlCommon.getWithId('show_project_extents', 'id', req.params.id, geomopts),
         ctrlCommon.getAll('resource', opts),
