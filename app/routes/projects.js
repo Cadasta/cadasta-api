@@ -869,11 +869,6 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
 
     req.queryModifiers.returnGeometry = false;
 
-    var options =  {
-        queryModifiers: req.queryModifiers,
-        outputFormat: 'GeoJSON'
-    };
-
     var whereClauseArr = ['project_id = $1', 'parcel_id = $2'];
     var whereClauseValues = [req.params.id, req.params.parcel_id];
 
@@ -882,10 +877,8 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
         outputFormat: req.query.outputFormat || 'GeoJSON'
     };
 
-    if(whereClauseArr.length > 0) {
-        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
-        options.whereClauseValues = whereClauseValues;
-    }
+    options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+    options.whereClauseValues = whereClauseValues;
 
     ctrlCommon.getAll('show_parcel_history',options)
         .then(function(result){
