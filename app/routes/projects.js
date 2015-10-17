@@ -887,7 +887,7 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
         options.whereClauseValues = whereClauseValues;
     }
 
-    ctrlCommon.getWithId('show_parcel_history', 'parcel_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    ctrlCommon.getAll('show_parcel_history',options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
