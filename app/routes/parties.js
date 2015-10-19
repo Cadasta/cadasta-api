@@ -6,7 +6,7 @@ var Q = require('q');
 
 /**
  *
- * @api {get} /parcels/:id/resources Get party resources
+ * @api {get} /project/:project_id/parties/:id/resources Get party resources
  * @apiName GetPartyResources
  * @apiGroup Parties
  *
@@ -64,18 +64,15 @@ var Q = require('q');
 }
  */
 
-router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) {
+router.get('/:project_id/parties/:id/resources', common.parseQueryOptions, function(req, res, next) {
 
-    var whereClauseArr = [];
-    var whereClauseValues = [];
+    var whereClauseArr = ['party_id = $1', 'project_id = $2'];
+    var whereClauseValues = [req.params.id, req.params.project_id];
 
     var options =  {
         queryModifiers: req.queryModifiers,
         outputFormat: 'GeoJSON'
     };
-
-    whereClauseArr.push('party_id = $1');
-    whereClauseValues.push(req.params.id);
 
     options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;

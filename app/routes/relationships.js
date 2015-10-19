@@ -5,7 +5,7 @@ var ctrlCommon = require('../controllers/common.js');
 
 
 /**
- * @api {get} /relationships/:id/relationship_history Get relationship's history
+ * @api {get} /projects/relationships/:id/relationship_history Get relationship's history
  * @apiName GetRelationshipHistory
  * @apiGroup Relationships
  * @apiDescription Get relationship history records for a given relationship_id
@@ -65,11 +65,22 @@ var ctrlCommon = require('../controllers/common.js');
       ]
     }
  */
-router.get('/:id/relationship_history', common.parseQueryOptions, function(req, res, next) {
+router.get('/:project_id/relationships/:id/relationship_history', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = ['project_id = $1','relationship_id = $2'];
+    var whereClauseValues = [req.params.project_id, req.params.id];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+    options.whereClauseValues = whereClauseValues;
 
     req.queryModifiers.returnGeometry = false;
 
-    ctrlCommon.getWithId('relationship_history', 'relationship_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    ctrlCommon.getAll('show_relationship_history', options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -83,7 +94,7 @@ router.get('/:id/relationship_history', common.parseQueryOptions, function(req, 
 });
 
 /**
- * @api {get} /relationships Get all
+ * @api {get} /projects/relationships Get all
  * @apiName GetRelationships
  * @apiGroup Relationships
  *
@@ -147,9 +158,23 @@ router.get('/:id/relationship_history', common.parseQueryOptions, function(req, 
 }
  */
 
-router.get('', common.parseQueryOptions, function(req, res, next) {
+router.get('/:project_id/relationships', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getAll("relationship", {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    whereClauseArr.push('project_id = $1');
+    whereClauseValues.push(req.params.project_id);
+
+    options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
+    options.whereClauseValues = whereClauseValues;
+
+    ctrlCommon.getAll("relationship", options)
         .then(function(result){
 
             res.status(200).json(result[0].response);
@@ -163,7 +188,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 });
 
 /**
- * @api {get} /relationships/:id/resources Get relationship resources
+ * @api {get} /projects/:project_id/relationships/:id/resources Get relationship resources
  * @apiName GetRelationshipResources
  * @apiGroup Relationships
  *
@@ -221,7 +246,7 @@ router.get('', common.parseQueryOptions, function(req, res, next) {
 }
  */
 
-router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) {
+router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions, function(req, res, next) {
 
     var whereClauseArr = [];
     var whereClauseValues = [];
@@ -233,6 +258,9 @@ router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) 
 
     whereClauseArr.push('relationship_id = $1');
     whereClauseValues.push(req.params.id);
+
+    whereClauseArr.push('project_id = $2');
+    whereClauseValues.push(req.params.project_id);
 
     options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;

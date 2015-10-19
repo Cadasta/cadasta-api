@@ -103,11 +103,8 @@ app.use('/', index);
 app.use('/', custom);
 app.use('/parcels', parcels);
 app.use('/providers', ingestion_engine.router);
-app.use('/relationships', relationships);
-//app.use('/resources', resources);
-app.use('/projects', projects,resources);
+app.use('/projects', projects,resources,relationships, parties);
 app.use('/organizations', organizations);
-app.use('/parties', parties);
 app.use('/field_data', field_data);
 
 
