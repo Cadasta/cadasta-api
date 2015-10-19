@@ -70,7 +70,7 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
             // delete from S3 if DB throws error
             deleteS3(path)
                 .then(function(resp){
-                    res.status(400).json({error:err, msg:resp.message});
+                    res.status(400).json({error:err});
                 })
                 .catch(function(err){
                     res.status(400).json({error:err.message});
@@ -147,11 +147,11 @@ function deleteS3(path){
 
 }
 
-function createResource(p_id, type, type_id, path,filename) {
+function createResource(p_id, type, type_id, path, filename) {
 
     var deferred = Q.defer();
 
-    var rootURL = 'https://s3.amazonaws.com/cadasta-test-space/';
+    var rootURL = 'https://s3.amazonaws.com/' + settings.s3.bucket + '/';
     var url = rootURL + path;
     var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "',null, '" + filename + "')";
 
@@ -236,93 +236,6 @@ function getOrg(p_id) {
 //
 //});
 
-/**
- * @api {get} /resources Get all
- * @apiName GetResources
- * @apiGroup Resources
- *
- * @apiDescription Get all resources (from the resource table)
- *
- * @apiParam (Optional query string parameters) {String} [project_id] Options: Project id integer
- * @apiParam (Optional query string parameters) {String} [fields] Options: id, user_id, time_created, time_updated
- * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, user_id, time_created, time_updated
- * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
- * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
- *
- * @apiSuccess {Object} response A feature collection with zero to many features
- * @apiSuccess {String} response.type "Feature Collection"
- * @apiSuccess {Object[]} response.features An array of feature objects
- * @apiSuccess {String} response.features.type "Feature"
- * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
- * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
- * @apiSuccess {Integer} response.features.properties.id resource id
- * @apiSuccess {Integer} response.features.properties.project_id resource project id
- * @apiSuccess {String} response.features.properties.type resource type (parcel,party,relationship)
- * @apiSuccess {String} response.features.properties.url resource download url
- * @apiSuccess {String} response.features.properties.description resource description
- * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
- * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
- * @apiSuccess {Number} response.features.properties.created_by id of creator
- * @apiSuccess {Number} response.features.properties.updated_by id of updater
- *
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost/resources
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "id": 2,
-                "type": null,
-                "url": "http://www.cadasta.org/2/parcel",
-                "description": null,
-                "active": true,
-                "sys_delete": false,
-                "time_created": "2015-09-09T14:57:34.398855-07:00",
-                "time_updated": "2015-09-09T14:57:34.398855-07:00",
-                "created_by": null,
-                "updated_by": null,
-                "project_id": 1
-            }
-        }
-    ]
-}
- */
-
-// GET ALL DB RECORDS
-router.get('/:project_id/resources', common.parseQueryOptions, function(req, res, next) {
-
-    var whereClauseArr = [];
-    var whereClauseValues = [];
-
-    var options =  {
-        queryModifiers: req.queryModifiers,
-        outputFormat: 'GeoJSON'
-    };
-
-    whereClauseArr.push('project_id = $1');
-    whereClauseValues.push(parseInt(req.query.project_id));
-    options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
-    options.whereClauseValues = whereClauseValues;
-
-
-    ctrlCommon.getAll("resource", options)
-        .then(function(result){
-
-            res.status(200).json(result[0].response);
-
-        })
-        .catch(function(err){
-            next(err);
-        })
-        .done();
-
-});
 
 // Get project resources
 /**
@@ -402,22 +315,13 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
 }
  *
  * */
-router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) {
-
-    //TODO add 'type' query parameter
-    //TODO change the filename on s3 - remove spaces
-
+router.get('/:project_id/resources', common.parseQueryOptions, function(req, res, next) {
 
     req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
     req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
 
-    var options =  {
-        queryModifiers: req.queryModifiers,
-        outputFormat: 'GeoJSON'
-    };
-
     var whereClauseArr = ['project_id = $1'];
-    var whereClauseValues = [req.params.id];
+    var whereClauseValues = [req.params.project_id];
 
     var options =  {
         queryModifiers: req.queryModifiers,
@@ -428,7 +332,6 @@ router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) 
         options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
         options.whereClauseValues = whereClauseValues;
     }
-
 
     ctrlCommon.getAll('resource', options)
         .then(function(result){

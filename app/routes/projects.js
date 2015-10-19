@@ -236,7 +236,7 @@ router.post('', function(req, res, next) {
 
     pgb.queryDeferred(sql,{paramValues: [cadasta_organization_id, ckan_id, ckan_title]})
         .then(function(response){
-            res.status(200).json({cadasta_project_id: response[0]})
+            res.status(200).json({cadasta_project_id: response[0].cd_create_project})
         })
         .catch(function(err){
             next(err);
@@ -433,6 +433,9 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
     var opts = {queryModifiers: {limit: 'LIMIT 10', project_id:req.params.id, sort_by: 'time_created', sort_dir: 'DESC'}, outputFormat: 'GeoJSON'};
     var geomopts = {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
+
+    opts.whereClause = geomopts.whereClause = 'WHERE project_id = $1';
+    opts.whereClauseValues = geomopts.whereClauseValues = [req.params.id];
 
     Q.all([
         ctrlCommon.getWithId('show_project_extents', 'id', req.params.id, geomopts),
@@ -866,11 +869,6 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
 
     req.queryModifiers.returnGeometry = false;
 
-    var options =  {
-        queryModifiers: req.queryModifiers,
-        outputFormat: 'GeoJSON'
-    };
-
     var whereClauseArr = ['project_id = $1', 'parcel_id = $2'];
     var whereClauseValues = [req.params.id, req.params.parcel_id];
 
@@ -879,12 +877,10 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
         outputFormat: req.query.outputFormat || 'GeoJSON'
     };
 
-    if(whereClauseArr.length > 0) {
-        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
-        options.whereClauseValues = whereClauseValues;
-    }
+    options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+    options.whereClauseValues = whereClauseValues;
 
-    ctrlCommon.getWithId('show_parcel_history', 'parcel_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    ctrlCommon.getAll('show_parcel_history',options)
         .then(function(result){
 
             res.status(200).json(result[0].response);

@@ -216,7 +216,7 @@ router.post('', function(req, res, next) {
 
     pgb.queryDeferred(sql,{paramValues: [ckan_id, ckan_title, ckan_description]})
         .then(function(response){
-            res.status(200).json({cadasta_organization_id: response[0]})
+            res.status(200).json({cadasta_organization_id: response[0].cd_create_organization})
         })
         .catch(function(err){
             next(err);
