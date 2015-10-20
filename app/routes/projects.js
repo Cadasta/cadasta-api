@@ -208,7 +208,8 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  *
  * @apiParam {Integer} cadasta_organization_id The cadasta id of the project's "parent"
  * @apiParam {String} ckan_id The id of the project in the CKAN application database
- * @apiParam {String} ckan_title The title of the project in the CKAN application database
+ * @apiParam {String} ckan_name The name of the project in the CKAN application database
+ * @apiParam {String} title The title of the project in the CKAN application database
  *
  * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
 
