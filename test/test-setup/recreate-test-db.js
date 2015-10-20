@@ -27,8 +27,8 @@ function nukeDB() {
     var db = settings.database;
     var kill = 'psql -d ' + db + ' -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = \'' + db
         + '\' AND pid <> pg_backend_pid()";';
-    var drop = 'dropdb ' + db;
-    var create = 'createdb ' + db + ' -O ' + settings.user;
+    var drop = 'psql -c "DROP DATABASE ' + db + '";';
+    var create = 'psql -c "CREATE DATABASE ' + db + ' OWNER ' + settings.user + '";';
 
     exec(kill, function(error, stdout, stderr) {
 

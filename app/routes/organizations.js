@@ -186,8 +186,8 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  *
  *
  * @apiParam {String} ckan_id The id of the organization in the CKAN application database
- * @apiParam {String} ckan_title The title of the organization in the CKAN application database
- * @apiParam {String} ckan_description The description of the organization in the CKAN application database
+ * @apiParam {String} title The title of the organization in the CKAN application database
+ * @apiParam {String} description The description of the organization in the CKAN application database
 
  *
  * @apiSuccess {Object} cadasta_organization_id The cadasta database id of the created organization
@@ -209,9 +209,6 @@ router.post('', function(req, res, next) {
     }
     var sql = "SELECT * FROM cd_create_organization($1,$2,$3,$4)";
 
-    res.status(200).json({success: true});
-
-    /*
     pgb.queryDeferred(sql,{paramValues: [req.body.ckan_id, req.body.ckan_name, req.body.ckan_title, req.body.ckan_description]})
         .then(function(response){
             res.status(200).json({cadasta_organization_id: response[0].cd_create_organization})
@@ -220,51 +217,125 @@ router.post('', function(req, res, next) {
             next(err);
         })
         .done();
-        */
+
 
 });
 
+
+/**
+ * @api {patch} /organizations/:id Update one
+ * @apiName UpdateOrganization
+ * @apiGroup Organizations
+ * @apiDescription Update an organization
+ *
+ * @apiParam {Number} id organization's unique ID.
+ *
+ * @apiParam (POST parameters) {String} ckan_name "name" attribute from the CKAN database
+ * @apiParam (POST parameters) {String} title "title" attribute from the CKAN database
+ * @apiParam (POST parameters) {String} description "description" attribute from the CKAN database
+ *
+ * @apiSuccess {Object} response
+ * @apiSuccess {String} response.success true
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "success": true
+        }
+ */
 router.patch('/:id', function(req, res, next) {
 
-    if(req.body.ckan_id === undefined || req.body.ckan_name === undefined || req.body.ckan_title === undefined || req.body.ckan_description === undefined) {
+    if(req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "UPDATE organization SET ckan_name = '$1', ckan_title='$2', description='$3' where ckan_id='$4'";
+    var sql = "UPDATE organization SET ckan_name = $1, title=$2, description=$3, time_updated=current_timestamp where id=$4";
 
-    // Temp response until db update
-    res.status(200).json({success: true});
+    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_name, req.body.title, req.body.description,req.params.id]})
+        .then(function(response){
+
+            res.status(200).json({success: true});
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
 
 
 });
 
+
+/**
+ * @api {patch} /organizations/:id/archive Archive one
+ * @apiName ArchiveOrganization
+ * @apiGroup Organizations
+ * @apiDescription Archive an organization
+ *
+ * @apiParam {Number} id organization's unique ID.
+ *
+
+ * @apiSuccess {Object} response
+ * @apiSuccess {String} response.success true
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "success": true
+        }
+ */
 router.patch('/:id/archive', function(req, res, next) {
 
-    if(req.body.ckan_id === undefined) {
-        return next(new Error('Missing POST parameters.'))
-    }
+    var sql = "UPDATE organization SET active = false, time_updated=current_timestamp where id=$1";
 
-    var sql = "UPDATE organization SET active = false";
+    pgb.queryDeferred(sql,{paramValues: [req.params.id]})
+        .then(function(response){
 
-    // Temp response until db update
-    res.status(200).json({success: true});
+            res.status(200).json({success: true});
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
 
 
 
 });
 
+/**
+ * @api {patch} /organizations/:id/sys_delete Flag one for system delete
+ * @apiName FlagDeleteOrganization
+ * @apiGroup Organizations
+ * @apiDescription Flag an organization for deletion
+ *
+ * @apiParam {Number} id organization's unique ID.
+ *
+
+ * @apiSuccess {Object} response
+ * @apiSuccess {String} response.success true
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "success": true
+        }
+ */
 router.patch('/:id/sys_delete', function(req, res, next) {
 
-    if(req.body.ckan_id === undefined) {
-        return next(new Error('Missing POST parameters.'))
-    }
+    var sql = "UPDATE organization SET active = false, sys_delete = true, time_updated=current_timestamp where id=$1";
 
-    var sql = "UPDATE organization SET sys_delete = false";
+    pgb.queryDeferred(sql,{paramValues: [req.params.id]})
+        .then(function(response){
 
-    // Temp response until db update
-    res.status(200).json({success: true});
-
-
+            res.status(200).json({success: true});
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
 
 });
 

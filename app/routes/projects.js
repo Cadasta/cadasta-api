@@ -224,17 +224,14 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  */
 router.post('', function(req, res, next) {
 
-    var cadasta_organization_id = req.body.cadasta_organization_id;
-    var ckan_id = req.body.ckan_id;
-    var ckan_title = req.body.ckan_title;
-
-    if(cadasta_organization_id === undefined || ckan_id === undefined || ckan_title === undefined) {
+    if(req.body.cadasta_organization_id === undefined || req.body.ckan_id === undefined
+        || req.body.ckan_name === undefined || req.body.title === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "SELECT * FROM cd_create_project($1,$2,$3)";
+    var sql = "SELECT * FROM cd_create_project($1,$2,$3,$4)";
 
-    pgb.queryDeferred(sql,{paramValues: [cadasta_organization_id, ckan_id, ckan_title]})
+    pgb.queryDeferred(sql,{paramValues: [req.body.cadasta_organization_id, req.body.ckan_id, req.body.ckan_name, req.body.title]})
         .then(function(response){
             res.status(200).json({cadasta_project_id: response[0].cd_create_project})
         })
@@ -242,6 +239,124 @@ router.post('', function(req, res, next) {
             next(err);
         })
         .done();
+
+});
+
+
+/**
+ * @api {patch} /projects/:id Update one
+ * @apiName UpdateProject
+ * @apiGroup Projects
+ * @apiDescription Update an project
+ *
+ * @apiParam {Number} id project's unique ID.
+ *
+ * @apiParam (POST parameters) {String} ckan_name "name" attribute from the CKAN database
+ * @apiParam (POST parameters) {String} title "title" attribute from the CKAN database
+ * @apiParam (POST parameters) {String} description "description" attribute from the CKAN database
+ *
+ * @apiSuccess {Object} response
+ * @apiSuccess {String} response.success true
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "success": true
+        }
+ */
+router.patch('/:id', function(req, res, next) {
+
+    if(req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "UPDATE project SET ckan_name = $1, title=$2, time_updated=current_timestamp where id=$3";
+
+    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_name, req.body.ckan_title,req.params.id]})
+        .then(function(response){
+
+            res.status(200).json({success: true});
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+
+});
+
+/**
+ * @api {patch} /projects/:id/archive Archive one
+ * @apiName ArchiveProject
+ * @apiGroup Projects
+ * @apiDescription Archive a project
+ *
+ * @apiParam {Number} id project's unique ID.
+ *
+
+ * @apiSuccess {Object} response
+ * @apiSuccess {String} response.success true
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "success": true
+        }
+ */
+router.patch('/:id/archive', function(req, res, next) {
+
+    var sql = "UPDATE project SET active = false, time_updated=current_timestamp where id=$1";
+
+    pgb.queryDeferred(sql,{paramValues: [req.params.id]})
+        .then(function(response){
+
+            res.status(200).json({success: true});
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+
+
+});
+
+/**
+ * @api {patch} /projects/:id/sys_delete Flag one for system delete
+ * @apiName FlagDeleteProject
+ * @apiGroup Projects
+ * @apiDescription Flag a project for deletion
+ *
+ * @apiParam {Number} id project's unique ID.
+ *
+
+ * @apiSuccess {Object} response
+ * @apiSuccess {String} response.success true
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "success": true
+        }
+ */
+router.patch('/:id/sys_delete', function(req, res, next) {
+
+    var sql = "UPDATE project SET active = false, sys_delete = true, time_updated=current_timestamp where id=$1";
+
+    pgb.queryDeferred(sql,{paramValues: [req.params.id]})
+        .then(function(response){
+
+            res.status(200).json({success: true});
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+
 
 });
 
