@@ -204,17 +204,15 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  */
 router.post('', function(req, res, next) {
 
-    var ckan_id = req.body.ckan_id;
-    var ckan_title = req.body.ckan_title;
-    var ckan_description = req.body.ckan_description;
-
-    if(ckan_id === undefined || ckan_title === undefined || ckan_description === undefined) {
+    if(req.body.ckan_id === undefined || req.body.ckan_name === undefined || req.body.ckan_title === undefined || req.body.ckan_description === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
+    var sql = "SELECT * FROM cd_create_organization($1,$2,$3,$4)";
 
-    var sql = "SELECT * FROM cd_create_organization($1,$2,$3)";
+    res.status(200).json({success: true});
 
-    pgb.queryDeferred(sql,{paramValues: [ckan_id, ckan_title, ckan_description]})
+    /*
+    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_id, req.body.ckan_name, req.body.ckan_title, req.body.ckan_description]})
         .then(function(response){
             res.status(200).json({cadasta_organization_id: response[0].cd_create_organization})
         })
@@ -222,6 +220,52 @@ router.post('', function(req, res, next) {
             next(err);
         })
         .done();
+        */
 
 });
+
+router.patch('/:id', function(req, res, next) {
+
+    if(req.body.ckan_id === undefined || req.body.ckan_name === undefined || req.body.ckan_title === undefined || req.body.ckan_description === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "UPDATE organization SET ckan_name = '$1', ckan_title='$2', description='$3' where ckan_id='$4'";
+
+    // Temp response until db update
+    res.status(200).json({success: true});
+
+
+});
+
+router.patch('/:id/archive', function(req, res, next) {
+
+    if(req.body.ckan_id === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "UPDATE organization SET active = false";
+
+    // Temp response until db update
+    res.status(200).json({success: true});
+
+
+
+});
+
+router.patch('/:id/sys_delete', function(req, res, next) {
+
+    if(req.body.ckan_id === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "UPDATE organization SET sys_delete = false";
+
+    // Temp response until db update
+    res.status(200).json({success: true});
+
+
+
+});
+
 module.exports = router;
