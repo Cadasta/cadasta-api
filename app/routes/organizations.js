@@ -186,6 +186,7 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  *
  *
  * @apiParam {String} ckan_id The id of the organization in the CKAN application database
+ * @apiParam {String} ckan_name The title of the organization in the CKAN application database
  * @apiParam {String} title The title of the organization in the CKAN application database
  * @apiParam {String} description The description of the organization in the CKAN application database
 
@@ -194,7 +195,7 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d '{"ckan_id":"my-org","ckan_title":"My Org", "ckan_description": "My description"}' http://localhost/organizations
+ *     curl -H "Content-Type: application/json" -X POST -d '{"ckan_id":"my-org","ckan-title":"my-org","title":"My Org", "description": "My description"}' http://localhost/organizations
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
