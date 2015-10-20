@@ -63,18 +63,24 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
         }).then(function(result){
 
             //console.log('Successfully uploaded resource id:' + result[0].cd_create_resource + ' to DB.');
-            res.status(200).json({message: "Success."});
+            res.status(200).json({message: "Success"});
 
         }).catch(function(err){
 
-            // delete from S3 if DB throws error
-            deleteS3(path)
-                .then(function(resp){
-                    res.status(400).json({error:err});
-                })
-                .catch(function(err){
-                    res.status(400).json({error:err.message});
-                })
+            // do not delete if already exists in DB
+            if (err.constraint == 'resource_url_key'){
+                res.status(400).json({error:err.detail, type:"duplicate"});
+            } else {
+                // delete from S3 if DB throws error
+                deleteS3(path)
+                    .then(function(resp){
+                        res.status(400).json({error:err});
+                    })
+                    .catch(function(err){
+                        res.status(400).json({error:err.message});
+                    })
+            }
+
 
         }).done();
 
@@ -160,7 +166,7 @@ function createResource(p_id, type, type_id, path, filename) {
             deferred.resolve(res);
         })
         .catch(function(err){
-            deferred.reject(err.message);
+            deferred.reject(err);
         });
 
     return deferred.promise;
