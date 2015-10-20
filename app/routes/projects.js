@@ -225,13 +225,13 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 router.post('', function(req, res, next) {
 
     if(req.body.cadasta_organization_id === undefined || req.body.ckan_id === undefined
-        || req.body.ckan_name === undefined || req.body.title === undefined) {
+        || req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "SELECT * FROM cd_create_project($1,$2,$3,$4)";
+    var sql = "SELECT * FROM cd_create_project($1,$2,$3,$4,$5)";
 
-    pgb.queryDeferred(sql,{paramValues: [req.body.cadasta_organization_id, req.body.ckan_id, req.body.ckan_name, req.body.title]})
+    pgb.queryDeferred(sql,{paramValues: [req.body.cadasta_organization_id, req.body.ckan_id, req.body.ckan_name, req.body.title, req.body.description]})
         .then(function(response){
             res.status(200).json({cadasta_project_id: response[0].cd_create_project})
         })
@@ -271,9 +271,9 @@ router.patch('/:id', function(req, res, next) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "UPDATE project SET ckan_name = $1, title=$2, time_updated=current_timestamp where id=$3";
+    var sql = "UPDATE project SET ckan_name = $1, title=$2, description=$3, time_updated=current_timestamp where id=$4";
 
-    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_name, req.body.ckan_title,req.params.id]})
+    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_name, req.body.title, req.body.description,req.params.id]})
         .then(function(response){
 
             res.status(200).json({success: true});
