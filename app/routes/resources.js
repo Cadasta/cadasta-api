@@ -41,7 +41,7 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
     var project_id = parseInt(req.params.project_id);
     var resource_type = req.params.type;
     var resource_type_id = parseInt(req.params.type_id);
-    var file_name = req.file.originalname.replace(/%20/g, "");  // remove white space
+    var file_name = req.file.originalname.replace(/ /g, "");  // remove white space
     var file = req.file.buffer;
     var path;
 
