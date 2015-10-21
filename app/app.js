@@ -180,7 +180,7 @@ function addLogging(app,settings){
 
     if(settings.useRollbar) {
         app.use(rollbar.errorHandler(settings.rollbarKey));
-        winston.add(winston.transports.Rollbar, { rollbarAccessToken: settings.rollbarKey, level:'debug' });
+        winston.add(winston.transports.Rollbar, { rollbarAccessToken: settings.rollbarKey, level:'warn' });
         rollbar.handleUncaughtExceptions(settings.rollbarKey, { exitOnUncaughtException: true });
     }
 }
