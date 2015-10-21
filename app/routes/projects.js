@@ -210,12 +210,13 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  * @apiParam {String} ckan_id The id of the project in the CKAN application database
  * @apiParam {String} ckan_name The name of the project in the CKAN application database
  * @apiParam {String} title The title of the project in the CKAN application database
+ * @apiParam {String} description The description of the project in the CKAN application database
  *
  * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id", "ckan_id":"my-org","ckan_title":"My Org"}' http://localhost/projects
+ *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id", "ckan_id":"my-org", "ckan_name":"my-org", "title":"My Org", "description": "some description text"}' http://localhost/projects
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
