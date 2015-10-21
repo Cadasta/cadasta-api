@@ -227,6 +227,7 @@ common.objectArraySQL = function(table, mods, where){
     return sql;
 };
 
+/*
 common.query = function (queryStr, cb) {
     pg.connect(conString, function (err, client, done) {
         if (err) {
@@ -247,6 +248,6 @@ common.query = function (queryStr, cb) {
 
     });
 };
-
+*/
 
 module.exports = common;

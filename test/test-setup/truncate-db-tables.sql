@@ -12,10 +12,8 @@
 
       BEGIN
 
-          DELETE FROM project WHERE id > 1 ;
-            	PERFORM setval('project_id_seq', (SELECT MAX(id) FROM project));
-          	DELETE FROM organization WHERE id > 1 ;
-          	PERFORM setval('organization_id_seq', (SELECT MAX(id) FROM organization));
+          TRUNCATE project RESTART IDENTITY CASCADE;
+          TRUNCATE organization RESTART IDENTITY CASCADE;
 
           	TRUNCATE option RESTART IDENTITY CASCADE;
           	TRUNCATE parcel RESTART IDENTITY CASCADE;
@@ -43,7 +41,16 @@
           	TRUNCATE "right" RESTART IDENTITY CASCADE;
           	TRUNCATE right_relationship  RESTART IDENTITY CASCADE;
           	TRUNCATE section RESTART IDENTITY CASCADE;
-          	TRUNCATE field_data RESTART IDENTITY CASCADE;
+
+			TRUNCATE field_data RESTART IDENTITY CASCADE;
+
+			SELECT * FROM cd_create_organization('demo-organization','demo-organization', 'Demo Organization', null);
+
+            SELECT * FROM cd_create_project((Select id from organization where ckan_name = 'demo-organization'),'demo-project ' ,'demo-project ','Friday Night', null);
+            SELECT * FROM cd_create_project((Select id from organization where ckan_id = 'demo-organization'),'nick-project','nick-project ','Nick Project', null);
+
+            SELECT * FROM cd_create_organization('habitat','habitat','Habitat for Humanity',null);
+            SELECT * FROM cd_create_project((Select id from organization where ckan_id = 'habitat'),'la-paz', 'la-paz', 'La Paz', 'test');
 
 		RETURN 'Success';
       EXCEPTION WHEN others THEN
