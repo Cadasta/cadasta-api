@@ -1617,7 +1617,7 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
  * @apiParam {String} [geojson] GeoJSON of the parcel
  * @apiParam {String="Commercial, Land Use"} [land_use] parcel land use type
  * @apiParam {String} [gov_pin] Government pin
- * @apiParam {String} [description] Optional Parcel description
+ * @apiParam {String} description Parcel description
  *
  * @apiSuccess {Object} cd_create_parcel The cadasta database id of the created parcel
 

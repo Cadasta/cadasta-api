@@ -1,6 +1,8 @@
 var pg = require('pg');
 var Q = require('q');
 var fs = require('fs');
+var exec = require('child_process').exec;
+var path = require('path');
 
 var testData = require('../../node_modules/cadasta-data-transformer/tests/data/cjf-min.json');
 
@@ -20,6 +22,27 @@ var conString = "postgres://" +
     dbSettings.port + "/" +
     dbSettings.database;
 
+
+function runDeferredPsql(command){
+
+    var deferred = Q.defer();
+
+    exec(command, function (error, stdout, stderr) {
+        if (stderr) {
+            console.error(stderr);
+            return deferred.reject(stderr);
+        }
+
+        else {
+            console.log('success.');
+            return deferred.resolve(true)
+        }
+
+    });
+
+    return deferred.promise;
+
+}
 
 
 /**
@@ -70,6 +93,13 @@ module.exports = function(){
     var deferred = Q.defer();
 
     query("SELECT truncate_db_tables();")
+        .then(function(){
+
+            return runDeferredPsql('psql -U ' + dbSettings.user + ' -d ' + dbSettings.database + ' -q -f ' + path.join(__dirname,'../../node_modules/cadasta-db/sql/6_test-data.sql' ));
+
+        })
+
+        //
         .then(function(response){
             console.log("Tables truncated.");
 
