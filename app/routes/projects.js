@@ -1738,9 +1738,9 @@ router.patch('/:id/parcels/:parcel_id', function(req, res, next) {
 
     var geojson = ctrlCommon.sanitize(req.body.geojson);
 
-    var sql = 'SELECT * FROM cd_update_parcel ($1, $2, $3, $4, $5, $6)';
+    var sql = 'SELECT * FROM cd_update_parcel ($1, $2, $3, $4, $5, $6, $7)';
 
-    pgb.queryDeferred(sql,{paramValues: [req.params.parcel_id, geojson, req.body.spatial_source, req.body.land_use, req.body.gov_pin, req.body.description]})
+    pgb.queryDeferred(sql,{paramValues: [req.params.id, req.params.parcel_id, geojson, req.body.spatial_source, req.body.land_use, req.body.gov_pin, req.body.description]})
         .then(function(response){
             res.status(200).json({status:"OKAY", cadata_parcel_history_id: response[0].cd_update_parcel})
         })
