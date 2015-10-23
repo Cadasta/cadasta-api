@@ -330,6 +330,26 @@ module.exports = function(app) {
 
         });
 
+        describe('PATCH /projects/:id/parcels/:id suite', function () {
+
+            it('should have status 400 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .patch('/projects/1/parcels/1')
+                    .send({"geojson": {"type": "LineString", "coordinates": [[91.91986083984375, 43.04881979669318], [91.94183349609375, 42.974511174899156]]}, "spatial_source":"digi", "description": "new descriotion"})
+                    .end(function (res) {
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(400);
+
+                        expect(res.body).to.have.property('status',"ERROR");
+
+                        done();
+                    });
+
+            });
+
+        });
+
 
     });
 
