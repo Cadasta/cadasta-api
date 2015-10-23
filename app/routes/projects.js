@@ -1606,9 +1606,9 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
 
 // CREATE A PARCEL RECORD
 /**
- * @api {post} /parcels Create one
- * @apiName PostParcel
- * @apiGroup Parcels
+ * @api {post} /projects/:id/parcels Project parcels - Create one
+ * @apiName CreateParcel
+ * @apiGroup Projects
  * @apiDescription Create a parcel
  *
  *
@@ -1624,7 +1624,6 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
  *
  * @apiExample {curl} Example usage:
  *     curl -H "Content-Type: application/json" -X POST -d '{"spatial_source": "digitized","geojson":{"type": "LineString","coordinates": [[91.91986083984375,43.04881979669318],[91.94183349609375,42.974511174899156]]},"land_use": "Commercial","gov_pin": "433421ss","description": "This is my test parcel"}' http://localhost/projects/1/parcels
- *
  *
  *
  * @api {get} /user/:id
@@ -1676,6 +1675,5 @@ router.post('/:id/parcels', function(req, res, next) {
         .done();
 
 });
-
 
 module.exports = router;
