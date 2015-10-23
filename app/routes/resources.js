@@ -74,7 +74,7 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
                 // delete from S3 if DB throws error
                 deleteS3(path)
                     .then(function(resp){
-                        res.status(400).json({error:err});
+                        res.status(400).json({error:err.message});
                     })
                     .catch(function(err){
                         res.status(400).json({error:err.message});
