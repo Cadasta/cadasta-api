@@ -1658,7 +1658,7 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
  */
 router.post('/:id/parcels', function(req, res, next) {
 
-    if(req.params.id === undefined || req.body.spatial_source === undefined) {
+    if(req.params.id === undefined || req.body.spatial_source === undefined || req.body.description) {
         return next(new Error('Missing required POST parameters.'))
     }
 
