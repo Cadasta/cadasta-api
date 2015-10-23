@@ -1311,7 +1311,7 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
 /**
  * @api {get} /parcels/:id/resources Get project parcel resources
  * @apiName GetProjectParcelResources
- * @apiGroup Project
+ * @apiGroup Projects
  *
  * @apiDescription Get a project parcels resources (from the resource_parcel table)
  *
@@ -1604,30 +1604,29 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
 });
 
 
-// CREATE A PARCEL RECORD
 /**
- * @api {post} /parcels Create one
- * @apiName PostParcel
- * @apiGroup Parcels
- * @apiDescription Create a parcel
+ * @api {post} /projects/:id/parcels Project Parcel - Create Parcel
+ * @apiName CreateParcel
+ * @apiGroup Projects
+ *
+ * @apiDescription Create a Project Parcel
  *
  *
- * @apiParam {Integer} project_id project in the Cadasta database
+ * @apiParam {Integer} project_id Cadasta project id
  * @apiParam {String="digitized", "recreational_gps", "survey_grade_gps", "survey_sketch"} spatial_source parcel spatial source
  * @apiParam {String} [geojson] GeoJSON of the parcel
  * @apiParam {String="Commercial, Land Use"} [land_use] parcel land use type
  * @apiParam {String} [gov_pin] Government pin
  * @apiParam {String} description Parcel description
  *
- * @apiSuccess {Object} cd_create_parcel The cadasta database id of the created parcel
+ * @apiSuccess {Object} cadasta_parcel_id The cadasta database id of the created parcel
 
  *
  * @apiExample {curl} Example usage:
  *     curl -H "Content-Type: application/json" -X POST -d '{"spatial_source": "digitized","geojson":{"type": "LineString","coordinates": [[91.91986083984375,43.04881979669318],[91.94183349609375,42.974511174899156]]},"land_use": "Commercial","gov_pin": "433421ss","description": "This is my test parcel"}' http://localhost/projects/1/parcels
  *
  *
- *
- * @api {get} /user/:id
+ * @api {post} /projects/:id/parcels
  * @apiParamExample {application/json} Request-Example:
  * {
     "spatial_source": "digitized",
@@ -1653,6 +1652,7 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
+ *          "status":"OKAY",
             "cadasta_parcel_id": 1
         }
  */
@@ -1668,79 +1668,84 @@ router.post('/:id/parcels', function(req, res, next) {
 
     pgb.queryDeferred(sql,{paramValues: [req.params.id, req.body.spatial_source, geojson, req.body.land_use, req.body.gov_pin, req.body.description]})
         .then(function(response){
-            res.status(200).json({cadasta_parcel_id: response[0].cd_create_parcel})
+            res.status(200).json({status:"OKAY", cadasta_parcel_id: response[0].cd_create_parcel})
         })
         .catch(function(err){
-            next(err);
+            res.status(200).json({status:"ERROR", message:err.message})
         })
         .done();
 
 });
 
-// UPDATE A PARCEL RECORD
 /**
- * @api {post} /parcels Create one
- * @apiName PostParcel
- * @apiGroup Parcels
- * @apiDescription Create a parcel
+ * @api {post} /projects/:id/parcels/:parcel_id Project Parcel - Update One
+ * @apiName UpdateParcel
+ * @apiGroup Projects
+ * @apiDescription Update a Parcel
  *
  *
- * @apiParam {Integer} project_id project in the Cadasta database
- * @apiParam {String="digitized", "recreational_gps", "survey_grade_gps", "survey_sketch"} spatial_source parcel spatial source
- * @apiParam {String} [geojson] GeoJSON of the parcel
- * @apiParam {String="Commercial, Land Use"} [land_use] parcel land use type
- * @apiParam {String} [gov_pin] Government pin
- * @apiParam {String} description Parcel description
+ * @apiParam {Integer} id Cadasta project id
+ * @apiParam {Integer} parcel_id Cadasta parcel id
  *
- * @apiSuccess {Object} cd_create_parcel The cadasta database id of the created parcel
+ * @apiParam (POST parameters) {String} [geojson] GeoJSON geometry object
+ * @apiParam (POST parameters) {String="digitized", "recreational_gps", "survey_grade_gps", "survey_sketch"} [spatial_source] parcel spatial source
+ * @apiParam (POST parameters) {String="Commercial, Land Use"} [land_use] parcel land use type
+ * @apiParam (POST parameters) {String} [gov_pin] Government pin
+ * @apiParam (POST parameters) {String} [description] Parcel description
+ *
+ * @apiSuccess {Object} cadasta_parcel_history_id The cadasta database id of the created parcel
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d '{"spatial_source": "digitized","geojson":{"type": "LineString","coordinates": [[91.91986083984375,43.04881979669318],[91.94183349609375,42.974511174899156]]},"land_use": "Commercial","gov_pin": "433421ss","description": "This is my test parcel"}' http://localhost/projects/1/parcels
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"spatial_source":"digitized"} http://localhost/projects/1/parcels/4
  *
+ * @api {patch} /projects/:id/parcels/:parcel_id
  *
- *
- * @api {get} /user/:id
  * @apiParamExample {application/json} Request-Example:
- * {
-    "spatial_source": "digitized",
-    "geojson": {
-        "type": "LineString",
+ *
+ *{"spatial_source": "digitized",
+"geojson":{
+        "type": "Linestring",
         "coordinates": [
-            [
-                91.91986083984375,
-                43.04881979669318
-            ],
-            [
-                91.94183349609375,
-                42.974511174899156
-            ]
+          [
+            91.91986083984375,
+            43.04881979669318
+          ],
+          [
+            91.94183349609375,
+            42.974511174899156
+          ]
         ]
-    },
-    "land_use": "Commercial",
-    "gov_pin": "433421ss",
-    "description": "This is my test parcel"
-}
- *
- *
+      },
+"land_use": "Residential",
+"gov_pin": null,
+"description": null
+}*
+
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
-            "cadasta_parcel_id": 1
+ *          "status":"OKAY",
+            "cadasta_parcel_history_id": 1
         }
  */
 router.patch('/:id/parcels/:parcel_id', function(req, res, next) {
 
-    if(req.params.id === undefined || req.id.parcel_id === undefined, req.body.geojson) {
+    if(req.params.id === undefined && (req.body.geojson === undefined || req.body.spatial_source === undefined ||
+        req.body.land_use === undefined || req.body.gov_pin === undefined || req.body.description === undefined)) {
         return next(new Error('Missing required POST parameters.'))
     }
 
-    pgb.queryDeferred(sql,{paramValues: [geojson]})
+    var geojson = ctrlCommon.sanitize(req.body.geojson);
+
+    var sql = 'SELECT * FROM cd_update_parcel ($1, $2, $3, $4, $5, $6)';
+
+    pgb.queryDeferred(sql,{paramValues: [req.params.parcel_id, geojson, req.body.spatial_source, req.body.land_use, req.body.gov_pin, req.body.description]})
         .then(function(response){
-            res.status(200).json({cadasta_parcel_id: response[0].cd_create_parcel})
+            res.status(200).json({status:"OKAY", cadata_parcel_history_id: response[0].cd_update_parcel})
         })
         .catch(function(err){
-            next(err);
+            res.status(400).json({status:"ERROR", message:err.message})
         })
         .done();
 
