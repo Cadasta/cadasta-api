@@ -107,7 +107,7 @@ module.exports = function(app) {
 
                         expect(featureProperties).to.have.property('id', 1);
                         expect(featureProperties).to.have.property('spatial_source', 1);
-                        expect(featureProperties).to.have.property('user_id', "11");
+                        expect(featureProperties).to.have.property('user_id', null);
                         expect(featureProperties).to.have.property('area');
                         expect(featureProperties).to.have.property('land_use');
                         expect(featureProperties).to.have.property('gov_pin');
@@ -286,6 +286,29 @@ module.exports = function(app) {
 
             });
         });
+
+        describe('POST /projects/:id/parcels suite', function () {
+
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .post('/projects/3/parcels')
+                    .send({spatial_source: 'digitized', geojson:{"type": "LineString","coordinates": [[91.91986083984375,43.04881979669318],[91.94183349609375,42.974511174899156]]}
+                        , land_use:"Commercial", gov_pin:'433421ss', description: 'Test parcel'})
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        expect(res.body).to.have.property('cadasta_parcel_id');
+
+                        done();
+                    });
+
+            });
+
+        });
+
     });
 
 };

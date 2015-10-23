@@ -210,13 +210,12 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  * @apiParam {String} ckan_id The id of the project in the CKAN application database
  * @apiParam {String} ckan_name The name of the project in the CKAN application database
  * @apiParam {String} title The title of the project in the CKAN application database
- * @apiParam {String} description The description of the project in the CKAN application database
  *
  * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id", "ckan_id":"my-org", "ckan_name":"my-org", "title":"My Org", "description": "some description text"}' http://localhost/projects
+ *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id", "ckan_id":"my-org","ckan_title":"My Org"}' http://localhost/projects
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -1596,6 +1595,80 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
     ctrlCommon.getAll('resource', options)
         .then(function(result){
             res.status(200).json(result[0].response);
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+
+// CREATE A PARCEL RECORD
+/**
+ * @api {post} /parcels Create one
+ * @apiName PostParcel
+ * @apiGroup Parcels
+ * @apiDescription Create a parcel
+ *
+ *
+ * @apiParam {Integer} project_id project in the Cadasta database
+ * @apiParam {String="digitized", "recreational_gps", "survey_grade_gps", "survey_sketch"} spatial_source parcel spatial source
+ * @apiParam {String} [geojson] GeoJSON of the parcel
+ * @apiParam {String="Commercial, Land Use"} [land_use] parcel land use type
+ * @apiParam {String} [gov_pin] Government pin
+ * @apiParam {String} description Parcel description
+ *
+ * @apiSuccess {Object} cd_create_parcel The cadasta database id of the created parcel
+
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X POST -d '{"spatial_source": "digitized","geojson":{"type": "LineString","coordinates": [[91.91986083984375,43.04881979669318],[91.94183349609375,42.974511174899156]]},"land_use": "Commercial","gov_pin": "433421ss","description": "This is my test parcel"}' http://localhost/projects/1/parcels
+ *
+ *
+ *
+ * @api {get} /user/:id
+ * @apiParamExample {application/json} Request-Example:
+ * {
+    "spatial_source": "digitized",
+    "geojson": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                91.91986083984375,
+                43.04881979669318
+            ],
+            [
+                91.94183349609375,
+                42.974511174899156
+            ]
+        ]
+    },
+    "land_use": "Commercial",
+    "gov_pin": "433421ss",
+    "description": "This is my test parcel"
+}
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            "cadasta_parcel_id": 1
+        }
+ */
+router.post('/:id/parcels', function(req, res, next) {
+
+    if(req.params.id === undefined || req.body.spatial_source === undefined) {
+        return next(new Error('Missing required POST parameters.'))
+    }
+
+    var geojson = ctrlCommon.sanitize(req.body.geojson);
+
+    var sql = "SELECT * FROM cd_create_parcel($1,$2,$3,$4,$5,$6)";
+
+    pgb.queryDeferred(sql,{paramValues: [req.params.id, req.body.spatial_source, geojson, req.body.land_use, req.body.gov_pin, req.body.description]})
+        .then(function(response){
+            res.status(200).json({cadasta_parcel_id: response[0].cd_create_parcel})
         })
         .catch(function(err){
             next(err);
