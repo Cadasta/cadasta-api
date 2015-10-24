@@ -13,7 +13,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/relationships/1/relationship_history')
+                    .get('projects/1/relationships/1/relationship_history')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
