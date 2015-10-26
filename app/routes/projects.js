@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var clone = require('clone');
 var common = require('../common.js');
 var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
@@ -547,8 +548,15 @@ router.patch('/:id/sys_delete', function(req, res, next) {
  */
 router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
-    var opts = {queryModifiers: {limit: 'LIMIT 10', project_id:req.params.id, sort_by: 'time_created', sort_dir: 'DESC'}, outputFormat: 'GeoJSON'};
-    var geomopts = {queryModifiers: {returnGeometry: true, limit: 'LIMIT 10'}, outputFormat: 'GeoJSON'};
+    var queryModifiers = clone(req.queryModifiers);
+    queryModifiers.sort_by = queryModifiers.sort_by || 'time_created';
+    queryModifiers.sort_dir = queryModifiers.sort_dir || 'DESC';
+
+    var geoQueryModifiers = clone(req.queryModifiers);
+    geoQueryModifiers.returnGeometry = geoQueryModifiers.returnGeometry || true;
+
+    var opts = {queryModifiers: queryModifiers, outputFormat: 'GeoJSON'};
+    var geomopts = {queryModifiers: geoQueryModifiers, outputFormat: 'GeoJSON'};
 
     opts.whereClause = geomopts.whereClause = 'WHERE project_id = $1';
     opts.whereClauseValues = geomopts.whereClauseValues = [req.params.id];
@@ -566,7 +574,7 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
             // If Id return no parcel, message the user
             if (geoJSON.features.length === 0) {
-                return res.status(200).json({message: "no parcel"});
+                return res.status(200).json({message: "no project"});
             } else {
                 // Add properties to parcel's geojson
                 geoJSON.features[0].properties.project_resources = results[1][0].response.features;
@@ -586,6 +594,50 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
         .done();
 
 });
+
+// Get data for big map
+router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
+
+    req.queryModifiers.returnGeometry = true;
+
+    var opts = {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'};
+
+    opts.whereClause = 'WHERE project_id = $1';
+    opts.whereClauseValues =  [req.params.id];
+
+    Q.all([
+        ctrlCommon.getWithId('show_project_extents', 'id', req.params.id, opts),
+        ctrlCommon.getAll('parcel', opts)
+    ])
+        .then(function (results) {
+
+            //Process results: Add parcel history and relationships to Parcel GeoJSON
+            var projectExtent = results[0][0].response;
+            var parcels = results[1][0].response
+
+            // If Id return no parcel, message the user
+            if (projectExtent.features.length === 0) {
+                return res.status(200).json({message: "no project"});
+            } else {
+                // Add properties to parcel's geojson
+                geoJSON.features[0].properties.project_resources = results[1][0].response.features;
+                geoJSON.features[0].properties.project_activity = results[2][0].response.features;
+                geoJSON.features[0].properties.parcels = results[3][0].response.features;
+
+                res.status(200).json([]);
+
+            }
+            ;
+
+            //llop through results[2][0].response.EACH -- add geom and prop to array
+        })
+        .catch(function (err) {
+            next(err)
+        })
+        .done();
+
+});
+
 
 // Get project parcel list
 /**
