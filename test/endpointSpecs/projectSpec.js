@@ -15,7 +15,7 @@ module.exports = function(app) {
 
             chai.request(app)
                 .post('/projects')
-                .send({"cadasta_organization_id": 2, "ckan_id": "my-test-project", "title": "My Test Project", "ckan_name": "my name", "description": "my descrption"})
+                .send({"cadasta_organization_id": 2, "ckan_id": "my-test-project", "title": "My Test Project", "ckan_name": "my name", "description": "my descrption", "ona_api_key":"my-api-key"})
                 .end(function (res) {
 
                     // Test that the endpoint exists and responds
