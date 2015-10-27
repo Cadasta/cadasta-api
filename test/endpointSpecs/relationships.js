@@ -106,6 +106,7 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('parcel_id');
                         expect(featureProperties).to.have.property('project_id');
                         expect(featureProperties).to.have.property('spatial_source');
+                        expect(featureProperties).to.have.property('how_acquired');
                         expect(featureProperties).to.have.property('party_id');
                         expect(featureProperties).to.have.property('first_name');
                         expect(featureProperties).to.have.property('last_name');
