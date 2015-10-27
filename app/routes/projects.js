@@ -364,7 +364,7 @@ router.patch('/:id/sys_delete', function(req, res, next) {
 
 //Get a project overview
 /**
- * @api {get} /projects/:id/overview Project Overview - get one
+ * @api {get} /projects/:id/overview Project Overview
  * @apiName Project Overview
  * @apiGroup Projects
 
@@ -595,7 +595,139 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
 
 });
 
-// Get data for big map
+/**
+ * @api {get} /projects/:id/map-data Project Map Data
+ * @apiName ProjectMapData
+ * @apiGroup Projects
+
+ * @apiDescription Get project extent geometry, and all project parcel geometries
+
+ * @apiParam {Number} id Project id number
+
+ * @apiSuccess {Object} response
+ * @apiSuccess {Object} response.project A feature collection with one feature representing a project
+ * @apiSuccess {Object} response.parcels A feature collection with zero to many features representing project parcels
+
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/projects/1/map-data
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            project: {
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: [
+                                [
+                                    [
+                                        -68.1512832641601,
+                                        -16.4848144489816
+                                    ],
+                                    [
+                                        -68.1435585021973,
+                                        -16.5295818911947
+                                    ],
+                                    [
+                                        -68.1191825866699,
+                                        -16.5159223369972
+                                    ],
+                                    [
+                                        -68.1524848937988,
+                                        -16.4644023247451
+                                    ],
+                                    [
+                                        -68.1512832641601,
+                                        -16.4848144489816
+                                    ]
+                                ]
+                            ]
+                        },
+                        properties: {
+                            id: 1,
+                            organization_id: 1,
+                            title: "Bolivia",
+                            ckan_id: null,
+                            active: true,
+                            sys_delete: false,
+                            time_created: "2015-09-16T15:14:31.46313-07:00",
+                            time_updated: "2015-09-16T15:14:31.46313-07:00",
+                            created_by: null,
+                            updated_by: null,
+                            project_resources: [
+                                {
+                                    type: "Feature",
+                                    geometry: null,
+                                    properties: {
+                                        id: 1,
+                                        project_id: 1,
+                                        url: "http://www.cadasta.org/2/parcel",
+                                        type: "parcel",
+                                        description: null,
+                                        active: true,
+                                        sys_delete: false,
+                                        time_created: "2015-09-16T16:10:44.884044-07:00",
+                                        time_updated: "2015-09-16T16:10:44.884044-07:00",
+                                        created_by: null,
+                                        updated_by: null
+                                    }
+                                }
+                            ],
+                            project_activity: [
+                                {
+                                    type: "Feature",
+                                    geometry: null,
+                                    properties: {
+                                        activity_type: "parcel",
+                                        id: 1,
+                                        type: "survey_sketch",
+                                        name: null,
+                                        parcel_id: null,
+                                        time_created: "2015-09-16T15:25:42.137404-07:00"
+                                    }
+                                }
+                            ],
+
+                        }
+                    }
+                ]
+            },
+            parcels: {
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        geometry: {
+                            type: "Point",
+                            coordinates: [
+                                -73.724739,
+                                40.588342
+                            ]
+                        },
+                        properties: {
+                            id: 1,
+                            project_id: 1,
+                            spatial_source: 1,
+                            user_id: "11",
+                            area: null,
+                            length: null,
+                            land_use: null,
+                            gov_pin: null,
+                            active: true,
+                            sys_delete: false,
+                            time_created: "2015-09-16T15:25:42.137404-07:00",
+                            time_updated: "2015-09-16T15:25:42.137404-07:00",
+                            created_by: 11,
+                            updated_by: null
+                        }
+                    }
+                ]
+            }
+        }
+ */
 router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
 
     req.queryModifiers.returnGeometry = true;
@@ -612,24 +744,17 @@ router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
         .then(function (results) {
 
             //Process results: Add parcel history and relationships to Parcel GeoJSON
-            var projectExtent = results[0][0].response;
+            var project = results[0][0].response;
             var parcels = results[1][0].response
 
             // If Id return no parcel, message the user
-            if (projectExtent.features.length === 0) {
+            if (project.features.length === 0) {
                 return res.status(200).json({message: "no project"});
             } else {
-                // Add properties to parcel's geojson
-                geoJSON.features[0].properties.project_resources = results[1][0].response.features;
-                geoJSON.features[0].properties.project_activity = results[2][0].response.features;
-                geoJSON.features[0].properties.parcels = results[3][0].response.features;
-
-                res.status(200).json([]);
+                res.status(200).json({project: project, parcels:parcels});
 
             }
-            ;
 
-            //llop through results[2][0].response.EACH -- add geom and prop to array
         })
         .catch(function (err) {
             next(err)
@@ -1455,7 +1580,7 @@ router.get('/:id/parcels/:parcel_id/resources', common.parseQueryOptions, functi
 });
 
 /**
- * @api {get} /show_activity Project activity
+ * @api {get} /:id/activity Project activity
  * @apiName GetProjectActivity
  * @apiGroup Projects
  * @apiDescription Get a project's activity records
