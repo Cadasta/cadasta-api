@@ -143,9 +143,9 @@ module.exports = function(app) {
                             // Ensure features have correct properties
                             features.forEach(function(feature){
 
-                                expect(feature).to.have.deep.property('properties.relationship_id');
+                                expect(feature).to.have.deep.property('properties.id');
                                 expect(feature).to.have.deep.property('properties.spatial_source');
-                                expect(feature).to.have.deep.property('properties.relationship_type');
+                                expect(feature).to.have.deep.property('properties.tenure_type');
                                 expect(feature).to.have.deep.property('properties.parcel_id');
                                 expect(feature).to.have.deep.property('properties.party_id');
                                 expect(feature).to.have.deep.property('properties.first_name');
@@ -181,9 +181,9 @@ module.exports = function(app) {
 
                         // Check properties
                         var featureProperties = features[0].properties;
-                        expect(featureProperties).to.have.property('relationship_id');
+                        expect(featureProperties).to.have.property('id');
                         expect(featureProperties).to.have.property('spatial_source');
-                        expect(featureProperties).to.have.property('relationship_type');
+                        expect(featureProperties).to.have.property('tenure_type');
                         expect(featureProperties).to.have.property('party_id');
                         expect(featureProperties).to.have.property('first_name');
                         expect(featureProperties).to.have.property('last_name');

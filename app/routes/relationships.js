@@ -5,9 +5,9 @@ var ctrlCommon = require('../controllers/common.js');
 
 
 /**
- * @api {get} /projects/relationships/:id/relationship_history Get relationship's history
+ * @api {get} /projects/relationships/:id/relationship_history Project relationships - Get history
  * @apiName GetRelationshipHistory
- * @apiGroup Relationships
+ * @apiGroup Projects
  * @apiDescription Get relationship history records for a given relationship_id
  * @apiParam {Number} id relationship's unique ID.
  *
@@ -94,9 +94,9 @@ router.get('/:project_id/relationships/:id/relationship_history', common.parseQu
 });
 
 /**
- * @api {get} /projects/relationships Get all
+ * @api {get} /projects/relationships Project relationships - Get all
  * @apiName GetRelationships
- * @apiGroup Relationships
+ * @apiGroup Projects
  *
  * @apiDescription Get all relationships (from the relationship table)
  *
@@ -188,9 +188,9 @@ router.get('/:project_id/relationships', common.parseQueryOptions, function(req,
 });
 
 /**
- * @api {get} /projects/:project_id/relationships/:id/resources Get relationship resources
+ * @api {get} /projects/:project_id/relationships/:id/resources Project relationships - Get resources
  * @apiName GetRelationshipResources
- * @apiGroup Relationships
+ * @apiGroup Projects
  *
  * @apiDescription Get all relationship resources (from the resource_parcel table)
  *
@@ -275,4 +275,95 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
         .done();
 
 });
+
+/**
+ * @api {get} /projects/id:/relationships/relationships_list Project relationships - Get relationship list
+ * @apiName GetRelationships
+ * @apiGroup Projects
+ *
+ * @apiDescription Get all relationships (from the relationship table)
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry Relationships GeoJSON geometry object. If Null, Parcels GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.id Relationship id
+ * @apiSuccess {String} response.features.properties.tenure_type Type of tenure (own, lease, occupy, informal occupy)
+ * @apiSuccess {Integer} response.features.properties.project_id Project id
+ * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
+ * @apiSuccess {Integer} response.features.properties.party_id Party id
+ * @apiSuccess {String} response.features.properties.first_name Party first name
+ * @apiSuccess {String} response.features.properties.last_name Party last name
+ * @apiSuccess {Boolean} response.features.properties.active Status of relationship
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Integer} response.features.properties.created_by id of creator
+ * @apiSuccess {Integer} response.features.properties.updated_by id of updater
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/relationships
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 1,
+                "tenure_type": "own",
+                "parcel_id": 1,
+                "project_id": 1,
+                "spatial_source": "digitized",
+                "party_id": 1,
+                "first_name": "Makkonen",
+                "last_name": "Ontario ",
+                "time_created": "2015-10-26T17:30:33.192933-07:00",
+                "active": true,
+                "time_updated": "2015-10-26T17:30:33.192933-07:00"
+            }
+        }
+    ]
+}
+ */
+
+router.get('/:project_id/relationships/relationships_list', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = [];
+    var whereClauseValues = [];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: 'GeoJSON'
+    };
+
+    whereClauseArr.push('project_id = $1');
+    whereClauseValues.push(req.params.project_id);
+
+    options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
+    options.whereClauseValues = whereClauseValues;
+
+    ctrlCommon.getAll("show_relationships", options)
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
 module.exports = router;
