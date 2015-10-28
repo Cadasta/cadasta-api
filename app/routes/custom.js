@@ -223,8 +223,8 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
  * @apiSuccess {String} response.features.type "Feature"
  * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
- * @apiSuccess {Number} response.features.properties.relationship_id relationship id
- * @apiSuccess {String} response.features.properties.relationship_type relationship type
+ * @apiSuccess {Number} response.features.properties.id relationship id
+ * @apiSuccess {String} response.features.properties.tenure_type relationship type
  * @apiSuccess {String} response.features.properties.spatial_source spatial source
  * @apiSuccess {Number} response.features.properties.parcel_id relationship's parcel id
  * @apiSuccess {Number} response.features.properties.party_id relationship's party id
@@ -250,8 +250,8 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
         ]
       },
       "properties": {
-        "relationship_id": 1,
-        "relationship_type": "Own",
+        "id": 1,
+        "tenure_type": "Own",
         "parcel_id": 1,
         "spatial_source": "survey_grade_gps",
         "party_id": 1,
@@ -270,8 +270,8 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
         ]
       },
       "properties": {
-        "relationship_id": 2,
-        "relationship_type": "Own",
+        "id": 2,
+        "tenure_type": "Own",
         "parcel_id": 2,
         "spatial_source": "survey_grade_gps",
         "party_id": 2,
@@ -318,8 +318,8 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
  * @apiSuccess {String} response.features.type "Feature"
  * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
- * @apiSuccess {Number} response.features.properties.relationship_id relationship id
- * @apiSuccess {String} response.features.properties.relationship_type relationship type
+ * @apiSuccess {Number} response.features.properties.id relationship id
+ * @apiSuccess {String} response.features.properties.tenure_type relationship type
  * @apiSuccess {String} response.features.properties.spatial_source spatial source
  * @apiSuccess {Number} response.features.properties.parcel_id relationship's parcel id
  * @apiSuccess {Number} response.features.properties.party_id relationship's party id
@@ -346,8 +346,8 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
                 ]
               },
               "properties": {
-                "relationship_id": 1,
-                "relationship_type": "Own",
+                "id": 1,
+                "tenure_type": "Own",
                 "parcel_id": 1,
                 "spatial_source": "survey_grade_gps",
                 "party_id": 1,
@@ -362,7 +362,7 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
 
 router.get('/show_relationships/:id', common.parseQueryOptions, function(req, res, next) {
 
-    ctrlCommon.getWithId('show_relationships', 'relationship_id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+    ctrlCommon.getWithId('show_relationships', 'id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
         .then(function(result){
 
             res.status(200).json(result[0].response);

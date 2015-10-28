@@ -257,9 +257,9 @@ module.exports = function(app) {
                         expect(geometry).to.have.property('coordinates');
 
                         var relationships = featureProperties.relationships;
-                        relationships.should.all.have.property('relationship_id');
+                        relationships.should.all.have.property('id');
                         relationships.should.all.have.property('parcel_id');
-                        relationships.should.all.have.property('relationship_type');
+                        relationships.should.all.have.property('tenure_type');
                         relationships.should.all.have.property('spatial_source');
                         relationships.should.all.have.property('party_id');
                         relationships.should.all.have.property('first_name');

@@ -9,11 +9,11 @@ module.exports = function(app) {
 
     describe('Relationships suite', function () {
 
-        describe('GET /relationships/:id/relationship_history', function () {
+        describe('GET projects/:id/relationships/:relationship_id/relationship_history', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/relationships/1/relationship_history')
+                    .get('/projects/1/relationships/1/relationship_history')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -31,10 +31,11 @@ module.exports = function(app) {
                         // Check properties
                         var featureProperties = features[0].properties;
 
-                        expect(featureProperties).to.have.property('id');
+                        expect(featureProperties).to.have.property('project_id');
                         expect(featureProperties).to.have.property('relationship_id');
                         expect(featureProperties).to.have.property('origin_id');
                         expect(featureProperties).to.have.property('parent_id');
+                        expect(featureProperties).to.have.property('parcel_id', 1);
                         expect(featureProperties).to.have.property('version', 1);
                         expect(featureProperties).to.have.property('expiration_date');
                         expect(featureProperties).to.have.property('description');
@@ -44,6 +45,11 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('time_updated');
                         expect(featureProperties).to.have.property('created_by');
                         expect(featureProperties).to.have.property('updated_by');
+                        expect(featureProperties).to.have.property('relationship_type');
+                        expect(featureProperties).to.have.property('spatial_source');
+                        expect(featureProperties).to.have.property('party_id',1);
+                        expect(featureProperties).to.have.property('first_name');
+                        expect(featureProperties).to.have.property('last_name');
 
                         done();
                     });
@@ -51,12 +57,11 @@ module.exports = function(app) {
             });
         });
 
-
         describe('GET /relationships/:id/resources', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/relationships/1/resources')
+                    .get('/projects/1/relationships/1/resources')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -68,12 +73,53 @@ module.exports = function(app) {
                         //  Get the GeoJSON features for further testing
                         var features = res.body.features;
 
+                        done();
+                    });
+
+            });
+        });
+
+        describe('GET projects/:id/relationships/:relationship_id/relationships_list', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .get('/projects/1/relationships/relationships_list')
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        // Test that it returns GeoJSON
+                        testUtils.expectFeatureCollection(res.body);
+
+                        //  Get the GeoJSON features for further testing
+                        var features = res.body.features;
+
+                        // Make sure only one feature returned
+                        expect(features).with.length(12);
+
+                        // Check properties
+                        var featureProperties = features[0].properties;
+
+                        expect(featureProperties).to.have.property('id');
+                        expect(featureProperties).to.have.property('tenure_type');
+                        expect(featureProperties).to.have.property('parcel_id');
+                        expect(featureProperties).to.have.property('project_id');
+                        expect(featureProperties).to.have.property('spatial_source');
+                        expect(featureProperties).to.have.property('how_acquired');
+                        expect(featureProperties).to.have.property('party_id');
+                        expect(featureProperties).to.have.property('first_name');
+                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('time_created');
+                        expect(featureProperties).to.have.property('active');
+                        expect(featureProperties).to.have.property('time_updated');
 
                         done();
                     });
 
             });
         });
+
 
     });
 

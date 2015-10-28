@@ -211,12 +211,13 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
  * @apiParam {String} ckan_id The id of the project in the CKAN application database
  * @apiParam {String} ckan_name The name of the project in the CKAN application database
  * @apiParam {String} title The title of the project in the CKAN application database
+ * @apiParam {String} ona_api_key The ONA API Key for the project
  *
  * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id", "ckan_id":"my-org","ckan_title":"My Org"}' http://localhost/projects
+ *     curl -H "Content-Type: application/json" -X POST -d '{"cadasta_organization_id": "1","ckan_id": "my-org","ckan_name": "My Org","title": "my-title","ona_api_key": "1239qsjdad1","description": "new-description"}' http://localhost/projects
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -227,18 +228,18 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 router.post('', function(req, res, next) {
 
     if(req.body.cadasta_organization_id === undefined || req.body.ckan_id === undefined
-        || req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined) {
+        || req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined || req.body.ona_api_key === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "SELECT * FROM cd_create_project($1,$2,$3,$4,$5)";
+    var sql = "SELECT * FROM cd_create_project($1,$2,$3,$4,$5,$6)";
 
-    pgb.queryDeferred(sql,{paramValues: [req.body.cadasta_organization_id, req.body.ckan_id, req.body.ckan_name, req.body.title, req.body.description]})
+    pgb.queryDeferred(sql,{paramValues: [req.body.cadasta_organization_id, req.body.ckan_id, req.body.ckan_name, req.body.title, req.body.description, req.body.ona_api_key]})
         .then(function(response){
             res.status(200).json({cadasta_project_id: response[0].cd_create_project})
         })
         .catch(function(err){
-            next(err);
+            next(err.message);
         })
         .done();
 
@@ -256,6 +257,7 @@ router.post('', function(req, res, next) {
  * @apiParam (POST parameters) {String} ckan_name "name" attribute from the CKAN database
  * @apiParam (POST parameters) {String} title "title" attribute from the CKAN database
  * @apiParam (POST parameters) {String} description "description" attribute from the CKAN database
+ * @apiParam (POST parameters) {String} ona_api_key "ona_api_key" attribute from the CKAN database
  *
  * @apiSuccess {Object} response
  * @apiSuccess {String} response.success true
@@ -269,13 +271,13 @@ router.post('', function(req, res, next) {
  */
 router.patch('/:id', function(req, res, next) {
 
-    if(req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined) {
+    if(req.body.ckan_name === undefined || req.body.title === undefined || req.body.description === undefined || req.body.ona_api_key === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "UPDATE project SET ckan_name = $1, title=$2, description=$3, time_updated=current_timestamp where id=$4";
+    var sql = "UPDATE project SET ckan_name = $1, title=$2, description=$3, time_updated=current_timestamp, ona_api_key=$4 where id=$5";
 
-    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_name, req.body.title, req.body.description,req.params.id]})
+    pgb.queryDeferred(sql,{paramValues: [req.body.ckan_name, req.body.title, req.body.description, req.body.ona_api_key,req.params.id]})
         .then(function(response){
 
             res.status(200).json({success: true});
