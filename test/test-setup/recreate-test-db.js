@@ -159,6 +159,7 @@ return nukeDB()
     .then(function(){
 
         console.log('truncate function is complete.');
+
         return ;
 
 
