@@ -1272,6 +1272,11 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
         outputFormat: 'GeoJSON'
     };
 
+    var geomOpts = {
+        queryModifiers: {returnGeometry: true },
+        outputFormat: 'GeoJSON'
+    };
+
     otherOpts.queryModifiers.limit = 'LIMIT 10';
     otherOpts.queryModifiers.sort_by = 'time_created';
     otherOpts.queryModifiers.sort_dir =  'DESC';
@@ -1282,10 +1287,13 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
     otherOpts.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
     otherOpts.whereClauseValues = whereClauseValues;
 
+    geomOpts.whereClause = otherOpts.whereClause;
+    geomOpts.whereClauseValues = otherOpts.whereClauseValues;
+
     Q.all([
         ctrlCommon.getAll('parcel',  options),
         ctrlCommon.getAll('show_parcel_history', otherOpts),
-        ctrlCommon.getAll('show_relationships', otherOpts)
+        ctrlCommon.getAll('show_relationships', geomOpts)
     ])
         .then(function (results) {
 

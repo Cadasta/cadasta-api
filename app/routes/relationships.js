@@ -302,6 +302,8 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
  * @apiSuccess {Integer} response.features.properties.party_id Party id
  * @apiSuccess {String} response.features.properties.first_name Party first name
  * @apiSuccess {String} response.features.properties.last_name Party last name
+ * @apiSuccess {String} response.features.properties.how_acquired Acquisition description
+ * @apiSuccess {String} response.features.properties.acquired_date Acquisition date
  * @apiSuccess {Boolean} response.features.properties.active Status of relationship
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
@@ -309,7 +311,7 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
  * @apiSuccess {Integer} response.features.properties.updated_by id of updater
  *
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost/relationships
+ *     curl -i http://localhost/projects/1/relationships/relationships_list
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -326,6 +328,8 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
                 "project_id": 1,
                 "spatial_source": "digitized",
                 "party_id": 1,
+                "how_acquired":"Borrowed",
+                "date_acquired:":"2010-05-25",
                 "first_name": "Makkonen",
                 "last_name": "Ontario ",
                 "time_created": "2015-10-26T17:30:33.192933-07:00",
@@ -352,6 +356,95 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
 
     options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;
+
+    ctrlCommon.getAll("show_relationships", options)
+        .then(function(result){
+
+            res.status(200).json(result[0].response);
+
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+});
+
+/**
+ * @api {get} projects/:id/relationships/:relationship_id Project relationship - Get one details
+ * @apiName GetProjectRelationship
+ * @apiGroup Relationships
+ * @apiDescription Get a project specific relationship (from the relationship table)
+ *
+ * @apiParam {Number} id project's unique ID.
+ * @apiParam {Number} relationship_id relationship's unique ID
+ * .
+ * @apiSuccess {Object} response A feature collection with zero to many features
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry Relationships GeoJSON geometry object. If Null, Parcels GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {Integer} response.features.properties.id Relationship id
+ * @apiSuccess {String} response.features.properties.tenure_type Type of tenure (own, lease, occupy, informal occupy)
+ * @apiSuccess {Integer} response.features.properties.project_id Project id
+ * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
+ * @apiSuccess {Integer} response.features.properties.party_id Party id
+ * @apiSuccess {String} response.features.properties.first_name Party first name
+ * @apiSuccess {String} response.features.properties.last_name Party last name
+ * @apiSuccess {String} response.features.properties.how_acquired Acquisition description
+ * @apiSuccess {String} response.features.properties.acquired_date Acquisition date
+ * @apiSuccess {Boolean} response.features.properties.active Status of relationship
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
+ * @apiSuccess {Integer} response.features.properties.created_by id of creator
+ * @apiSuccess {Integer} response.features.properties.updated_by id of updater
+ *
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/projects/1/relationships/1/details
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *    {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "id": 1,
+                "tenure_type": "own",
+                "how_acquired": "inheritance",
+                "acquired_date": "2010-05-25",
+                "parcel_id": 1,
+                "project_id": 1,
+                "spatial_source": "digitized",
+                "party_id": 1,
+                "first_name": "Makkonen",
+                "last_name": "Ontario ",
+                "time_created": "2015-10-27T13:09:05.374558-07:00",
+                "active": true,
+                "time_updated": "2015-10-27T13:09:05.374558-07:00"
+            }
+        }
+    ]
+}
+ */
+router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptions, function(req, res, next) {
+
+    var whereClauseArr = ['project_id = $1', 'id = $2'];
+    var whereClauseValues = [req.params.id, req.params.relationship_id];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: req.query.outputFormat || 'GeoJSON'
+    };
+
+    if(whereClauseArr.length > 0) {
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
 
     ctrlCommon.getAll("show_relationships", options)
         .then(function(result){
