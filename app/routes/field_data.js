@@ -15,5 +15,4 @@ var PythonShell = require('python-shell');
 
 
 
-
 module.exports = router;
