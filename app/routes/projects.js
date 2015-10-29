@@ -560,6 +560,8 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
     var opts = {queryModifiers: queryModifiers, outputFormat: 'GeoJSON'};
     var geomopts = {queryModifiers: geoQueryModifiers, outputFormat: 'GeoJSON'};
 
+    opts.queryModifiers.limit = 'LIMIT 10';
+
     opts.whereClause = geomopts.whereClause = 'WHERE project_id = $1';
     opts.whereClauseValues = geomopts.whereClauseValues = [req.params.id];
 
@@ -586,9 +588,8 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
                 res.status(200).json(geoJSON);
 
             }
-            ;
 
-            //llop through results[2][0].response.EACH -- add geom and prop to array
+            //loop through results[2][0].response.EACH -- add geom and prop to array
         })
         .catch(function (err) {
             next(err)

@@ -3,6 +3,51 @@ var router = express.Router();
 var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
+var pgb = require('../pg-binding.js');
+
+// CREATE A PROJECT RECORD
+/**
+ * @api {post} /projects/1/parties Project parties - Create one
+ * @apiName PostParties
+ * @apiGroup Projects
+ * @apiDescription Create a party
+ *
+ * @apiParam (POST parameters) {String} first_name First name of party
+ * @apiParam (POST parameters) {String} last_name Last name of party
+ * @apiParam (POST parameters) {String} group_name Name of Party Group
+ * @apiParam (POST parameters) {String="individual, group"} party_type Type of Party
+ *
+ * @apiSuccess {Object} cadasta_party_id The cadasta database id of the created party
+
+ *pm
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X POST -d  http://localhost/projects/1/parties
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            "cadasta_party_id": 1
+        }
+ */
+router.post('/:project_id/parties', function(req, res, next) {
+
+    if(req.body.first_name === undefined || req.body.last_name === undefined ||
+        req.body.group_name === undefined || req.body.party_type === undefined) {
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "SELECT * FROM cd_create_party($1,$2,$3,$4,$5)";
+
+    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.body.party_type, req.body.first_name, req.body.last_name, req.body.group_name]})
+        .then(function(response){
+            res.status(200).json({cadasta_party_id: response[0].cd_create_party})
+        })
+        .catch(function(err){
+            next(err.message);
+        })
+        .done();
+
+});
 
 /**
  *
