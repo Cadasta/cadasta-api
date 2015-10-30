@@ -239,7 +239,7 @@ router.post('', function(req, res, next) {
             res.status(200).json({cadasta_project_id: response[0].cd_create_project})
         })
         .catch(function(err){
-            next(err.message);
+            next(err);
         })
         .done();
 
