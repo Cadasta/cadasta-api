@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
-var Q = require('Q');
-
+var Q = require('q');
 
 /**
  * @api {get} /projects/relationships/:id/relationship_history Project relationships - Get history
