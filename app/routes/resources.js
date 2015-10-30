@@ -74,10 +74,10 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
                 // delete from S3 if DB throws error
                 deleteS3(path)
                     .then(function(resp){
-                        res.status(400).json({error:err.message});
+                        res.status(400).json({message: err.message, error:err});
                     })
                     .catch(function(err){
-                        res.status(400).json({error:err.message});
+                        res.status(400).json({message:err.message, error:err});
                     })
             }
 
@@ -187,7 +187,7 @@ function getOrg(p_id) {
             deferred.resolve(res);
         })
         .catch(function(err){
-            deferred.reject(err.message);
+            deferred.reject(err);
         });
 
     return deferred.promise;

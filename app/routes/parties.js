@@ -242,7 +242,7 @@ router.post('/:project_id/parties', function(req, res, next) {
             res.status(200).json({cadasta_party_id: response[0].cd_create_party})
         })
         .catch(function(err){
-            next(err.message);
+            next(err);
         })
         .done();
 
