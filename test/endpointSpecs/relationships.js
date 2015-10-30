@@ -162,6 +162,25 @@ module.exports = function(app) {
             });
         });
 
+        describe('POST /projects/1/relationships', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .post('/projects/1/relationships')
+                    .send({"parcel_id": 1,"ckan_user_id": null,"party_id": 4,"geom_id": null,"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":null,"description":null})
+                    .end(function (res) {
+
+                        //Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        expect(res.body).to.have.property('cadasta_relationship_id');
+
+                        done();
+                    });
+
+            });
+        });
+
     });
 
 };

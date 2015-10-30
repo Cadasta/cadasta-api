@@ -3,6 +3,7 @@ var router = express.Router();
 var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
+var pgb = require('../pg-binding.js');
 
 /**
  * @api {get} /projects/relationships/:id/relationship_history Project relationships - Get history
@@ -472,6 +473,74 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
         })
         .catch(function(err){
             next(err)
+        })
+        .done();
+
+});
+
+// CREATE A RELATIONSHIP RECORD
+/**
+ * @api {post} /projects/:id/relationships Project relationships- Create one
+ * @apiName PostRelationships
+ * @apiGroup Projects
+ * @apiDescription Create a project relationship
+ *
+ * @apiParam {Integer} parcel_id Cadasta parcel id
+ * @apiParam {String} ckan_id The id of the CKAN user
+ * @apiParam {Integer} party_id Cadasta party id
+ * @apiParam {Integer} geom_id Cadasta relationship geometry id
+ * @apiParam {String="own, lease, occupy, informal occupy"} tenure_type Cadasta relationship tenure type
+ * @apiParam {String} geom_id Cadasta relationship geometry id
+ * @apiParam {Date} acquired_data Date tenure was acquired
+ * @apiParam {String} how_acquired Description of how tenure was acquired
+ * @apiParam {String} how_acquired Relationship description
+ *
+ * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
+
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X POST -d {"parcel_id": 10,"ckan_user_id": null,"party_id": 8,"geom_id": null,"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":"borrowed","description":"gift from grandfather"} http://localhost/projects/1/relationships
+ *
+ * @api {post} /projects/:id/parcels
+ * @apiParamExample {application/json} Request-Example:
+ * {
+    "parcel_id": 10,
+    "ckan_user_id": null,
+    "party_id": 8,
+    "geom_id": null,
+    "tenure_type":"lease",
+    "acquired_date":"10/31/2015",
+    "how_acquired":"borrowed",
+    "description":"gift from grandfather"
+}
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+            "cadasta_relationship_id": 1
+        }
+ */
+router.post('/:project_id/relationships', function(req, res, next) {
+
+    if(req.body.parcel_id === undefined || req.body.ckan_user_id === undefined
+        || req.body.party_id === undefined || req.body.geom_id === undefined
+        || req.body.tenure_type === undefined || req.body.acquired_date === undefined
+        || req.body.how_acquired === undefined || req.body.description === undefined) {
+
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "SELECT * FROM cd_create_relationship($1,$2,$3,$4,$5,$6,$7,$8,$9)";
+
+    var paramValues =  [req.params.project_id,req.body.parcel_id, req.body.ckan_user_id,
+        req.body.party_id, req.body.geom_id, req.body.tenure_type, req.body.acquired_date, req.body.how_acquired, req.body.description];
+
+    pgb.queryDeferred(sql,{paramValues:paramValues})
+        .then(function(response){
+            res.status(200).json({cadasta_relationship_id: response[0].cd_create_relationship})
+        })
+        .catch(function(err){
+            res.status(400).json({message:err.message, error:err});
         })
         .done();
 
