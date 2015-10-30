@@ -185,7 +185,8 @@ router.get('/:project_id/parties/:id/details', common.parseQueryOptions, functio
     Q.all([
         ctrlCommon.getAll('show_parties',  partyOptions),
         ctrlCommon.getAll('show_party_parcels',  geomOptions),
-        ctrlCommon.getAll('show_relationships', geomOptions)
+        ctrlCommon.getAll('show_relationships', geomOptions),
+        ctrlCommon.getAll('show_relationship_history', geomOptions)
     ])
         .then(function (results) {
 
@@ -195,6 +196,7 @@ router.get('/:project_id/parties/:id/details', common.parseQueryOptions, functio
             // Add properties to parties geojson
             geoJSON.features[0].properties.parcels = results[1][0].response.features;
             geoJSON.features[0].properties.relationships = results[2][0].response.features;
+            geoJSON.features[0].properties.relationship_history = results[3][0].response.features;
 
             res.status(200).json(geoJSON);
         })

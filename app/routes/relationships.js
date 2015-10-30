@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
+var Q = require('Q');
 
 
 /**
@@ -446,14 +447,32 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
         options.whereClauseValues = whereClauseValues;
     }
 
-    ctrlCommon.getAll("show_relationships", options)
-        .then(function(result){
+    var historyOptions =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: req.query.outputFormat || 'GeoJSON'
+    };
 
-            res.status(200).json(result[0].response);
+    if(whereClauseArr.length > 0) {
+        historyOptions.whereClause = 'WHERE ' + ['project_id = $1', 'relationship_id = $2'].join(' AND ');
+        historyOptions.whereClauseValues = [req.params.id, req.params.relationship_id];
+    }
 
+    Q.all([
+        ctrlCommon.getAll('show_relationships',  options),
+        ctrlCommon.getAll('show_relationship_history',  historyOptions)
+    ])
+        .then(function (results) {
+
+            //Process results: Add parcel history and relationships to Parcel GeoJSON
+            var geoJSON = results[0][0].response;
+
+            // Add properties to parties geojson
+            geoJSON.features[0].properties.relationship_history = results[1][0].response.features;
+
+            res.status(200).json(geoJSON);
         })
         .catch(function(err){
-            next(err);
+            next(err)
         })
         .done();
 
