@@ -9,7 +9,7 @@
     "aws-sdk": "^2.1.49",
     "body-parser": "~1.13.2",
     "cadasta-data-transformer": "https://github.com/Cadasta/cadasta-data-transformer/tarball/dev",
-    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/db_setup",
+    "cadasta-db": "https://github.com/Cadasta/cadasta-db/tarball/dev",
     "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master",
     "cadasta-provider-geojson": "https://github.com/Cadasta/cadasta-provider-geojson/tarball/master",
     "cadasta-provider-ona": "https://github.com/Cadasta/cadasta-provider-ona/tarball/master",
