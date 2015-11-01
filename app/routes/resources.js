@@ -19,14 +19,16 @@ AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: setti
  *
  * @apiDescription Upload parcel, party, or relationship project resource
  *
- * @apiParam (Required parameters) {Number} [project_id] Project id
- * @apiParam (Required parameters) {String} [resource_type] Options: project, parcel, party, relationship
- * @apiParam (Required parameters) {Number} [resource_type_id] id of resource_type
+ * @apiParam (Required path parameters) {Number} [project_id] Project id
+ * @apiParam (Required path parameters) {String} [resource_type] Options: project, parcel, party, relationship
+ * @apiParam (Required path parameters) {Number} [resource_type_id] id of resource_type
+ * @apiParam (Required multipart body parameters) {File} [filedata] file data
+ * @apiParam (Required multipart body parameters) {String} [filename] file name 
  *
  * @apiSuccess {Object} response an Object message property
  *
  * @apiExample {curl} Example usage:
- *     curl -i -F name=test -F filedata=@newfile.rtf http://localhost:9000/project/3/parcel/3/resources
+ *     curl -i -F filename=test -F filedata=@newfile.rtf http://localhost:9000/project/3/parcel/3/resources
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -41,7 +43,12 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
     var project_id = parseInt(req.params.project_id);
     var resource_type = req.params.type;
     var resource_type_id = parseInt(req.params.type_id);
-    var file_name = req.file.originalname.replace(/ /g, "").replace(/%20/g, "");  // remove white space
+
+    if ( req.body.filename === undefined ) {
+        return next(new Error('Missing POST body form field: "filename"'))
+    }
+    var file_name = req.body.filename.replace(/ /g, "").replace(/%20/g, "");  // remove white space
+
     var file = req.file.buffer;
     var path;
 
@@ -69,12 +76,12 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
 
             // do not delete if already exists in DB
             if (err.constraint == 'resource_url_key'){
-                res.status(400).json({error:err.detail, type:"duplicate"});
+                res.status(400).json({ error:err, type:"duplicate", message:err.detail });
             } else {
                 // delete from S3 if DB throws error
                 deleteS3(path)
                     .then(function(resp){
-                        res.status(400).json({message: err.message, error:err});
+                        res.status(400).json({message:err.message, error:err});
                     })
                     .catch(function(err){
                         res.status(400).json({message:err.message, error:err});
