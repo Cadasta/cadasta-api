@@ -23,7 +23,6 @@ AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: setti
  * @apiParam (Required path parameters) {String} [resource_type] Options: project, parcel, party, relationship
  * @apiParam (Required path parameters) {Number} [resource_type_id] id of resource_type
  * @apiParam (Required multipart body parameters) {File} [filedata] file data
- * @apiParam (Required multipart body parameters) {String} [filename] file name 
  *
  * @apiSuccess {Object} response an Object message property
  *
@@ -43,12 +42,7 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
     var project_id = parseInt(req.params.project_id);
     var resource_type = req.params.type;
     var resource_type_id = parseInt(req.params.type_id);
-
-    if ( req.body.filename === undefined ) {
-        return next(new Error('Missing POST body form field: "filename"'))
-    }
-    var file_name = req.body.filename.replace(/ /g, "").replace(/%20/g, "");  // remove white space
-
+    var file_name = req.file.originalname.replace(/ /g, "").replace(/%20/g, "");  // remove white space
     var file = req.file.buffer;
     var path;
 
