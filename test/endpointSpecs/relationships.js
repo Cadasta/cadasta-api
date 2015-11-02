@@ -167,7 +167,7 @@ module.exports = function(app) {
 
                 chai.request(app)
                     .post('/projects/1/relationships')
-                    .send({"parcel_id": 1,"ckan_user_id": null,"party_id": 4,"geom_id": null,"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":null,"description":null})
+                    .send({"parcel_id": 1,"ckan_user_id": null,"party_id": 4,"geojson": {"type":"Point","coordinates":[-72.9490754,40.8521095]},"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":null,"description":null})
                     .end(function (res) {
 
                         //Test that the endpoint exists and responds

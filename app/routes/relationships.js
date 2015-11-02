@@ -522,18 +522,18 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
  */
 router.post('/:project_id/relationships', function(req, res, next) {
 
-    if(req.body.parcel_id === undefined || req.body.ckan_user_id === undefined
-        || req.body.party_id === undefined || req.body.geom_id === undefined
-        || req.body.tenure_type === undefined || req.body.acquired_date === undefined
-        || req.body.how_acquired === undefined || req.body.description === undefined) {
+    if(req.body.parcel_id === undefined
+        || req.body.party_id === undefined || req.body.tenure_type === undefined) {
 
         return next(new Error('Missing POST parameters.'))
     }
 
+    var geojson = ctrlCommon.sanitize(req.body.geojson);
+
     var sql = "SELECT * FROM cd_create_relationship($1,$2,$3,$4,$5,$6,$7,$8,$9)";
 
     var paramValues =  [req.params.project_id,req.body.parcel_id, req.body.ckan_user_id,
-        req.body.party_id, req.body.geom_id, req.body.tenure_type, req.body.acquired_date, req.body.how_acquired, req.body.description];
+        req.body.party_id, geojson, req.body.tenure_type, req.body.acquired_date, req.body.how_acquired, req.body.description];
 
     pgb.queryDeferred(sql,{paramValues:paramValues})
         .then(function(response){
