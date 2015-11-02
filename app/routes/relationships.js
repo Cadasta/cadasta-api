@@ -488,9 +488,8 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
  * @apiParam {Integer} parcel_id Cadasta parcel id
  * @apiParam {String} ckan_id The id of the CKAN user
  * @apiParam {Integer} party_id Cadasta party id
- * @apiParam {Integer} geom_id Cadasta relationship geometry id
+ * @apiParam {Integer} geojson GeoJSON geometry object
  * @apiParam {String="own, lease, occupy, informal occupy"} tenure_type Cadasta relationship tenure type
- * @apiParam {String} geom_id Cadasta relationship geometry id
  * @apiParam {Date} acquired_data Date tenure was acquired
  * @apiParam {String} how_acquired Description of how tenure was acquired
  * @apiParam {String} how_acquired Relationship description
@@ -499,15 +498,15 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d {"parcel_id": 10,"ckan_user_id": null,"party_id": 8,"geom_id": null,"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":"borrowed","description":"gift from grandfather"} http://localhost/projects/1/relationships
+ *     curl -H "Content-Type: application/json" -X POST -d {"parcel_id": 10,"ckan_user_id": null,"party_id": 8,"geojson": null,"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":"borrowed","description":"gift from grandfather"} http://localhost/projects/1/relationships
  *
- * @api {post} /projects/:id/parcels
+ * @api {post} /projects/:id/relationships
  * @apiParamExample {application/json} Request-Example:
  * {
     "parcel_id": 10,
     "ckan_user_id": null,
     "party_id": 8,
-    "geom_id": null,
+    "geojson": null,
     "tenure_type":"lease",
     "acquired_date":"10/31/2015",
     "how_acquired":"borrowed",
