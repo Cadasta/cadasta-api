@@ -495,7 +495,7 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
  * @apiParam {String} how_acquired Description of how tenure was acquired
  * @apiParam {String} how_acquired Relationship description
  *
- * @apiSuccess {Object} cadasta_project_id The cadasta database id of the created project
+ * @apiSuccess {Object} cadasta_relationship_id The cadasta database id of the created relationship
 
  *
  * @apiExample {curl} Example usage:
