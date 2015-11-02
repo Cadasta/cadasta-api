@@ -27,7 +27,7 @@ AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: setti
  * @apiSuccess {Object} response an Object message property
  *
  * @apiExample {curl} Example usage:
- *     curl -i -F filename=test -F filedata=@newfile.rtf http://localhost:9000/project/3/parcel/3/resources
+ *     curl -i -F filedata=@newfile.rtf http://localhost:9000/project/3/parcel/3/resources
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
