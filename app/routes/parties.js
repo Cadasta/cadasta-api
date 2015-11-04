@@ -217,10 +217,13 @@ router.get('/:project_id/parties/:id/details', common.parseQueryOptions, functio
  * @apiParam (POST parameters) {String} last_name Last name of party
  * @apiParam (POST parameters) {String} group_name Name of Party Group
  * @apiParam (POST parameters) {String="individual, group"} party_type Type of Party
+ * apiParam (POST parameters) {String} gender Gender
+ * @apiParam (POST parameters) {Date} dob Date of Birth
+ * @apiParam (POST parameters) {String} notes Party Notes
+ * @apiParam (POST parameters) {String} national_id Party National ID
  *
  * @apiSuccess {Object} cadasta_party_id The cadasta database id of the created party
-
- *pm
+ *
  * @apiExample {curl} Example usage:
  *     curl -H "Content-Type: application/json" -X POST -d  http://localhost/projects/1/parties
  *
@@ -237,9 +240,9 @@ router.post('/:project_id/parties', function(req, res, next) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "SELECT * FROM cd_create_party($1,$2,$3,$4,$5)";
+    var sql = "SELECT * FROM cd_create_party($1,$2,$3,$4,$5,$6,$7,$8,$9)";
 
-    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.body.party_type, req.body.first_name, req.body.last_name, req.body.group_name]})
+    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.body.party_type, req.body.first_name, req.body.last_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
         .then(function(response){
             res.status(200).json({cadasta_party_id: response[0].cd_create_party})
         })

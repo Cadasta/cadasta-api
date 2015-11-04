@@ -8,7 +8,7 @@ var testUtils = require('../test-utils/test-utils.js');
 module.exports = function(app) {
 
     describe('Parties Suite', function(){
-        describe('GET /projects/3/parties', function () {
+        describe('GET /projects/1/parties', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
@@ -39,7 +39,7 @@ module.exports = function(app) {
 
             });
         });
-        describe('GET /projects/3/parties/1', function () {
+        describe('GET /projects/1/parties/1', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
@@ -73,7 +73,7 @@ module.exports = function(app) {
 
             });
         });
-        describe('GET /projects/3/parties/1/details', function () {
+        describe('GET /projects/1/parties/1/details', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
@@ -132,12 +132,21 @@ module.exports = function(app) {
 
             });
         });
-        describe('POST /projects/3/parties', function () {
+        describe('POST /projects/1/parties', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
                     .post('/projects/1/parties')
-                    .send({"first_name": null, "last_name": null, "group_name": "Wallys World", "party_type": "group"})
+                    .send({
+                        "first_name": null,
+                        "last_name": null,
+                        "group_name": "Wallys World",
+                        "party_type": "group",
+                        "gender": "Male",
+                        "dob":"2010-10-22",
+                        "notes":"We at wal mart corporation have been working hard to make this happen. We own everything",
+                        "national_id":"XXX3322**iiIeeeeLLLL"
+                    })
                     .end(function (res) {
 
                         //Test that the endpoint exists and responds
