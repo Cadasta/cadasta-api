@@ -448,7 +448,7 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
     }
 
     var historyOptions =  {
-        queryModifiers: req.queryModifiers,
+        queryModifiers: {sort_by:'version', sort_dir:'DESC'},
         outputFormat: req.query.outputFormat || 'GeoJSON'
     };
 
@@ -544,5 +544,84 @@ router.post('/:project_id/relationships', function(req, res, next) {
         .done();
 
 });
+
+
+/**
+ * @api {post} /projects/:id/relationships/:relationship_id Project Relationship - Update One
+ * @apiName UpdateRelationship
+ * @apiGroup Projects
+ * @apiDescription Update a Relationship
+ *
+ *
+ * @apiParam {Integer} id Cadasta project id
+ * @apiParam {Integer} relationship_id Cadasta relationship id
+
+ * @apiParam (POST parameters) {Integer} [party_id] Cadasta project party id
+ * @apiParam (POST parameters) {Integer} [parcel_id] Cadasta project parcel id
+ * @apiParam (POST parameters) {String} [geojson] GeoJSON geometry object
+ * @apiParam {String="own, lease, occupy, informal occupy"} [tenure_type] Cadasta relationship tenure type
+ * @apiParam (POST parameters) {Date} [acquired_date] Date of tenure acquisition
+ * @apiParam (POST parameters) {String} [how_acquired] How tenure was acquired
+ * @apiParam (POST parameters) {String} [description] Description of tenure history
+ *
+ * @apiSuccess {Object} cadasta_relationship_history_id The Cadasta database id of the created relationship history
+
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"spatial_source":"digitized"} http://localhost/projects/1/parcels/4
+ *
+ * @api {patch} /projects/:id/parcels/:parcel_id
+ *
+ * @apiParamExample {application/json} Request-Example:
+ *
+ *{"spatial_source": "digitized",
+"geojson":{
+        "type": "Linestring",
+        "coordinates": [
+          [
+            91.91986083984375,
+            43.04881979669318
+          ],
+          [
+            91.94183349609375,
+            42.974511174899156
+          ]
+        ]
+      },
+"land_use": "Residential",
+"gov_pin": null,
+"description": null
+}*
+
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *          "status":"OKAY",
+            "cadasta_relationship_history_id": 1
+        }
+ */
+router.patch('/:id/relationships/:relationship_id', function(req, res, next) {
+
+    if(req.params.id === undefined ||req.params.relationship_id === undefined) {
+        return next(new Error('Missing required POST parameters.'))
+    }
+
+    var geojson = ctrlCommon.sanitize(req.body.geojson);
+
+    var sql = 'SELECT * FROM cd_update_relationship ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+
+    var paramValues = [req.params.id, req.params.relationship_id, req.body.party_id, req.body.parcel_id,geojson, req.body.tenure_type, req.body.acquired_date, req.body.how_acquired, req.body.description];
+
+    pgb.queryDeferred(sql, {paramValues:paramValues})
+        .then(function(response){
+            res.status(200).json({status:"OKAY", cadasta_relationship_history_id: response[0].cd_update_relationship})
+        })
+        .catch(function(err){
+            res.status(400).json({status:"ERROR", message:err.message})
+        })
+        .done();
+
+});
+
 
 module.exports = router;

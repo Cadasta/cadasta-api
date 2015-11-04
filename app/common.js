@@ -159,7 +159,7 @@ common.featureCollectionSQL = function(table, mods, where){
 
         order_by = 'ORDER BY ' + modifiers.sort_by.split(',')
                                             .map(function(col){
-                                                return col + ' ' + modifiers.sort_dir;
+                                                return col + ' ' + (modifiers.sort_dir || '');
                                             })
                                             .join(',');
 

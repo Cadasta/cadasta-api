@@ -17,7 +17,6 @@
 
           	TRUNCATE option RESTART IDENTITY CASCADE;
           	TRUNCATE parcel RESTART IDENTITY CASCADE;
-          	TRUNCATE relationship_geometry RESTART IDENTITY CASCADE;
           	TRUNCATE organization RESTART IDENTITY CASCADE;
           	TRUNCATE project RESTART IDENTITY CASCADE;
 

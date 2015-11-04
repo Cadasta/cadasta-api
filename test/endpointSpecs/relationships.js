@@ -45,7 +45,7 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('time_updated');
                         expect(featureProperties).to.have.property('created_by');
                         expect(featureProperties).to.have.property('updated_by');
-                        expect(featureProperties).to.have.property('relationship_type');
+                        expect(featureProperties).to.have.property('tenure_type');
                         expect(featureProperties).to.have.property('spatial_source');
                         expect(featureProperties).to.have.property('party_id',1);
                         expect(featureProperties).to.have.property('first_name');
@@ -180,6 +180,36 @@ module.exports = function(app) {
 
             });
         });
+
+        describe('PATCH /projects/:id/relationships/:relationship_id suite', function () {
+
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .patch('/projects/1/relationships/1')
+                    .send({
+                        "parcel_id": null,
+                        "party_id": null,
+                        "geojson":null,
+                        "tenure_type":"informal occupy",
+                        "acquired_date":"11/1/2015",
+                        "how_acquired":"informally leased from government",
+                        "description":null
+                    })
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        expect(res.body).to.have.property('cadasta_relationship_history_id');
+
+                        done();
+                    });
+
+            });
+
+        });
+
 
     });
 
