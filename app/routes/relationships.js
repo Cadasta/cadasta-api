@@ -556,10 +556,8 @@ router.post('/:project_id/relationships', function(req, res, next) {
  * @apiParam {Integer} id Cadasta project id
  * @apiParam {Integer} relationship_id Cadasta relationship id
 
- * @apiParam (POST parameters) {Integer} [party_id] Cadasta project party id
- * @apiParam (POST parameters) {Integer} [parcel_id] Cadasta project parcel id
  * @apiParam (POST parameters) {String} [geojson] GeoJSON geometry object
- * @apiParam {String="own, lease, occupy, informal occupy"} [tenure_type] Cadasta relationship tenure type
+ * @apiParam (POST parameters) {String="own, lease, occupy, informal occupy"} [tenure_type] Cadasta relationship tenure type
  * @apiParam (POST parameters) {Date} [acquired_date] Date of tenure acquisition
  * @apiParam (POST parameters) {String} [how_acquired] How tenure was acquired
  * @apiParam (POST parameters) {String} [description] Description of tenure history
@@ -568,31 +566,20 @@ router.post('/:project_id/relationships', function(req, res, next) {
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X PATCH -d {"spatial_source":"digitized"} http://localhost/projects/1/parcels/4
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"geojson":null,"tenure_type":"informal occupy","acquired_date":"11/1/2015","how_acquired":"informally leased from government","description":"new description"} http://localhost/projects/1/relationships/4
  *
- * @api {patch} /projects/:id/parcels/:parcel_id
+ * @api {patch} /projects/:id/relationships/:relationship_id
  *
  * @apiParamExample {application/json} Request-Example:
  *
- *{"spatial_source": "digitized",
-"geojson":{
-        "type": "Linestring",
-        "coordinates": [
-          [
-            91.91986083984375,
-            43.04881979669318
-          ],
-          [
-            91.94183349609375,
-            42.974511174899156
-          ]
-        ]
-      },
-"land_use": "Residential",
-"gov_pin": null,
-"description": null
-}*
-
+ *{
+    "geojson":null,
+    "tenure_type":"informal occupy",
+    "acquired_date":"11/1/2015",
+    "how_acquired":"informally leased from government",
+    "description":"new description"
+}
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
