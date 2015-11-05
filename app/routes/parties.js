@@ -253,6 +253,54 @@ router.post('/:project_id/parties', function(req, res, next) {
 
 });
 
+
+// UPDATE A PARTY RECORD
+/**
+ * @api {patch} /projects/:project_id/parties/:party_id Project parties - Update one
+ * @apiName UpdateParties
+ * @apiGroup Projects
+ * @apiDescription Update a party
+ *
+ * @apiParam (POST parameters) {String} first_name First name of party
+ * @apiParam (POST parameters) {String} last_name Last name of party
+ * @apiParam (POST parameters) {String} group_name Name of Party Group
+ * @apiParam (POST parameters) {String="individual, group"} party_type Type of Party
+ * @apiParam (POST parameters) {String} gender Gender
+ * @apiParam (POST parameters) {Date} dob Date of Birth
+ * @apiParam (POST parameters) {String} notes Party Notes
+ * @apiParam (POST parameters) {String} national_id Party National ID
+ *
+ * @apiSuccess {Object} cadasta_party_id The cadasta database id of the created party
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"first_name": "Daniel","last_name": "Baah","group_name": null,"party_type": "individual","gender": "free form text","dob":"10-10-2010","notes":"We at wal mart corporation have been working hard to make this happen. We own everything","national_id":"XXX3322**iiIeeeeLLLL"} http://localhost/projects/1/parties/1
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *          "status":"OKAY",
+            "cadasta_party_id": 1
+        }
+ */
+router.patch('/:project_id/parties/:party_id', function(req, res, next) {
+
+    // Must have party type and or first name
+    if(req.body.party_type === undefined && (req.body.first_name == undefined || req.body.group_name == undefined)){
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var sql = "SELECT * FROM cd_update_party($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)";
+
+    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.params.party_id,req.body.party_type, req.body.first_name, req.body.last_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
+        .then(function(response){
+            res.status(200).json({status:"OKAY",cadasta_party_id: response[0].cd_update_party})
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+});
+
 /**
  *
  * @api {get} /project/:project_id/parties Project Parties - Get one

@@ -159,7 +159,35 @@ module.exports = function(app) {
 
             });
         });
-        
+        describe('PATCH /projects/1/parties/1', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .patch('/projects/1/parties/1')
+                    .send({
+                        "first_name": "Daniel",
+                        "last_name": "Baah",
+                        "group_name": null,
+                        "party_type": "individual",
+                        "gender": "free form text",
+                        "dob":"10-10-2010",
+                        "notes":"We at wal mart corporation have been working hard to make this happen. We own everything",
+                        "national_id":"XXX3322**iiIeeeeLLLL"
+                    })
+                    .end(function (res) {
+
+                        //Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        expect(res.body).to.have.property('cadasta_party_id');
+
+                        done();
+                    });
+
+            });
+        });
+
+
     })
 
 };
