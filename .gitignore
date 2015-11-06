@@ -9,6 +9,7 @@ app/settings/*
 !app/settings/environment-settings.js.example
 node_modules/
 app/public/docs/
+docs-app/public/**
 ship/**
 deploy/**
 
