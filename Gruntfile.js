@@ -38,7 +38,7 @@ module.exports = function(grunt) {
         apidoc: {
             docs: {
                 src: ["app", "node_modules/cadasta-data-transformer/src/ingestion"],
-                dest: "app/public/docs/",
+                dest: "docs-app/public/",
                 options: {
                     debug: true,
                     includeFilters: [ ".*\\.js$" ],
