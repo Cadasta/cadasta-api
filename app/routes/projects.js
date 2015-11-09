@@ -1338,31 +1338,61 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
  * @apiSuccess {Number} response.features.properties.created_by id of creator
  * @apiSuccess {Number} response.features.properties.updated_by id of updater
  * @apiSuccess {Array} response.features.properties.parcel_history
- * @apiSuccess {Number} response.features.properties.parcel_history.id history id
- * @apiSuccess {Number} response.features.properties.parcel_history.parcel_id parcel id
- * @apiSuccess {Number} response.features.properties.parcel_history.origin_id origin id
- * @apiSuccess {Number} response.features.properties.parcel_history.parent_id parent id
- * @apiSuccess {String} response.features.properties.parcel_history.version version
- * @apiSuccess {String} response.features.properties.parcel_history.description description
- * @apiSuccess {String} response.features.properties.parcel_history.date_modified YYYY-MM-DD of last update
- * @apiSuccess {Boolean} response.features.properties.parcel_history.active active/archived flag
- * @apiSuccess {String} response.features.properties.parcel_history.time_created Time stamp of creation
- * @apiSuccess {String} response.features.properties.parcel_history.time_updated Time stamp of last update
- * @apiSuccess {Number} response.features.properties.parcel_history.created_by id of creator
- * @apiSuccess {Number} response.features.properties.parcel_history.updated_by id of updater
- * @apiSuccess {Array} response.features.properties.relationships
- * @apiSuccess {Number} response.features.properties.relationships.id
- * @apiSuccess {Number} response.features.properties.relationships.parcel_id
- * @apiSuccess {Number} response.features.properties.relationships.party_id
- * @apiSuccess {Number} response.features.properties.relationships.geom_id
- * @apiSuccess {Number} response.features.properties.relationships.tenure_type
- * @apiSuccess {Number} response.features.properties.relationships.acquired_date
- * @apiSuccess {Number} response.features.properties.relationships.how_acquired
- * @apiSuccess {Number} response.features.properties.relationships.active
- * @apiSuccess {Number} response.features.properties.relationships.time_created
- * @apiSuccess {Number} response.features.properties.relationships.time_updated
- * @apiSuccess {Number} response.features.properties.relationships.created_by
- * @apiSuccess {Number} response.features.properties.relationships.updated_by
+ * @apiSuccess {Object} response.features.properties.parcel_history.properties parcel history properties
+ * @apiSuccess {Number} response.features.properties.parcel_history.properties.id history id
+ * @apiSuccess {Number} response.features.properties.parcel_history.properties.parcel_id parcel id
+ * @apiSuccess {Number} response.features.properties.parcel_history.properties.origin_id origin id
+ * @apiSuccess {Number} response.features.properties.parcel_history.properties.parent_id parent id
+ * @apiSuccess {String} response.features.properties.parcel_history.properties.version version
+ * @apiSuccess {String} response.features.properties.parcel_history.properties.description description
+ * @apiSuccess {String} response.features.properties.parcel_history.properties.date_modified YYYY-MM-DD of last update
+ * @apiSuccess {Boolean} response.features.properties.parcel_history.properties.active active/archived flag
+ * @apiSuccess {String} response.features.properties.parcel_history.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.parcel_history.properties.time_updated Time stamp of last update
+ * @apiSuccess {Number} response.features.properties.parcel_history.properties.created_by id of creator
+ * @apiSuccess {Number} response.features.properties.parcel_history.properties.updated_by id of updater
+ * @apiSuccess {Array} response.features.properties.relationships array of parcel relationships
+ * @apiSuccess {Object} response.features.properties.relationships.properties
+ * @apiSuccess {Object} response.features.properties.relationships.geometry relationship geometry
+ * @apiSuccess {Number} response.features.properties.relationships.properties.id relationship id
+ * @apiSuccess {Number} response.features.properties.relationships.properties.parcel_id parcel id
+ * @apiSuccess {Number} response.features.properties.relationships.properties.party_id party id
+ * @apiSuccess {Number} response.features.properties.relationships.properties.geom_id geom id
+ * @apiSuccess {String} response.features.properties.relationships.properties.tenure_type tenure type
+ * @apiSuccess {Date} response.features.properties.relationships.properties.acquired_date parcel acquired date
+ * @apiSuccess {String} response.features.properties.relationships.properties.how_acquired how parcel was acquired
+ * @apiSuccess {Boolean} response.features.properties.relationships.properties.active status
+ * @apiSuccess {Date} response.features.properties.relationships.properties.time_created time created
+ * @apiSuccess {Date} response.features.properties.relationships.properties.time_updated time updated
+ * @apiSuccess {Number} response.features.properties.relationships.properties.created_by created by
+ * @apiSuccess {Number} response.features.properties.relationships.properties.updated_by updated by
+ * @apiSuccess {Array} response.features.properties.relationship_history
+ * @apiSuccess {Array} response.features.properties.relationship_history.properties
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.project_id project id
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.relationship_id relationship id
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.origin_id original parcel id
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.version version
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.parent_id parent parcel id
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.tenure_type tenure type
+ * @apiSuccess {Date} response.features.properties.relationship_history.properties.acquired_date acquired date
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.how_acquired how parcel was acquired
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.parcel_id parcel id
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.relationship_type relationship type
+ * @apiSuccess {Date} response.features.properties.relationship_history.properties.expiration_date expiration date
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.description description
+ * @apiSuccess {Date} response.features.properties.relationship_history.properties.date_modified date modified
+ * @apiSuccess {Boolean} response.features.properties.relationship_history.properties.active status
+ * @apiSuccess {Date} response.features.properties.relationship_history.properties.time_created time created
+ * @apiSuccess {Float} response.features.properties.relationship_history.properties.length parcel length
+ * @apiSuccess {Float} response.features.properties.relationship_history.properties.area parcel area
+ * @apiSuccess {Date} response.features.properties.relationship_history.properties.time_updated time updated
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.created_by created by
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.updated_by updated by
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.spatial_source spatial source
+ * @apiSuccess {Number} response.features.properties.relationship_history.properties.party_id party id
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.first_name first name
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.last_name last name
+ *
  *
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/projects/1/parcels/1/details
@@ -1395,36 +1425,82 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
                 "created_by": 11,
                 "updated_by": null,
                 "parcel_history": [
-                  {
-                    "id": 1,
-                    "parcel_id": 1,
-                    "origin_id": 1,
-                    "parent_id": null,
-                    "version": 1,
-                    "description": "new description",
-                    "date_modified": "2015-09-01T07:00:00.000Z",
-                    "active": true,
-                    "time_created": "2015-09-01T16:53:16.466Z",
-                    "time_updated": null,
-                    "created_by": 11,
-                    "updated_by": null
+                 {
+                    "type": "Feature",
+                    "geometry": null,
+                    "properties": {
+                        "id": 1,
+                        "parcel_id": 1,
+                        "origin_id": 1,
+                        "parent_id": null,
+                        "version": 1,
+                        "description": "new description",
+                        "date_modified": "2015-09-01T07:00:00.000Z",
+                        "active": true,
+                        "time_created": "2015-09-01T16:53:16.466Z",
+                        "time_updated": null,
+                        "created_by": 11,
+                        "updated_by": null
+                    }
                   }
                 ],
                 "relationships": [
+                   {
+                     "type": "Feature",
+                     "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            -72.9490754,
+                            40.8521095
+                        ]
+                     },
+                     "properties": {
+                        "id": 1,
+                        "parcel_id": 1,
+                        "party_id": 1,
+                        "geom_id": null,
+                        "tenure_type": 1,
+                        "acquired_date": null,
+                        "how_acquired": null,
+                        "active": true,
+                        "sys_delete": false,
+                        "time_created": "2015-09-01T16:53:16.466Z",
+                        "time_updated": null,
+                        "created_by": 11,
+                        "updated_by": null
+                      }
+                  }
+                ],
+                "relationship_history": [
                   {
-                    "id": 1,
-                    "parcel_id": 1,
-                    "party_id": 1,
-                    "geom_id": null,
-                    "tenure_type": 1,
-                    "acquired_date": null,
-                    "how_acquired": null,
-                    "active": true,
-                    "sys_delete": false,
-                    "time_created": "2015-09-01T16:53:16.466Z",
-                    "time_updated": null,
-                    "created_by": 11,
-                    "updated_by": null
+                    "type": "Feature",
+                    "geometry": null,
+                    "properties": {
+                        "project_id": 1,
+                        "relationship_id": 1,
+                        "origin_id": 1,
+                        "version": 2,
+                        "parent_id": null,
+                        "tenure_type": 4,
+                        "acquired_date": "2015-11-01",
+                        "how_acquired": "informally leased from government",
+                        "parcel_id": 1,
+                        "relationship_type": "informal occupy",
+                        "expiration_date": null,
+                        "description": null,
+                        "date_modified": "2015-11-06",
+                        "active": true,
+                        "time_created": "2015-11-06T13:36:30.29735-08:00",
+                        "length": null,
+                        "area": null,
+                        "time_updated": "2015-11-06T13:36:30.29735-08:00",
+                        "created_by": null,
+                        "updated_by": null,
+                        "spatial_source": "digitized",
+                        "party_id": 1,
+                        "first_name": "Daniel",
+                        "last_name": "Lastname"
+                    }
                   }
                 ]
               }
@@ -1471,7 +1547,8 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
     Q.all([
         ctrlCommon.getAll('parcel',  options),
         ctrlCommon.getAll('show_parcel_history', otherOpts),
-        ctrlCommon.getAll('show_relationships', geomOpts)
+        ctrlCommon.getAll('show_relationships', geomOpts),
+        ctrlCommon.getAll('show_relationship_history', otherOpts)
     ])
         .then(function (results) {
 
@@ -1486,6 +1563,7 @@ router.get('/:id/parcels/:parcel_id/details', common.parseQueryOptions, function
             // Add properties to parcel's geojson
             geoJSON.features[0].properties.parcel_history = results[1][0].response.features;
             geoJSON.features[0].properties.relationships = results[2][0].response.features;
+            geoJSON.features[0].properties.relationship_history = results[3][0].response.features;
 
             res.status(200).json(geoJSON);
         })

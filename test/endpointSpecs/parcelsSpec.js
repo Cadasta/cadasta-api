@@ -281,6 +281,104 @@ module.exports = function(app) {
                         parcel_history.should.all.have.property('created_by');
                         parcel_history.should.all.have.property('updated_by');
 
+
+                        done();
+                    });
+
+            });
+        });
+
+        describe('GET projects/:id/parcels/:id/details', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .get('/projects/1/parcels/1/details')
+                    .end(function (res) {
+
+                        // Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        // Test that it returns GeoJSON
+                        testUtils.expectFeatureCollection(res.body);
+
+                        //  Get the GeoJSON features for further testing
+                        var features = res.body.features;
+
+                        // Make sure only one feature returned
+                        expect(features).with.length(1);
+
+                        // Check properties
+                        var featureProperties = features[0].properties;
+
+                        expect(featureProperties).to.have.property('id');
+                        expect(featureProperties).to.have.property('spatial_source');
+                        expect(featureProperties).to.have.property('user_id');
+                        expect(featureProperties).to.have.property('area');
+                        expect(featureProperties).to.have.property('land_use');
+                        expect(featureProperties).to.have.property('gov_pin');
+                        expect(featureProperties).to.have.property('active');
+                        expect(featureProperties).to.have.property('time_created');
+                        expect(featureProperties).to.have.property('time_updated');
+                        expect(featureProperties).to.have.property('created_by');
+                        expect(featureProperties).to.have.property('updated_by');
+                        expect(featureProperties).to.have.property('parcel_history');
+                        expect(featureProperties).to.have.property('parcel_history');
+
+                        var geometry = features[0].geometry;
+
+                        expect(geometry).to.have.property('coordinates');
+
+                        var relationshipProperties = featureProperties.relationships[0].properties;
+                        expect(relationshipProperties).to.have.property('id');
+                        expect(relationshipProperties).to.have.property('parcel_id');
+                        expect(relationshipProperties).to.have.property('tenure_type');
+                        expect(relationshipProperties).to.have.property('spatial_source');
+                        expect(relationshipProperties).to.have.property('party_id');
+                        expect(relationshipProperties).to.have.property('first_name');
+                        expect(relationshipProperties).to.have.property('last_name');
+                        expect(relationshipProperties).to.have.property('time_created');
+
+
+                        var parcel_historyProperties = featureProperties.parcel_history[0].properties;
+                        expect(parcel_historyProperties).to.have.property('id');
+                        expect(parcel_historyProperties).to.have.property('parcel_id');
+                        expect(parcel_historyProperties).to.have.property('origin_id');
+                        expect(parcel_historyProperties).to.have.property('parent_id');
+                        expect(parcel_historyProperties).to.have.property('version');
+                        expect(parcel_historyProperties).to.have.property('description');
+                        expect(parcel_historyProperties).to.have.property('date_modified');
+                        expect(parcel_historyProperties).to.have.property('active');
+                        expect(parcel_historyProperties).to.have.property('time_created');
+                        expect(parcel_historyProperties).to.have.property('time_updated');
+                        expect(parcel_historyProperties).to.have.property('created_by');
+                        expect(parcel_historyProperties).to.have.property('updated_by');
+
+                        var relationship_historyProperties = featureProperties.relationship_history[0].properties;
+                        expect(relationship_historyProperties).to.have.property('project_id');
+                        expect(relationship_historyProperties).to.have.property('relationship_id');
+                        expect(relationship_historyProperties).to.have.property('origin_id');
+                        expect(relationship_historyProperties).to.have.property('parent_id');
+                        expect(relationship_historyProperties).to.have.property('version');
+                        expect(relationship_historyProperties).to.have.property('tenure_type');
+                        expect(relationship_historyProperties).to.have.property('acquired_date');
+                        expect(relationship_historyProperties).to.have.property('how_acquired');
+                        expect(relationship_historyProperties).to.have.property('parcel_id');
+                        expect(relationship_historyProperties).to.have.property('relationship_type');
+                        expect(relationship_historyProperties).to.have.property('expiration_date');
+                        expect(relationship_historyProperties).to.have.property('description');
+                        expect(relationship_historyProperties).to.have.property('date_modified');
+                        expect(relationship_historyProperties).to.have.property('active');
+                        expect(relationship_historyProperties).to.have.property('time_created');
+                        expect(relationship_historyProperties).to.have.property('length');
+                        expect(relationship_historyProperties).to.have.property('area');
+                        expect(relationship_historyProperties).to.have.property('time_updated');
+                        expect(relationship_historyProperties).to.have.property('created_by');
+                        expect(relationship_historyProperties).to.have.property('updated_by');
+                        expect(relationship_historyProperties).to.have.property('spatial_source');
+                        expect(relationship_historyProperties).to.have.property('party_id');
+                        expect(relationship_historyProperties).to.have.property('first_name');
+                        expect(relationship_historyProperties).to.have.property('last_name');
+
                         done();
                     });
 
