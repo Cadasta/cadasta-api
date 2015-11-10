@@ -72,7 +72,7 @@ In the user directory, clone the following repositiories:
     cp ~/cadasta-private-settings/cadasta-api/environment-settings.js ~/cadasta-api/app/settings
     
     # Install Cadasta API
-	cd cadasta-api
+	cd ~/cadasta-api
 	npm install
 	pip install -r requirements.txt
 	grunt updateDocs
