@@ -4,6 +4,8 @@ The Cadasta API is based on the [Express](http://expressjs.com/) web framework f
 
 ###Install
 
+The following installation instructions assume you are deploying the API to the same host that include the CKAN application and database
+
 In the user directory, clone the following repositiories:
 
 	# Get the Cadasta DB repo
@@ -12,7 +14,7 @@ In the user directory, clone the following repositiories:
     # Get PostGIS extension
     sudo apt-get install -y postgis postgresql-9.3-postgis-2.1
     
-    # Create the Database
+    # Create the Database if you have not already done so
 	sudo -u postgres psql -c "CREATE DATABASE cadasta_db with owner=postgres encoding='UTF-8' 
 	lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0"
 	sudo -u postgres psql -c "CREATE EXTENSION postgis;" cadasta_db
