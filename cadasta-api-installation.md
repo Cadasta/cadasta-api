@@ -10,7 +10,7 @@ In the user directory, clone the following repositiories:
     git clone https://github.com/Cadasta/cadasta-db.git
     
     # Get PostGIS extension
-    sudo apt-get install -y postgis postgresql-9.4-postgis-2.1
+    sudo apt-get install -y postgis postgresql-9.3-postgis-2.1
     
     # Create the Database
 	sudo -u postgres psql -c "CREATE DATABASE cadasta_db with owner=postgres encoding='UTF-8' 
@@ -30,11 +30,11 @@ In the user directory, clone the following repositiories:
     # Get the Cadasta Api code
     git clone https://github.com/Cadasta/cadasta-api.git
         
-    cp cadasta-private-settings/cadasta-api/settings.js cadasta-api/app/settings
-    cp cadasta-private-settings/cadasta-api/environment-settings.js cadasta-api/app/settings
+    cp ~/cadasta-private-settings/cadasta-api/settings.js cadasta-api/app/settings
+    cp ~/cadasta-private-settings/cadasta-api/environment-settings.js cadasta-api/app/settings
     
     # Install Cadasta API
-	cd cadasta-api
+	cd ~/cadasta-api
 	sudo npm install
 	pip install -r requirements.txt
 	grunt updateDocs
@@ -43,8 +43,8 @@ In the user directory, clone the following repositiories:
 	sudo npm install pm2 -g
 	
 	# Create the pm2 startup script
-	pm2 startup ubuntu -u vagrant
-	sudo su -c "env PATH=$PATH:/usr/bin pm2 startup ubuntu -u vagrant --hp /home/vagrant"
+	pm2 startup ubuntu -u ubuntu
+	sudo su -c "env PATH=$PATH:/usr/bin pm2 startup ubuntu -u ubuntu --hp /home/ubuntu"
     
 
 	# Start the API
@@ -66,12 +66,12 @@ In the user directory, clone the following repositiories:
 	git pull origin master
 	
 	# Copy private settings
-	cp cadasta-private-settings/cadasta-api/settings.js cadasta-api/app/settings
-    cp cadasta-private-settings/cadasta-api/environment-settings.js cadasta-api/app/settings
+	cp ~/cadasta-private-settings/cadasta-api/settings.js ~/cadasta-api/app/settings
+    cp ~/cadasta-private-settings/cadasta-api/environment-settings.js ~/cadasta-api/app/settings
     
     # Install Cadasta API
 	cd cadasta-api
-	sudo npm install
+	npm install
 	pip install -r requirements.txt
 	grunt updateDocs
 	
