@@ -50,7 +50,7 @@ In the user directory, clone the following repositiories:
     
 
 	# Start the API
-	sudo pm2 start app/app.js --name cadasta-api -- --env production
+	sudo pm2 start app/app.js --name cadasta-api -- --env ckan
 	
 	# Serve the API documentation
 	sudo pm2 start docs-app/app.js --name cadasta-api-docs
@@ -78,4 +78,10 @@ In the user directory, clone the following repositiories:
 	grunt updateDocs
 	
 	#Restart
-	sudo pm2 restart all
+	sudo pm2 delete all
+
+	# Start the API
+	sudo pm2 start app/app.js --name cadasta-api -- --env ckan
+
+	# Serve the API documentation
+	sudo pm2 start docs-app/app.js --name cadasta-api-docs
