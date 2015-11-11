@@ -60,7 +60,7 @@ for (var i in envSettings) {
     settings[i] = envSettings[i];
 }
 
-//settings.pg = envSettings.pg;
+settings.pg = envSettings.pg;
 
 var DataTransformer = require('cadasta-data-transformer');
 var ingestion_engine = DataTransformer(settings);
