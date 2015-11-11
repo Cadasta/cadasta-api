@@ -18,7 +18,7 @@ var environment = argv.env || null;
 
 if(!environment) {
     console.error("\nPlease provide an environment setting, e.g., '--env development'.\n", 1);
-    return;
+    process.exit(1);
 }
 
 var settings, environments, validEnvironments, envSettings;
@@ -28,14 +28,14 @@ try {
     settings = require('./settings/settings.js');
 } catch (e) {
     console.error("Missing app/settings/settings.js file.\n", e);
-    return;
+    process.exit(1);
 }
 
 try {
     environments = require("./settings/environment-settings.js");
 } catch (e) {
     console.error("Missing app/settings/settings.js file.\n", e);
-    return;
+    process.exit(1);
 }
 
 if(!environments.hasOwnProperty(environment)) {
@@ -44,7 +44,7 @@ if(!environments.hasOwnProperty(environment)) {
 
     console.error("\nThe --env value you provided is not found in the list of valid environments: "
         + validEnvironments.split(',').join(', '), 1);
-    return;
+    process.exit(1);
 }
 
 // Define environment settings
