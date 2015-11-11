@@ -2,6 +2,11 @@
 
 The Cadasta API is based on the [Express](http://expressjs.com/) web framework for Node.js.  It connects to the Cadasta PostgreSQL database. This database contains all of the Cadasta application-specific schema entities and the schema for storing survey data imported from ONA.
 
+Dependencies:
+Node 0.10.24
+Grunt-CLI
+PM2
+
 ###Install
 
 The following installation instructions assume you are deploying the API to the same host that include the CKAN application and database
@@ -80,7 +85,9 @@ In the user directory, clone the following repositiories:
 	#Restart
 	sudo pm2 delete all
 
-	# Start the API, see valid [environments](https://github.com/Cadasta/cadasta-private-settings/blob/master/cadasta-api/environment-settings.js)
+Start the API, see valid [environments](https://github.com/Cadasta/cadasta-private-settings/blob/master/cadasta-api/environment-settings.js)
+
+	# Serve the API
 	sudo pm2 start app/app.js --name cadasta-api -- --env <environment>
 
 	# Serve the API documentation
