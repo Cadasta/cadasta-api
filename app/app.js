@@ -14,7 +14,7 @@ require('./console-winston');
 
 
 // Set the valid environments
-var validEnvironments = ['production', 'demo', 'staging', 'staging-backup', 'development', 'testing'];
+var validEnvironments = ['ckan',  'development', 'testing'];
 
 // Get the runtime environment from the node app argument; default to development
 var environment = argv.env || 'development';
@@ -120,17 +120,12 @@ if (app.get('env') === 'development') {
     // print stack trace
     printStackTrace(app);
 
-} else if (app.get('env') === 'staging' || app.get('env') === 'demo' || app.get('env') === 'staging-backup') {
+} else if (app.get('env') === 'ckan') {
 
     // print stack trace and log warnings and errors to Rollbar logging dashboard
     printStackTrace(app);
     addLogging(app, settings);
 
-} else if (app.get('env') === 'production') {
-
-    // hide stack trace and log warnings and errors to Rollbar logging dashboard
-    hideStackTrace(app);
-    addLogging(app, settings);
 }
 
 
