@@ -80,8 +80,8 @@ In the user directory, clone the following repositiories:
 	#Restart
 	sudo pm2 delete all
 
-	# Start the API
-	sudo pm2 start app/app.js --name cadasta-api -- --env deployment_ec2
+	# Start the API, see valid [environments](https://github.com/Cadasta/cadasta-private-settings/blob/master/cadasta-api/environment-settings.js)
+	sudo pm2 start app/app.js --name cadasta-api -- --env <environment>
 
 	# Serve the API documentation
 	sudo pm2 start docs-app/app.js --name cadasta-api-docs
