@@ -73,8 +73,8 @@ In the user directory, clone the following repositiories:
     
     # Install Cadasta API
 	cd ~/cadasta-api
-	npm install
-	pip install -r requirements.txt
+	sudo npm install
+	sudo pip install -r requirements.txt
 	grunt updateDocs
 	
 	#Restart
