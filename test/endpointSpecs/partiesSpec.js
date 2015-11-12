@@ -27,8 +27,7 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('project_id');
                         expect(featureProperties).to.have.property('num_relationships');
                         expect(featureProperties).to.have.property('group_name');
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
                         expect(featureProperties).to.have.property('type');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_created');
@@ -43,7 +42,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/projects/1/parties/2')
+                    .get('/projects/1/parties/1')
                     .end(function (res) {
 
                         //Test that the endpoint exists and responds
@@ -57,13 +56,12 @@ module.exports = function(app) {
                         // Check properties
                         var featureProperties = features[0].properties;
 
-                        expect(featureProperties).to.have.property('id',2);
+                        expect(featureProperties).to.have.property('id',1);
                         expect(featureProperties).to.have.property('project_id',1);
                         expect(featureProperties).to.have.property('num_relationships',1);
-                        expect(featureProperties).to.have.property('group_name');
-                        expect(featureProperties).to.have.property('first_name', 'Oscar');
-                        expect(featureProperties).to.have.property('last_name', 'Sanders ');
-                        expect(featureProperties).to.have.property('type', 'individual');
+                        expect(featureProperties).to.have.property('group_name', 'Wal mart');
+                        expect(featureProperties).to.have.property('full_name');
+                        expect(featureProperties).to.have.property('type', 'group');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_created');
                         expect(featureProperties).to.have.property('time_updated');
@@ -99,8 +97,7 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('project_id');
                         expect(featureProperties).to.have.property('num_relationships');
                         expect(featureProperties).to.have.property('group_name');
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
                         expect(featureProperties).to.have.property('type');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_created');
@@ -121,8 +118,8 @@ module.exports = function(app) {
                         expect(relationships).to.have.property('project_id');
                         expect(relationships).to.have.property('spatial_source');
                         expect(relationships).to.have.property('party_id');
-                        expect(relationships).to.have.property('first_name');
-                        expect(relationships).to.have.property('last_name');
+                        expect(relationships).to.have.property('full_name');
+                        expect(relationships).to.have.property('group_name');
                         expect(relationships).to.have.property('time_created');
                         expect(relationships).to.have.property('active');
                         expect(relationships).to.have.property('time_updated');
@@ -138,8 +135,7 @@ module.exports = function(app) {
                 chai.request(app)
                     .post('/projects/1/parties')
                     .send({
-                        "first_name": null,
-                        "last_name": null,
+                        "full_name": null,
                         "group_name": "Wallys World",
                         "party_type": "group",
                         "gender": "Male",
@@ -165,8 +161,7 @@ module.exports = function(app) {
                 chai.request(app)
                     .patch('/projects/1/parties/1')
                     .send({
-                        "first_name": "Daniel",
-                        "last_name": "Baah",
+                        "full_name": "Daniel",
                         "group_name": null,
                         "party_type": "individual",
                         "gender": "free form text",

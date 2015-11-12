@@ -228,8 +228,8 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
  * @apiSuccess {String} response.features.properties.spatial_source spatial source
  * @apiSuccess {Number} response.features.properties.parcel_id relationship's parcel id
  * @apiSuccess {Number} response.features.properties.party_id relationship's party id
- * @apiSuccess {String} response.features.properties.first_name first name of creator
- * @apiSuccess {String} response.features.properties.last_name last_name of creator
+ * @apiSuccess {String} response.features.properties.full_name party full name
+ *  * @apiSuccess {String} response.features.properties.group_name party group name
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
@@ -255,8 +255,8 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
         "parcel_id": 1,
         "spatial_source": "survey_grade_gps",
         "party_id": 1,
-        "first_name": "Daniel",
-        "last_name": "Baah",
+        "full_name": "Daniel B",
+        "group_name":null,
         "time_created": "2015-08-12T03:46:01.673153+00:00"
       }
     },
@@ -275,8 +275,8 @@ router.get('/show_activity', common.parseQueryOptions, function(req, res, next) 
         "parcel_id": 2,
         "spatial_source": "survey_grade_gps",
         "party_id": 2,
-        "first_name": "Sarah",
-        "last_name": "Bindman",
+        "full_name": "Sarah Smith",
+        "group_name": "WalMart",
         "time_created": "2015-08-12T03:46:01.673153+00:00"
       }
     }
@@ -323,8 +323,8 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
  * @apiSuccess {String} response.features.properties.spatial_source spatial source
  * @apiSuccess {Number} response.features.properties.parcel_id relationship's parcel id
  * @apiSuccess {Number} response.features.properties.party_id relationship's party id
- * @apiSuccess {String} response.features.properties.first_name first name of creator
- * @apiSuccess {String} response.features.properties.last_name last_name of creator
+ * @apiSuccess {String} response.features.properties.full_name first name of party
+ * @apiSuccess {String} response.features.properties.group_name group name of party
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  *
  * @apiExample {curl} Example usage:
@@ -351,8 +351,8 @@ router.get('/show_relationships', common.parseQueryOptions, function(req, res, n
                 "parcel_id": 1,
                 "spatial_source": "survey_grade_gps",
                 "party_id": 1,
-                "first_name": "Daniel",
-                "last_name": "Baah",
+                "full_name": "Daniel Batch",
+                "group_name": null,
                 "time_created": "2015-08-12T03:46:01.673153+00:00"
               }
             }

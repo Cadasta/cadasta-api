@@ -25,8 +25,8 @@ var pgb = require('../pg-binding.js');
  * @apiSuccess {Integer} response.features.properties.id party id
  * @apiSuccess {Integer} response.features.properties.project_id party project id
  * @apiSuccess {Integer} response.features.properties.num_relationships number of party relationships
- * @apiSuccess {String} response.features.properties.first_name party first name
- * @apiSuccess {String} response.features.properties.last_name party last name
+ * @apiSuccess {String} response.features.properties.full_name party group name
+ * @apiSuccess {String} response.features.properties.group_name party group name
  * @apiSuccess {String} response.features.properties.group_name Time stamp of last update
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp of party creation
  * @apiSuccess {Timestamp} response.features.properties.time_updated timestamp of party update
@@ -48,8 +48,8 @@ var pgb = require('../pg-binding.js');
  * @apiSuccess {Number} response.features.properties.relationships.properties.project_id
  * @apiSuccess {String} response.features.properties.relationships.properties.spatial_source
  * @apiSuccess {Number} response.features.properties.relationships.properties.party_id
- * @apiSuccess {String} response.features.properties.relationships.properties.first_name
- * @apiSuccess {String} response.features.properties.relationships.properties.last_name
+ * @apiSuccess {String} response.features.properties.relationships.properties.full_name
+ * @apiSuccess {String} response.features.properties.relationships.properties.group_name
  * @apiSuccess {Timestamp} response.features.properties.relationships.properties.time_created
  * @apiSuccess {Timestamp} response.features.properties.relationships.properties.time_updated
  * @apiSuccess {Number} response.features.properties.relationships.properties.active
@@ -70,8 +70,8 @@ var pgb = require('../pg-binding.js');
                 "id": 2,
                 "num_relationships": 2,
                 "group_name": null,
-                "first_name": "Oscar",
-                "last_name": "Sanders ",
+                "full_name": "Oscar",
+                "group_name": "Sanders ",
                 "type": "individual",
                 "active": true,
                 "time_created": "2015-10-28T18:52:00.69074-07:00",
@@ -143,8 +143,8 @@ var pgb = require('../pg-binding.js');
                             "project_id": 1,
                             "spatial_source": "survey_sketch",
                             "party_id": 2,
-                            "first_name": "Oscar",
-                            "last_name": "Sanders ",
+                            "full_name": "Oscar",
+                            "group_name": "Sanders ",
                             "time_created": "2015-10-28T18:52:00.69074-07:00",
                             "active": true,
                             "time_updated": "2015-10-28T18:52:00.69074-07:00"
@@ -213,8 +213,7 @@ router.get('/:project_id/parties/:id/details', common.parseQueryOptions, functio
  * @apiGroup Projects
  * @apiDescription Create a party
  *
- * @apiParam (POST parameters) {String} first_name First name of party
- * @apiParam (POST parameters) {String} last_name Last name of party
+ * @apiParam (POST parameters) {String} full_name group name of party
  * @apiParam (POST parameters) {String} group_name Name of Party Group
  * @apiParam (POST parameters) {String="individual, group"} party_type Type of Party
  * apiParam (POST parameters) {String} gender Gender
@@ -235,14 +234,14 @@ router.get('/:project_id/parties/:id/details', common.parseQueryOptions, functio
  */
 router.post('/:project_id/parties', function(req, res, next) {
 
-    if(req.body.first_name === undefined || req.body.last_name === undefined ||
+    if(req.body.full_name === undefined || req.body.group_name === undefined ||
         req.body.group_name === undefined || req.body.party_type === undefined) {
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "SELECT * FROM cd_create_party($1,$2,$3,$4,$5,$6,$7,$8,$9)";
+    var sql = "SELECT * FROM cd_create_party($1,$2,$3,$4,$5,$6,$7,$8)";
 
-    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.body.party_type, req.body.first_name, req.body.last_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
+    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.body.party_type, req.body.full_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
         .then(function(response){
             res.status(200).json({cadasta_party_id: response[0].cd_create_party})
         })
@@ -261,8 +260,7 @@ router.post('/:project_id/parties', function(req, res, next) {
  * @apiGroup Projects
  * @apiDescription Update a party
  *
- * @apiParam (POST parameters) {String} first_name First name of party
- * @apiParam (POST parameters) {String} last_name Last name of party
+ * @apiParam (POST parameters) {String} full_name group name of party
  * @apiParam (POST parameters) {String} group_name Name of Party Group
  * @apiParam (POST parameters) {String="individual, group"} party_type Type of Party
  * @apiParam (POST parameters) {String} gender Gender
@@ -273,7 +271,7 @@ router.post('/:project_id/parties', function(req, res, next) {
  * @apiSuccess {Object} cadasta_party_id The cadasta database id of the created party
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X PATCH -d {"first_name": "Daniel","last_name": "Baah","group_name": null,"party_type": "individual","gender": "free form text","dob":"10-10-2010","notes":"We at wal mart corporation have been working hard to make this happen. We own everything","national_id":"XXX3322**iiIeeeeLLLL"} http://localhost/projects/1/parties/1
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"full_name": "Daniel Batch","group_name": null,"party_type": "individual","gender": "free form text","dob":"10-10-2010","notes":"We at wal mart corporation have been working hard to make this happen. We own everything","national_id":"XXX3322**iiIeeeeLLLL"} http://localhost/projects/1/parties/1
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -284,14 +282,14 @@ router.post('/:project_id/parties', function(req, res, next) {
  */
 router.patch('/:project_id/parties/:party_id', function(req, res, next) {
 
-    // Must have party type and or first name
-    if(req.body.party_type === undefined && (req.body.first_name == undefined || req.body.group_name == undefined)){
+    // Must have party type and or group name
+    if(req.body.party_type === undefined && (req.body.full_name == undefined || req.body.group_name == undefined)){
         return next(new Error('Missing POST parameters.'))
     }
 
-    var sql = "SELECT * FROM cd_update_party($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)";
+    var sql = "SELECT * FROM cd_update_party($1,$2,$3,$4,$5,$6,$7,$8,$9)";
 
-    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.params.party_id,req.body.party_type, req.body.first_name, req.body.last_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
+    pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.params.party_id,req.body.party_type, req.body.full_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
         .then(function(response){
             res.status(200).json({status:"OKAY",cadasta_party_id: response[0].cd_update_party})
         })
@@ -323,8 +321,8 @@ router.patch('/:project_id/parties/:party_id', function(req, res, next) {
  * @apiSuccess {Integer} response.features.properties.id party id
  * @apiSuccess {Integer} response.features.properties.project_id party project id
  * @apiSuccess {Integer} response.features.properties.num_relationships number of party relationships
- * @apiSuccess {String} response.features.properties.first_name party first name
- * @apiSuccess {String} response.features.properties.last_name party last name
+ * @apiSuccess {String} response.features.properties.full_name party group name
+ * @apiSuccess {String} response.features.properties.group_name party group name
  * @apiSuccess {String} response.features.properties.group_name Time stamp of last update
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp of party creation
  * @apiSuccess {Timestamp} response.features.properties.time_updated timestamp of party update
@@ -345,8 +343,8 @@ router.patch('/:project_id/parties/:party_id', function(req, res, next) {
                 "id": 64,
                 "num_relationships": 0,
                 "group_name": "Wal-Mart",
-                "first_name": null,
-                "last_name": null,
+                "full_name": null,
+                "group_name": null,
                 "type": "group",
                 "active": true,
                 "time_created": "2015-10-28T15:00:52.522756-07:00",
@@ -403,8 +401,8 @@ router.get('/:project_id/parties/:id', common.parseQueryOptions, function(req, r
  * @apiSuccess {Integer} response.features.properties.id party id
  * @apiSuccess {Integer} response.features.properties.project_id party project id
  * @apiSuccess {Integer} response.features.properties.num_relationships number of party relationships
- * @apiSuccess {String} response.features.properties.first_name party first name
- * @apiSuccess {String} response.features.properties.last_name party last name
+ * @apiSuccess {String} response.features.properties.full_name party group name
+ * @apiSuccess {String} response.features.properties.group_name party group name
  * @apiSuccess {String} response.features.properties.group_name Time stamp of last update
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp of party creation
  * @apiSuccess {Timestamp} response.features.properties.time_updated timestamp of party update
@@ -425,8 +423,8 @@ router.get('/:project_id/parties/:id', common.parseQueryOptions, function(req, r
                 "id": 64,
                 "num_relationships": 0,
                 "group_name": "Wal-Mart",
-                "first_name": null,
-                "last_name": null,
+                "full_name": null,
+                "group_name": null,
                 "type": "group",
                 "active": true,
                 "time_created": "2015-10-28T15:00:52.522756-07:00",

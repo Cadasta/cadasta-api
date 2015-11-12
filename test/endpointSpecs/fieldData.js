@@ -33,7 +33,6 @@ module.exports = function(app) {
 
                         expect(featureProperties).to.have.property('project_id');
                         expect(featureProperties).to.have.property('user_id');
-                        expect(featureProperties).to.have.property('parcel_id');
                         expect(featureProperties).to.have.property('id_string');
                         expect(featureProperties).to.have.property('form_id');
                         expect(featureProperties).to.have.property('name');
@@ -95,7 +94,6 @@ module.exports = function(app) {
 
                         expect(featureProperties).to.have.property('project_id');
                         expect(featureProperties).to.have.property('user_id');
-                        expect(featureProperties).to.have.property('parcel_id');
                         expect(featureProperties).to.have.property('id_string');
                         expect(featureProperties).to.have.property('form_id');
                         expect(featureProperties).to.have.property('name');

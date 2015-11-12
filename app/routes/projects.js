@@ -1223,8 +1223,8 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
  * @apiSuccess {Number} response.features.properties.updated_by id of updater
  * @apiSuccess {String} response.features.properties.relationship_type relationship type
  * @apiSuccess {String} response.features.properties.spatial_source spatial source
- * @apiSuccess {String} response.features.properties.first_name first name of creator
- * @apiSuccess {String} response.features.properties.last_name last_name of creator
+ * @apiSuccess {String} response.features.properties.full_name full name of creator
+ * @apiSuccess {String} response.features.properties.group_name group_name of creator
  *
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/projects/1/parcels/1/show_relationship_history
@@ -1254,8 +1254,8 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
                 "relationship_type": "own",
                 "spatial_source": "survey_sketch",
                 "party_id": 1,
-                "first_name": "Thurmond",
-                "last_name": "Thomas"
+                "full_name": "Thurmond",
+                "group_name": null
               }
             }
           ]
@@ -1390,8 +1390,8 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
  * @apiSuccess {Number} response.features.properties.relationship_history.properties.updated_by updated by
  * @apiSuccess {Number} response.features.properties.relationship_history.properties.spatial_source spatial source
  * @apiSuccess {Number} response.features.properties.relationship_history.properties.party_id party id
- * @apiSuccess {String} response.features.properties.relationship_history.properties.first_name first name
- * @apiSuccess {String} response.features.properties.relationship_history.properties.last_name last name
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.full_name full name
+ * @apiSuccess {String} response.features.properties.relationship_history.properties.group_name group name
  *
  *
  * @apiExample {curl} Example usage:
@@ -1498,8 +1498,8 @@ router.get('/:id/parcels/:parcel_id/show_relationship_history', common.parseQuer
                         "updated_by": null,
                         "spatial_source": "digitized",
                         "party_id": 1,
-                        "first_name": "Daniel",
-                        "last_name": "Lastname"
+                        "full_name": "Daniel",
+                        "group_name": null
                     }
                   }
                 ]

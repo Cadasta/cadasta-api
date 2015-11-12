@@ -320,8 +320,8 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
  * @apiSuccess {Number} response.features.properties.updated_by id of updater
  * @apiSuccess {String} response.features.properties.relationship_type relationship type
  * @apiSuccess {String} response.features.properties.spatial_source spatial source
- * @apiSuccess {String} response.features.properties.first_name first name of creator
- * @apiSuccess {String} response.features.properties.last_name last_name of creator
+ * @apiSuccess {String} response.features.properties.full_name first name of party
+ * @apiSuccess {String} response.features.properties.group_name group name of party
  *
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/parcels/:id/show_relationship_history
@@ -351,8 +351,8 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
                 "relationship_type": "own",
                 "spatial_source": "survey_sketch",
                 "party_id": 1,
-                "first_name": "Thurmond",
-                "last_name": "Thomas"
+                "full_name": "Thurmond Thomas",
+                "grou_name": null
               }
             }
           ]

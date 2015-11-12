@@ -132,7 +132,7 @@ module.exports = function(app) {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
-                    .get('/parcels/1/show_relationship_history?relationship_type=own&active=true')
+                    .get('/parcels/1/show_relationship_history?relationship_type=mineral rights&active=true')
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
@@ -166,8 +166,8 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('spatial_source');
                         expect(featureProperties).to.have.property('relationship_type');
                         expect(featureProperties).to.have.property('party_id');
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
+                        expect(featureProperties).to.have.property('group_name');
 
                         done();
                     });
@@ -262,8 +262,8 @@ module.exports = function(app) {
                         relationships.should.all.have.property('tenure_type');
                         relationships.should.all.have.property('spatial_source');
                         relationships.should.all.have.property('party_id');
-                        relationships.should.all.have.property('first_name');
-                        relationships.should.all.have.property('last_name');
+                        relationships.should.all.have.property('full_name');
+                        relationships.should.all.have.property('group_name');
                         relationships.should.all.have.property('time_created');
                         //relationships.should.all.have.property('time_updated');
 
@@ -334,8 +334,8 @@ module.exports = function(app) {
                         expect(relationshipProperties).to.have.property('tenure_type');
                         expect(relationshipProperties).to.have.property('spatial_source');
                         expect(relationshipProperties).to.have.property('party_id');
-                        expect(relationshipProperties).to.have.property('first_name');
-                        expect(relationshipProperties).to.have.property('last_name');
+                        expect(relationshipProperties).to.have.property('full_name');
+                        expect(relationshipProperties).to.have.property('group_name');
                         expect(relationshipProperties).to.have.property('time_created');
 
 
@@ -376,8 +376,8 @@ module.exports = function(app) {
                         expect(relationship_historyProperties).to.have.property('updated_by');
                         expect(relationship_historyProperties).to.have.property('spatial_source');
                         expect(relationship_historyProperties).to.have.property('party_id');
-                        expect(relationship_historyProperties).to.have.property('first_name');
-                        expect(relationship_historyProperties).to.have.property('last_name');
+                        expect(relationship_historyProperties).to.have.property('full_name');
+                        expect(relationship_historyProperties).to.have.property('group_name');
 
                         done();
                     });

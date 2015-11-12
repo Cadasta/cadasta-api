@@ -48,8 +48,8 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('tenure_type');
                         expect(featureProperties).to.have.property('spatial_source');
                         expect(featureProperties).to.have.property('party_id',1);
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
+                        expect(featureProperties).to.have.property('group_name');
 
                         done();
                     });
@@ -96,7 +96,7 @@ module.exports = function(app) {
                         var features = res.body.features;
 
                         // Make sure only one feature returned
-                        expect(features).with.length(12);
+                        expect(features).with.length(1);
 
                         // Check properties
                         var featureProperties = features[0].properties;
@@ -108,8 +108,8 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('spatial_source');
                         expect(featureProperties).to.have.property('how_acquired');
                         expect(featureProperties).to.have.property('party_id');
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
+                        expect(featureProperties).to.have.property('group_name');
                         expect(featureProperties).to.have.property('time_created');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_updated');
@@ -150,8 +150,8 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('how_acquired');
                         expect(featureProperties).to.have.property('acquired_date');
                         expect(featureProperties).to.have.property('party_id');
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
+                        expect(featureProperties).to.have.property('group_name');
                         expect(featureProperties).to.have.property('time_created');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_updated');
@@ -167,7 +167,7 @@ module.exports = function(app) {
 
                 chai.request(app)
                     .post('/projects/1/relationships')
-                    .send({"parcel_id": 1,"ckan_user_id": null,"party_id": 4,"geojson": {"type":"Point","coordinates":[-72.9490754,40.8521095]},"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":null,"description":null})
+                    .send({"parcel_id": 1,"ckan_user_id": null,"party_id": 1,"geojson": {"type":"Point","coordinates":[-72.9490754,40.8521095]},"tenure_type":"mineral rights","acquired_date":"10/31/2015","how_acquired":null,"description":null})
                     .end(function (res) {
 
                         //Test that the endpoint exists and responds
@@ -191,7 +191,7 @@ module.exports = function(app) {
                         "parcel_id": null,
                         "party_id": null,
                         "geojson":null,
-                        "tenure_type":"informal occupy",
+                        "tenure_type":"joint tenancy",
                         "acquired_date":"11/1/2015",
                         "how_acquired":"informally leased from government",
                         "description":null

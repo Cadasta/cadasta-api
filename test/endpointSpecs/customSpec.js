@@ -148,8 +148,8 @@ module.exports = function(app) {
                                 expect(feature).to.have.deep.property('properties.tenure_type');
                                 expect(feature).to.have.deep.property('properties.parcel_id');
                                 expect(feature).to.have.deep.property('properties.party_id');
-                                expect(feature).to.have.deep.property('properties.first_name');
-                                expect(feature).to.have.deep.property('properties.last_name');
+                                expect(feature).to.have.deep.property('properties.full_name');
+                                expect(feature).to.have.deep.property('properties.group_name');
                                 expect(feature).to.have.deep.property('properties.time_created');
                             });
                         }
@@ -185,8 +185,8 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('spatial_source');
                         expect(featureProperties).to.have.property('tenure_type');
                         expect(featureProperties).to.have.property('party_id');
-                        expect(featureProperties).to.have.property('first_name');
-                        expect(featureProperties).to.have.property('last_name');
+                        expect(featureProperties).to.have.property('full_name');
+                        expect(featureProperties).to.have.property('group_name');
                         expect(featureProperties).to.have.property('parcel_id', 1);
                         expect(featureProperties).to.have.property('time_created');
 

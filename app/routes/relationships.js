@@ -301,8 +301,8 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
  * @apiSuccess {Integer} response.features.properties.project_id Project id
  * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
  * @apiSuccess {Integer} response.features.properties.party_id Party id
- * @apiSuccess {String} response.features.properties.first_name Party first name
- * @apiSuccess {String} response.features.properties.last_name Party last name
+ * @apiSuccess {String} response.features.properties.full_name Party full name
+ * @apiSuccess {String} response.features.properties.group_name Party group name
  * @apiSuccess {String} response.features.properties.how_acquired Acquisition description
  * @apiSuccess {String} response.features.properties.acquired_date Acquisition date
  * @apiSuccess {Boolean} response.features.properties.active Status of relationship
@@ -331,8 +331,8 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
                 "party_id": 1,
                 "how_acquired":"Borrowed",
                 "date_acquired:":"2010-05-25",
-                "first_name": "Makkonen",
-                "last_name": "Ontario ",
+                "full_name": "Makkonen",
+                "group_name": "Ontario ",
                 "time_created": "2015-10-26T17:30:33.192933-07:00",
                 "active": true,
                 "time_updated": "2015-10-26T17:30:33.192933-07:00"
@@ -391,8 +391,8 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
  * @apiSuccess {Integer} response.features.properties.project_id Project id
  * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
  * @apiSuccess {Integer} response.features.properties.party_id Party id
- * @apiSuccess {String} response.features.properties.first_name Party first name
- * @apiSuccess {String} response.features.properties.last_name Party last name
+ * @apiSuccess {String} response.features.properties.full_name Party full name
+ * @apiSuccess {String} response.features.properties.group_name Party group name
  * @apiSuccess {String} response.features.properties.how_acquired Acquisition description
  * @apiSuccess {String} response.features.properties.acquired_date Acquisition date
  * @apiSuccess {Boolean} response.features.properties.active Status of relationship
@@ -422,8 +422,8 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
                 "project_id": 1,
                 "spatial_source": "digitized",
                 "party_id": 1,
-                "first_name": "Makkonen",
-                "last_name": "Ontario ",
+                "full_name": "Makkonen",
+                "group_name": "Ontario ",
                 "time_created": "2015-10-27T13:09:05.374558-07:00",
                 "active": true,
                 "time_updated": "2015-10-27T13:09:05.374558-07:00"
