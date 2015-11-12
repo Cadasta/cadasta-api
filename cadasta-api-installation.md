@@ -81,7 +81,7 @@ In the user directory, clone the following repositiories:
 	sudo pm2 delete all
 
 	# Start the API
-	sudo pm2 start app/app.js --name cadasta-api -- --env ckan
+	sudo pm2 start app/app.js --name cadasta-api -- --env deployment_ec2
 
 	# Serve the API documentation
 	sudo pm2 start docs-app/app.js --name cadasta-api-docs

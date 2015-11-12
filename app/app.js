@@ -13,30 +13,42 @@ require('winston-rollbar').Rollbar;
 require('./console-winston');
 
 
-// Set the valid environments
-var validEnvironments = ['production', 'demo', 'staging', 'staging-backup', 'development', 'testing'];
-
 // Get the runtime environment from the node app argument; default to development
-var environment = argv.env || 'development';
+var environment = argv.env || null;
 
-// Ensure the environment argument is valid
-if(validEnvironments.indexOf(environment) === -1) {
-    console.error('Invalid environment type');
-    return;
+if(!environment) {
+    console.error("\nPlease provide an environment setting, e.g., '--env development'.\n", 1);
+    process.exit(1);
 }
 
-var settings, envSettings;
+var settings, environments, validEnvironments, envSettings;
 
 //if settings.js doesn't exist, let the user know and exit
 try {
     settings = require('./settings/settings.js');
-
-    // Environment specific configuration settings
-    envSettings = require("./settings/environment-settings.js")[environment];
 } catch (e) {
-    console.log("Missing a settings file.\n", e);
-    return;
+    console.error("Missing app/settings/settings.js file.\n", e);
+    process.exit(1);
 }
+
+try {
+    environments = require("./settings/environment-settings.js");
+} catch (e) {
+    console.error("Missing app/settings/settings.js file.\n", e);
+    process.exit(1);
+}
+
+if(!environments.hasOwnProperty(environment)) {
+
+    var validEnvironments = Object.keys(environments).toString();
+
+    console.error("\nThe --env value you provided is not found in the list of valid environments: "
+        + validEnvironments.split(',').join(', '), 1);
+    process.exit(1);
+}
+
+// Define environment settings
+envSettings = environments[environment];
 
 // Copy the Environment specific to the settings module, then they will be available wherever settings module is required.
 for (var i in envSettings) {
@@ -47,6 +59,7 @@ for (var i in envSettings) {
 
     settings[i] = envSettings[i];
 }
+
 settings.pg = envSettings.pg;
 
 var DataTransformer = require('cadasta-data-transformer');
@@ -120,17 +133,12 @@ if (app.get('env') === 'development') {
     // print stack trace
     printStackTrace(app);
 
-} else if (app.get('env') === 'staging' || app.get('env') === 'demo' || app.get('env') === 'staging-backup') {
+} else {
 
-    // print stack trace and log warnings and errors to Rollbar logging dashboard
+    // print stack trace and log warnings
     printStackTrace(app);
     addLogging(app, settings);
 
-} else if (app.get('env') === 'production') {
-
-    // hide stack trace and log warnings and errors to Rollbar logging dashboard
-    hideStackTrace(app);
-    addLogging(app, settings);
 }
 
 

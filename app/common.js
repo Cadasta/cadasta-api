@@ -1,18 +1,9 @@
 var Q = require('q');
 var settings = require('./settings/settings.js');
-var envSettings = require('./settings/environment-settings.js');
 var columnLookup = require('./column-lookup.js');
 var errors = require('./errors.js');
 var common = {};
 var pg = require('pg');
-
-// PostGIS Connection String
-var conString = "postgres://" +
-    envSettings.development.pg.user + ":" +
-    envSettings.development.pg.password + "@" +
-    envSettings.development.pg.server + ":" +
-    envSettings.development.pg.port + "/" +
-    envSettings.development.pg.database;
 
 common.getArguments = function (req) {
     var args;

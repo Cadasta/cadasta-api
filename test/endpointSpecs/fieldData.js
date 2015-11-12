@@ -51,7 +51,8 @@ module.exports = function(app) {
                         expect(responsesProperties).to.have.property('project_id');
                         expect(responsesProperties).to.have.property('field_data_id');
                         expect(responsesProperties).to.have.property('respondent_id');
-                        expect(responsesProperties).to.have.property('response');
+                        expect(responsesProperties).to.have.property('text');
+                        expect(responsesProperties).to.have.property('question_id');
                         expect(responsesProperties).to.have.property('time_created');
                         expect(responsesProperties).to.have.property('time_updated');
 
