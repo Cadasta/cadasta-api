@@ -792,6 +792,8 @@ router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
  * @apiSuccess {Numeric} response.features.properties.area area of parcel geometry
  * @apiSuccess {String} response.features.properties.tenure_type type of relationship tenure
  * @apiSuccess {Integer} response.features.properties.num_relationships number of associated relationships
+ * @apiSuccess {Boolean} response.features.properties.validated Survey response validation status
+
  *
  * @apiExample {curl} Example usage:
  *     curl -i http://localhost/projects/1/parcels_list
@@ -813,7 +815,8 @@ router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
                 "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
                 "tenure_type": "own",
-                "num_relationships": 6
+                "num_relationships": 6,
+                "validated":false
             }
         },
         {
@@ -824,7 +827,8 @@ router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
                 "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
                 "tenure_type": "lease",
-                "num_relationships": 5
+                "num_relationships": 5,
+                 "validated":false
             }
         },
         {
@@ -835,7 +839,8 @@ router.get('/:id/map-data', common.parseQueryOptions, function(req, res, next) {
                 "time_created": "2015-08-24T14:03:27.144363-07:00",
                 "area": null,
                 "tenure_type": "occupy",
-                "num_relationships": 2
+                "num_relationships": 2,
+                "validated":false
             }
         }
     ]

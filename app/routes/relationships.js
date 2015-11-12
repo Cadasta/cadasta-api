@@ -305,6 +305,7 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
  * @apiSuccess {String} response.features.properties.group_name Party group name
  * @apiSuccess {String} response.features.properties.how_acquired Acquisition description
  * @apiSuccess {String} response.features.properties.acquired_date Acquisition date
+ * @apiSuccess {Boolean} response.features.properties.validated Status of survey response validation
  * @apiSuccess {Boolean} response.features.properties.active Status of relationship
  * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
  * @apiSuccess {String} response.features.properties.time_updated Time stamp of last update
@@ -331,6 +332,7 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
                 "party_id": 1,
                 "how_acquired":"Borrowed",
                 "date_acquired:":"2010-05-25",
+                "validated":false,
                 "full_name": "Makkonen",
                 "group_name": "Ontario ",
                 "time_created": "2015-10-26T17:30:33.192933-07:00",

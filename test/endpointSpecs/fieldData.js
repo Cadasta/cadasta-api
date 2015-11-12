@@ -71,7 +71,7 @@ module.exports = function(app) {
             });
         });
 
-        describe('GET projects/:id/fieldData/:field_data_id', function () {
+        describe('GET projects/:id/fieldData/:field_data_id/validate_respondents', function () {
             it('should have status 200 and contain specified data structure', function (done) {
 
                 chai.request(app)
@@ -112,6 +112,32 @@ module.exports = function(app) {
             });
         });
 
+        describe('PATCH /projects/:id/fieldData/:field_data_id/validate_respondents', function () {
+            it('should have status 200 and contain specified data structure', function (done) {
+
+                chai.request(app)
+                    .patch('/projects/1/fieldData/1/validate_respondents')
+                    .send({
+                        "respondent_ids": [
+                            1
+                        ]
+                    })
+                    .end(function (res) {
+
+                        //Test that the endpoint exists and responds
+                        expect(res).to.have.status(200);
+
+                        expect(res.body).to.have.property('cadasta_validate_respondent');
+
+                        var response_arr = res.body.cadasta_validate_respondent;
+
+                        expect(response_arr).with.length(1);
+
+                        done();
+                    });
+
+            });
+        });
     });
 
 };

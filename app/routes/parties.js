@@ -404,6 +404,7 @@ router.get('/:project_id/parties/:id', common.parseQueryOptions, function(req, r
  * @apiSuccess {String} response.features.properties.full_name party group name
  * @apiSuccess {String} response.features.properties.group_name party group name
  * @apiSuccess {String} response.features.properties.group_name Time stamp of last update
+ * @apiSuccess {Boolean} response.features.properties.validated Status of survey response validation
  * @apiSuccess {Timestamp} response.features.properties.time_created timestamp of party creation
  * @apiSuccess {Timestamp} response.features.properties.time_updated timestamp of party update
  *
@@ -425,6 +426,7 @@ router.get('/:project_id/parties/:id', common.parseQueryOptions, function(req, r
                 "group_name": "Wal-Mart",
                 "full_name": null,
                 "group_name": null,
+                "validated":false,
                 "type": "group",
                 "active": true,
                 "time_created": "2015-10-28T15:00:52.522756-07:00",
