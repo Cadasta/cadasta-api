@@ -120,7 +120,7 @@ module.exports = function(app) {
                     .send({
                         "respondent_ids": [
                             1
-                        ]
+                        ], "status":true
                     })
                     .end(function (res) {
 

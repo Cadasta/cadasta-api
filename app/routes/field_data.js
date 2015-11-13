@@ -378,6 +378,8 @@ router.get('/:project_id/fieldData/:id', common.parseQueryOptions, function(req,
  * @apiDescription Validate field data submissions
  *
  * @apiParam (POST parameters) {Array} respondent_ids Respondent ids
+ * @apiParam (POST parameters) {Boolean} status Validation status
+
  *
  * @apiSuccess {Object} cadasta_validate_respondent Array of validated Respondent ids
  *
@@ -395,7 +397,7 @@ router.get('/:project_id/fieldData/:id', common.parseQueryOptions, function(req,
 router.patch('/:project_id/fieldData/:field_data_id/validate_respondents', function(req, res, next) {
 
     // Must have party type and or group name
-    if(req.body.respondent_ids === undefined){
+    if(req.body.respondent_ids === undefined || req.body.status === undefined){
         return next(new Error('Missing POST parameters.'))
     }
 
@@ -404,9 +406,9 @@ router.patch('/:project_id/fieldData/:field_data_id/validate_respondents', funct
     // Create string of respondent ids
     var id_string = respondent_ids.join(",");
 
-    var sql = "SELECT * FROM cd_validate_respondents($1)";
+    var sql = "SELECT * FROM cd_validate_respondents($1, $2)";
 
-    pgb.queryDeferred(sql,{paramValues: [id_string]})
+    pgb.queryDeferred(sql,{paramValues: [id_string, req.body.status]})
         .then(function(response){
             res.status(200).json({status:"OKAY",cadasta_validate_respondent: response[0].cd_validate_respondents})
         })

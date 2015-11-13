@@ -7,7 +7,7 @@ var path = require('path');
 var testData = require('../../node_modules/cadasta-data-transformer/tests/data/cjf-min.json');
 
 // Get DB settings for the requested environment
-var settings = require('../../app/settings/environment-settings.js').testing;
+var settings = require('../../app/settings/environment-settings.js').localhost_testing;
 
 var DataTransformer = require('../../node_modules/cadasta-data-transformer');
 var ingestion_engine = DataTransformer(settings);
