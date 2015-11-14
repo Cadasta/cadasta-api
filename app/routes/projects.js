@@ -1937,9 +1937,23 @@ router.post('/:id/parcels', function(req, res, next) {
 
     var sql = "SELECT * FROM cd_create_parcel($1,$2,$3,$4,$5,$6)";
 
+    var parcel_id;
+
     pgb.queryDeferred(sql,{paramValues: [req.params.id, req.body.spatial_source, geojson, req.body.land_use, req.body.gov_pin, req.body.description]})
         .then(function(response){
-            res.status(200).json({status:"OKAY", cadasta_parcel_id: response[0].cd_create_parcel})
+
+            /**
+             * Parcel creation on UI is validated
+             *
+             */
+            var sqlUpdateParcel = 'UPDATE parcel SET validated = true where id = ' + response[0].cd_create_parcel;
+
+            parcel_id = response[0].cd_create_parcel;
+
+            return pgb.queryDeferred(sqlUpdateParcel);
+        })
+        .then(function(updateResponse){
+            res.status(200).json({status:"OKAY", cadasta_parcel_id: parcel_id});
         })
         .catch(function(err){
             res.status(200).json({status:"ERROR", message:err.message})

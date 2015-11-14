@@ -39,7 +39,6 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('version', 1);
                         expect(featureProperties).to.have.property('expiration_date');
                         expect(featureProperties).to.have.property('description');
-                        expect(featureProperties).to.have.property('date_modified');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_created');
                         expect(featureProperties).to.have.property('time_updated');
