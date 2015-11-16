@@ -156,7 +156,6 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('parent_id');
                         expect(featureProperties).to.have.property('version');
                         expect(featureProperties).to.have.property('description');
-                        expect(featureProperties).to.have.property('date_modified');
                         expect(featureProperties).to.have.property('expiration_date');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_created');
@@ -203,7 +202,6 @@ module.exports = function(app) {
                         expect(featureProperties).to.have.property('parent_id');
                         expect(featureProperties).to.have.property('version', 1);
                         expect(featureProperties).to.have.property('description');
-                        expect(featureProperties).to.have.property('date_modified');
                         expect(featureProperties).to.have.property('active');
                         expect(featureProperties).to.have.property('time_created');
                         expect(featureProperties).to.have.property('time_updated');
@@ -274,7 +272,6 @@ module.exports = function(app) {
                         parcel_history.should.all.have.property('parent_id');
                         parcel_history.should.all.have.property('version');
                         parcel_history.should.all.have.property('description');
-                        parcel_history.should.all.have.property('date_modified');
                         parcel_history.should.all.have.property('active');
                         parcel_history.should.all.have.property('time_created');
                         parcel_history.should.all.have.property('time_updated');
@@ -346,7 +343,6 @@ module.exports = function(app) {
                         expect(parcel_historyProperties).to.have.property('parent_id');
                         expect(parcel_historyProperties).to.have.property('version');
                         expect(parcel_historyProperties).to.have.property('description');
-                        expect(parcel_historyProperties).to.have.property('date_modified');
                         expect(parcel_historyProperties).to.have.property('active');
                         expect(parcel_historyProperties).to.have.property('time_created');
                         expect(parcel_historyProperties).to.have.property('time_updated');
@@ -366,7 +362,6 @@ module.exports = function(app) {
                         expect(relationship_historyProperties).to.have.property('relationship_type');
                         expect(relationship_historyProperties).to.have.property('expiration_date');
                         expect(relationship_historyProperties).to.have.property('description');
-                        expect(relationship_historyProperties).to.have.property('date_modified');
                         expect(relationship_historyProperties).to.have.property('active');
                         expect(relationship_historyProperties).to.have.property('time_created');
                         expect(relationship_historyProperties).to.have.property('length');

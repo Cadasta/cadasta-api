@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var multer = require('multer');
 var common = require('../common.js');
-var upload = multer();
+var pgb = require('../pg-binding.js');
 var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
@@ -369,6 +369,53 @@ router.get('/:project_id/fieldData/:id', common.parseQueryOptions, function(req,
         })
         .done();
 
+});
+
+/**
+ * @api {patch} /projects/:project_id/fieldData/:field_data_id/validate_respondents Project field data - Validate field data submissions
+ * @apiName ValidateFieldData
+ * @apiGroup Field Data
+ * @apiDescription Validate field data submissions
+ *
+ * @apiParam (POST parameters) {Array} respondent_ids Respondent ids
+ * @apiParam (POST parameters) {Boolean} status Validation status
+
+ *
+ * @apiSuccess {Object} cadasta_validate_respondent Array of validated Respondent ids
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"respondent_ids": [18,19,20,21]} http://localhost/projects/1/fieldData/1/validate_respondents
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *          "status":"OKAY",
+            "cadasta_validate_respondent": [12,13,14,15]
+        }
+ */
+
+router.patch('/:project_id/fieldData/:field_data_id/validate_respondents', function(req, res, next) {
+
+    // Must have party type and or group name
+    if(req.body.respondent_ids === undefined || req.body.status === undefined){
+        return next(new Error('Missing POST parameters.'))
+    }
+
+    var respondent_ids = req.body.respondent_ids;
+
+    // Create string of respondent ids
+    var id_string = respondent_ids.join(",");
+
+    var sql = "SELECT * FROM cd_validate_respondents($1, $2)";
+
+    pgb.queryDeferred(sql,{paramValues: [id_string, req.body.status]})
+        .then(function(response){
+            res.status(200).json({status:"OKAY",cadasta_validate_respondent: response[0].cd_validate_respondents})
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
 });
 
 module.exports = router;
