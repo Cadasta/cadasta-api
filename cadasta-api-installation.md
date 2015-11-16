@@ -76,8 +76,9 @@ In the user directory, clone the following repositiories:
 	cp ~/cadasta-private-settings/cadasta-api/settings.js ~/cadasta-api/app/settings
     cp ~/cadasta-private-settings/cadasta-api/environment-settings.js ~/cadasta-api/app/settings
     
-    # Install Cadasta API
+    # Update Cadasta API
 	cd ~/cadasta-api
+	sudo rm -rf node_modules
 	sudo npm install
 	sudo pip install -r requirements.txt
 	grunt updateDocs
@@ -92,3 +93,6 @@ Start the API, see valid [environments](https://github.com/Cadasta/cadasta-priva
 
 	# Serve the API documentation
 	sudo pm2 start docs-app/app.js --name cadasta-api-docs
+	
+	# Save changes to pm2 startup script
+	pm2 save
