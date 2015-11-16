@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                 src: ["app", "node_modules/cadasta-data-transformer/src/ingestion"],
                 dest: "docs-app/public/",
                 options: {
-                    debug: true,
+                    debug: false,
                     includeFilters: [ ".*\\.js$" ],
                     excludeFilters: [  "ship/" ]
                 }
