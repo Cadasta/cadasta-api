@@ -158,7 +158,7 @@ function createResource(p_id, type, type_id, path, filename) {
 
     var deferred = Q.defer();
 
-    var rootURL = 'https://s3.amazonaws.com/' + settings.s3.bucket + '/';
+    var rootURL = settings.s3.domain + '/' + settings.s3.bucket + '/';
     var url = rootURL + path;
     var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "',null, '" + filename + "')";
 
