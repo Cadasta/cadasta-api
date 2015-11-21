@@ -10,7 +10,16 @@ var pgb = require('../pg-binding.js');
 
 
 var AWS = require('aws-sdk');
-AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: settings.s3.awsSecretKey});
+if (settings.hasOwnProperty('s3')) {
+  if (settings.s3.hasOwnProperty('awsAccessKey'))
+    AWS.config.update({ accessKeyId: settings.s3.awsAccessKey,
+                        secretAccessKey: settings.s3.awsSecretKey });
+  else if (settings.s3.hasOwnProperty('useEC2MetadataCredentials') &&
+           settings.s3.useEC2MetadataCredentials)
+    AWS.config.credentials = new AWS.EC2MetadataCredentials();
+  else
+    AWS.config.credentials = new AWS.EnvironmentCredentials();
+}
 
 /**
  * @api {post} /projects/project_id/resource_type/resource_type_id/resources Upload
