@@ -141,7 +141,7 @@ var pgb = require('../pg-binding.js');
                             "acquired_date": "2014-09-09",
                             "parcel_id": 2,
                             "project_id": 1,
-                            "spatial_source": "survey_sketch",
+                            "spatial_source": "survey sketch",
                             "party_id": 2,
                             "full_name": "Oscar",
                             "group_name": "Sanders ",
@@ -241,9 +241,23 @@ router.post('/:project_id/parties', function(req, res, next) {
 
     var sql = "SELECT * FROM cd_create_party($1,$2,$3,$4,$5,$6,$7,$8)";
 
+    var party_id;
+
     pgb.queryDeferred(sql,{paramValues: [req.params.project_id, req.body.party_type, req.body.full_name, req.body.group_name, req.body.gender, req.body.dob, req.body.notes, req.body.national_id]})
-        .then(function(response){
-            res.status(200).json({cadasta_party_id: response[0].cd_create_party})
+        .then(function(r1){
+
+            party_id = r1[0].cd_create_party;
+
+            /**
+             * Party creation on UI is validated
+             *
+             */
+            var sqlUpdateParty = 'UPDATE party SET validated = true where id = ' + party_id;
+
+            return pgb.queryDeferred(sqlUpdateParty);
+        })
+        .then(function(r2){
+            res.status(200).json({cadasta_party_id: party_id})
         })
         .catch(function(err){
             next(err);

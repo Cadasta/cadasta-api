@@ -533,12 +533,26 @@ router.post('/:project_id/relationships', function(req, res, next) {
 
     var sql = "SELECT * FROM cd_create_relationship($1,$2,$3,$4,$5,$6,$7,$8,$9)";
 
+    var relationship_id;
+
     var paramValues =  [req.params.project_id,req.body.parcel_id, req.body.ckan_user_id,
         req.body.party_id, geojson, req.body.tenure_type, req.body.acquired_date, req.body.how_acquired, req.body.description];
 
     pgb.queryDeferred(sql,{paramValues:paramValues})
-        .then(function(response){
-            res.status(200).json({cadasta_relationship_id: response[0].cd_create_relationship})
+        .then(function(r1){
+
+            relationship_id = r1[0].cd_create_relationship;
+
+            /**
+             * Relationship creation on UI is validated
+             *
+             */
+            var sqlUpdateRelationship = 'UPDATE relationship SET validated = true where id = ' + relationship_id;
+
+            return pgb.queryDeferred(sqlUpdateRelationship);
+        })
+        .then(function(r2){
+            res.status(200).json({cadasta_relationship_id: relationship_id})
         })
         .catch(function(err){
             res.status(400).json({message:err.message, error:err});

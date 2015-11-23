@@ -349,7 +349,7 @@ router.get('/:id/history', common.parseQueryOptions, function(req, res, next) {
                 "created_by": 11,
                 "updated_by": null,
                 "relationship_type": "own",
-                "spatial_source": "survey_sketch",
+                "spatial_source": "survey sketch",
                 "party_id": 1,
                 "full_name": "Thurmond Thomas",
                 "grou_name": null

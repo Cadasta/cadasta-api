@@ -508,7 +508,7 @@ router.patch('/:id/sys_delete', function(req, res, next) {
                                 properties: {
                                     activity_type: "parcel",
                                     id: 1,
-                                    type: "survey_sketch",
+                                    type: "survey sketch",
                                     name: null,
                                     parcel_id: null,
                                     time_created: "2015-09-16T15:25:42.137404-07:00"
@@ -686,7 +686,7 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
                                     properties: {
                                         activity_type: "parcel",
                                         id: 1,
-                                        type: "survey_sketch",
+                                        type: "survey sketch",
                                         name: null,
                                         parcel_id: null,
                                         time_created: "2015-09-16T15:25:42.137404-07:00"
@@ -1257,7 +1257,7 @@ router.get('/:id/parcels/:parcel_id/history', common.parseQueryOptions, function
                 "created_by": 11,
                 "updated_by": null,
                 "relationship_type": "own",
-                "spatial_source": "survey_sketch",
+                "spatial_source": "survey sketch",
                 "party_id": 1,
                 "full_name": "Thurmond",
                 "group_name": null
@@ -1884,7 +1884,7 @@ router.get('/:project_id/resources', common.parseQueryOptions, function(req, res
  *
  *
  * @apiParam {Integer} project_id Cadasta project id
- * @apiParam {String="digitized", "recreational_gps", "survey_grade_gps", "survey_sketch"} spatial_source parcel spatial source
+ * @apiParam {String="digitized, recreational gps, survey grade gps, survey sketch, survey coordinates"} spatial_source parcel spatial source
  * @apiParam {String} [geojson] GeoJSON of the parcel
  * @apiParam {String="Commercial, Land Use"} [land_use] parcel land use type
  * @apiParam {String} [gov_pin] Government pin
@@ -1940,19 +1940,19 @@ router.post('/:id/parcels', function(req, res, next) {
     var parcel_id;
 
     pgb.queryDeferred(sql,{paramValues: [req.params.id, req.body.spatial_source, geojson, req.body.land_use, req.body.gov_pin, req.body.description]})
-        .then(function(response){
+        .then(function(r1){
+
+            parcel_id = r1[0].cd_create_parcel;
 
             /**
              * Parcel creation on UI is validated
              *
              */
-            var sqlUpdateParcel = 'UPDATE parcel SET validated = true where id = ' + response[0].cd_create_parcel;
-
-            parcel_id = response[0].cd_create_parcel;
+            var sqlUpdateParcel = 'UPDATE parcel SET validated = true where id = ' + parcel_id;
 
             return pgb.queryDeferred(sqlUpdateParcel);
         })
-        .then(function(updateResponse){
+        .then(function(r2){
             res.status(200).json({status:"OKAY", cadasta_parcel_id: parcel_id});
         })
         .catch(function(err){
@@ -1973,7 +1973,7 @@ router.post('/:id/parcels', function(req, res, next) {
  * @apiParam {Integer} parcel_id Cadasta parcel id
  *
  * @apiParam (POST parameters) {String} [geojson] GeoJSON geometry object
- * @apiParam (POST parameters) {String="digitized", "recreational_gps", "survey_grade_gps", "survey_sketch"} [spatial_source] parcel spatial source
+ * @apiParam (POST parameters) {String="digitized, recreational gps, survey grade gps, survey sketch, survey coordinates"} [spatial_source] parcel spatial source
  * @apiParam (POST parameters) {String="Commercial, Land Use"} [land_use] parcel land use type
  * @apiParam (POST parameters) {String} [gov_pin] Government pin
  * @apiParam (POST parameters) {String} [description] Parcel description
