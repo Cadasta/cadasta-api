@@ -106,7 +106,7 @@ module.exports = function(app) {
                         var featureProperties = features[0].properties;
 
                         expect(featureProperties).to.have.property('id', 1);
-                        expect(featureProperties).to.have.property('spatial_source', 1);
+                        expect(featureProperties).to.have.property('spatial_source', 3);
                         expect(featureProperties).to.have.property('user_id', null);
                         expect(featureProperties).to.have.property('area');
                         expect(featureProperties).to.have.property('land_use');

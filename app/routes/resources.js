@@ -10,7 +10,16 @@ var pgb = require('../pg-binding.js');
 
 
 var AWS = require('aws-sdk');
-AWS.config.update({accessKeyId: settings.s3.awsAccessKey, secretAccessKey: settings.s3.awsSecretKey});
+if (settings.hasOwnProperty('s3')) {
+  if (settings.s3.hasOwnProperty('awsAccessKey'))
+    AWS.config.update({ accessKeyId: settings.s3.awsAccessKey,
+                        secretAccessKey: settings.s3.awsSecretKey });
+  else if (settings.s3.hasOwnProperty('useEC2MetadataCredentials') &&
+           settings.s3.useEC2MetadataCredentials)
+    AWS.config.credentials = new AWS.EC2MetadataCredentials();
+  else
+    AWS.config.credentials = new AWS.EnvironmentCredentials();
+}
 
 /**
  * @api {post} /projects/project_id/resource_type/resource_type_id/resources Upload
@@ -45,6 +54,7 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
     var file_name = req.file.originalname.replace(/ /g, "").replace(/%20/g, "");  // remove white space
     var file = req.file.buffer;
     var path;
+    var file_description = req.body.description;
 
     var deferred = Q.defer();
 
@@ -59,7 +69,7 @@ router.post('/:project_id/:type/:type_id/resources', upload.single('filedata'), 
 
             console.log('Successfully uploaded resource to S3.');
             //create resource in DB
-            return createResource(project_id, resource_type, resource_type_id, s3response.path,file_name);
+            return createResource(project_id, resource_type, resource_type_id, s3response.path,file_name, file_description);
 
         }).then(function(result){
 
@@ -154,13 +164,13 @@ function deleteS3(path){
 
 }
 
-function createResource(p_id, type, type_id, path, filename) {
+function createResource(p_id, type, type_id, path, filename, description) {
 
     var deferred = Q.defer();
 
     var rootURL = settings.s3.domain + '/' + settings.s3.bucket + '/';
     var url = rootURL + path;
-    var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "',null, '" + filename + "')";
+    var sql = "SELECT * FROM cd_create_resource('" + p_id + "','" + type + "'," + type_id + ",'" + url + "', '" + description + "' , '" + filename + "')";
 
     pgb.queryDeferred(sql)
         .then(function(res){

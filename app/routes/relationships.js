@@ -118,7 +118,7 @@ router.get('/:project_id/relationships/:id/relationship_history', common.parseQu
  * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
  * @apiSuccess {Integer} response.features.properties.party_id Party id
  * @apiSuccess {Integer} response.features.properties.geom_id Geometry id
- * @apiSuccess {String} response.features.properties.tenure_type Type of tenure (own, lease, occupy, informal occupy)
+ * @apiSuccess {String="freehold, long term leasehold, leasehold, customary rights, occupancy, tenancy, hunting/fishing/harvest rights, grazing rights, indigenous land rights, joint tenancy, tenancy in common, undivided co-ownership, easement, equitable servitude, mineral rights, water rights, concessionary rights, carbon rights"} response.features.properties.tenure_type Type of tenure
  * @apiSuccess {String} response.features.properties.acquired_date Date of acquisition
  * @apiSuccess {String} response.features.properties.how_acquired Description of how relationship was acquired
  * @apiSuccess {Boolean} response.features.properties.active Status of relationship
@@ -297,7 +297,7 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
  * @apiSuccess {Object} response.features.geometry Relationships GeoJSON geometry object. If Null, Parcels GeoJSON geometry object
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
  * @apiSuccess {Integer} response.features.properties.id Relationship id
- * @apiSuccess {String} response.features.properties.tenure_type Type of tenure (own, lease, occupy, informal occupy)
+ * @apiSuccess {String="freehold, long term leasehold, leasehold, customary rights, occupancy, tenancy, hunting/fishing/harvest rights, grazing rights, indigenous land rights, joint tenancy, tenancy in common, undivided co-ownership, easement, equitable servitude, mineral rights, water rights, concessionary rights, carbon rights"} response.features.properties.tenure_type Type of tenure
  * @apiSuccess {Integer} response.features.properties.project_id Project id
  * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
  * @apiSuccess {Integer} response.features.properties.party_id Party id
@@ -325,7 +325,7 @@ router.get('/:project_id/relationships/:id/resources', common.parseQueryOptions,
             "geometry": null,
             "properties": {
                 "id": 1,
-                "tenure_type": "own",
+                "tenure_type": "easement",
                 "parcel_id": 1,
                 "project_id": 1,
                 "spatial_source": "digitized",
@@ -389,7 +389,7 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
  * @apiSuccess {Object} response.features.geometry Relationships GeoJSON geometry object. If Null, Parcels GeoJSON geometry object
  * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
  * @apiSuccess {Integer} response.features.properties.id Relationship id
- * @apiSuccess {String} response.features.properties.tenure_type Type of tenure (own, lease, occupy, informal occupy)
+ * @apiSuccess {String="freehold, long term leasehold, leasehold, customary rights, occupancy, tenancy, hunting/fishing/harvest rights, grazing rights, indigenous land rights, joint tenancy, tenancy in common, undivided co-ownership, easement, equitable servitude, mineral rights, water rights, concessionary rights, carbon rights"} response.features.properties.tenure_type Type of tenure
  * @apiSuccess {Integer} response.features.properties.project_id Project id
  * @apiSuccess {Integer} response.features.properties.parcel_id Parcel id
  * @apiSuccess {Integer} response.features.properties.party_id Party id
@@ -417,7 +417,7 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
             "geometry": null,
             "properties": {
                 "id": 1,
-                "tenure_type": "own",
+                "tenure_type": "easement",
                 "how_acquired": "inheritance",
                 "acquired_date": "2010-05-25",
                 "parcel_id": 1,
@@ -491,7 +491,7 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
  * @apiParam {String} ckan_id The id of the CKAN user
  * @apiParam {Integer} party_id Cadasta party id
  * @apiParam {Integer} geojson GeoJSON geometry object
- * @apiParam {String="own, lease, occupy, informal occupy"} tenure_type Cadasta relationship tenure type
+ * @apiParam {String="freehold, long term leasehold, leasehold, customary rights, occupancy, tenancy, hunting/fishing/harvest rights, grazing rights, indigenous land rights, joint tenancy, tenancy in common, undivided co-ownership, easement, equitable servitude, mineral rights, water rights, concessionary rights, carbon rights"} tenure_type Cadasta relationship tenure type
  * @apiParam {Date} acquired_data Date tenure was acquired
  * @apiParam {String} how_acquired Description of how tenure was acquired
  * @apiParam {String} how_acquired Relationship description
@@ -500,7 +500,7 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X POST -d {"parcel_id": 10,"ckan_user_id": null,"party_id": 8,"geojson": null,"tenure_type":"lease","acquired_date":"10/31/2015","how_acquired":"borrowed","description":"gift from grandfather"} http://localhost/projects/1/relationships
+ *     curl -H "Content-Type: application/json" -X POST -d {"parcel_id": 10,"ckan_user_id": null,"party_id": 8,"geojson": null,"tenure_type":"leasehold","acquired_date":"10/31/2015","how_acquired":"borrowed","description":"gift from grandfather"} http://localhost/projects/1/relationships
  *
  * @api {post} /projects/:id/relationships
  * @apiParamExample {application/json} Request-Example:
@@ -509,7 +509,7 @@ router.get('/:id/relationships/:relationship_id/details', common.parseQueryOptio
     "ckan_user_id": null,
     "party_id": 8,
     "geojson": null,
-    "tenure_type":"lease",
+    "tenure_type":"easement",
     "acquired_date":"10/31/2015",
     "how_acquired":"borrowed",
     "description":"gift from grandfather"
@@ -533,12 +533,26 @@ router.post('/:project_id/relationships', function(req, res, next) {
 
     var sql = "SELECT * FROM cd_create_relationship($1,$2,$3,$4,$5,$6,$7,$8,$9)";
 
+    var relationship_id;
+
     var paramValues =  [req.params.project_id,req.body.parcel_id, req.body.ckan_user_id,
         req.body.party_id, geojson, req.body.tenure_type, req.body.acquired_date, req.body.how_acquired, req.body.description];
 
     pgb.queryDeferred(sql,{paramValues:paramValues})
-        .then(function(response){
-            res.status(200).json({cadasta_relationship_id: response[0].cd_create_relationship})
+        .then(function(r1){
+
+            relationship_id = r1[0].cd_create_relationship;
+
+            /**
+             * Relationship creation on UI is validated
+             *
+             */
+            var sqlUpdateRelationship = 'UPDATE relationship SET validated = true where id = ' + relationship_id;
+
+            return pgb.queryDeferred(sqlUpdateRelationship);
+        })
+        .then(function(r2){
+            res.status(200).json({cadasta_relationship_id: relationship_id})
         })
         .catch(function(err){
             res.status(400).json({message:err.message, error:err});
@@ -557,9 +571,9 @@ router.post('/:project_id/relationships', function(req, res, next) {
  *
  * @apiParam {Integer} id Cadasta project id
  * @apiParam {Integer} relationship_id Cadasta relationship id
-
+ *
  * @apiParam (POST parameters) {String} [geojson] GeoJSON geometry object
- * @apiParam (POST parameters) {String="own, lease, occupy, informal occupy"} [tenure_type] Cadasta relationship tenure type
+ * @apiParam (POST parameters) {String="freehold, long term leasehold, leasehold, customary rights, occupancy, tenancy, hunting/fishing/harvest rights, grazing rights, indigenous land rights, joint tenancy, tenancy in common, undivided co-ownership, easement, equitable servitude, mineral rights, water rights, concessionary rights, carbon rights"} [tenure_type] Cadasta relationship tenure type
  * @apiParam (POST parameters) {Date} [acquired_date] Date of tenure acquisition
  * @apiParam (POST parameters) {String} [how_acquired] How tenure was acquired
  * @apiParam (POST parameters) {String} [description] Description of tenure history
@@ -568,7 +582,7 @@ router.post('/:project_id/relationships', function(req, res, next) {
 
  *
  * @apiExample {curl} Example usage:
- *     curl -H "Content-Type: application/json" -X PATCH -d {"geojson":null,"tenure_type":"informal occupy","acquired_date":"11/1/2015","how_acquired":"informally leased from government","description":"new description"} http://localhost/projects/1/relationships/4
+ *     curl -H "Content-Type: application/json" -X PATCH -d {"geojson":null,"tenure_type":"easement","acquired_date":"11/1/2015","how_acquired":"informally leased from government","description":"new description"} http://localhost/projects/1/relationships/4
  *
  * @api {patch} /projects/:id/relationships/:relationship_id
  *
@@ -576,7 +590,7 @@ router.post('/:project_id/relationships', function(req, res, next) {
  *
  *{
     "geojson":null,
-    "tenure_type":"informal occupy",
+    "tenure_type":"easement",
     "acquired_date":"11/1/2015",
     "how_acquired":"informally leased from government",
     "description":"new description"

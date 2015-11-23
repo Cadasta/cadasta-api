@@ -6,7 +6,7 @@ var exec = require('child_process').exec;
 
 
 // Get DB settings for the requested environment
-var settings = require('../../app/settings/environment-settings.js').testing.pg;
+var settings = require('../../app/settings/environment-settings.js').localhost_testing.pg;
 
 // build DB connection string
 var conString = "postgres://" +
