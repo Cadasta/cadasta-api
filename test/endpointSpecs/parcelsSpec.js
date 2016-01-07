@@ -387,7 +387,7 @@ module.exports = function(app) {
                 chai.request(app)
                     .post('/projects/3/parcels')
                     .send({spatial_source: 'digitized', geojson:{"type": "LineString","coordinates": [[91.91986083984375,43.04881979669318],[91.94183349609375,42.974511174899156]]}
-                        , land_use:"Commercial", gov_pin:'433421ss', description: 'Test parcel'})
+                        , land_use:"community land", gov_pin:'433421ss', description: 'Test parcel'})
                     .end(function (res) {
 
                         // Test that the endpoint exists and responds
