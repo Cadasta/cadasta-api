@@ -56,7 +56,6 @@ common.createDynamicInClause = function(key, vals, startIndex) {
 common.parseQueryOptions = function(req, res, next) {
 
     var queryModifiers = {};
-    
     try {
 
         if(req.query.hasOwnProperty('fields')) {

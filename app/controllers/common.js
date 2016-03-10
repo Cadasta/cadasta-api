@@ -14,7 +14,6 @@ var tableColumnQuery = controller.tableColumnQuery = function(tablename) {
     if(columnLookup.hasOwnProperty(tablename)) {
         deferred.resolve(true);
         return deferred.promise;
-
     }
 
     var sql = "SELECT json_agg(CAST(column_name AS text)) as column_name  FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '" + tablename + "' AND column_name <> 'geom';"
@@ -103,6 +102,45 @@ controller.getWithId = function(tablename, idKey, idValue, opts){
     return deferred.promise;
 
 };
+
+
+controller.getIntersectsWithId = function(tablename, idKey, idValue, opts){
+
+    var options = opts || {};
+    options.queryModifiers = options.queryModifiers || {};
+    options.outputFormat  = options.outputFormat || "object array";
+
+    var deferred = Q.defer();
+
+    tableColumnQuery(tablename)
+        .then(function(response){
+
+            var sql;
+            var geom = JSON.stringify(options.geom);
+
+            if(options.outputFormat === 'GeoJSON')
+                // select all parcels that intersect with the geom excluding the parcel
+                // with the specified id.
+                sql = common.featureCollectionSQL(tablename, options.queryModifiers, "WHERE st_intersects(st_buffer(st_geomfromgeojson('" + geom + "')," + options.buffer + " ), t.geom::geography) AND " + idKey + " <> $1");
+            else
+                sql = common.objectArraySQL(tablename,  options.queryModifiers, "WHERE " + idKey + " = $1");
+            console.log(sql);
+            return pgb.queryDeferred(sql,{paramValues: [idValue]});
+        })
+        .then(function(result){
+
+            deferred.resolve(result)
+
+        })
+        .catch(function(err){
+            deferred.reject(err);
+        })
+        .done();
+
+    return deferred.promise;
+
+};
+
 
 controller.sanitize = function (val) {
     // we want a null to still be null, not a string
