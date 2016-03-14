@@ -141,6 +141,42 @@ controller.getIntersectsWithId = function(tablename, idKey, idValue, opts){
 
 };
 
+controller.getIntersectsWithBBox = function(tablename, idKey, idValue, xmin, ymin, xmax, ymax, opts){
+
+    var options = opts || {};
+    options.queryModifiers = options.queryModifiers || {};
+    options.outputFormat  = options.outputFormat || "object array";
+    var bbox = 'POLYGON((' + xmin + ' ' + ymin + ', ' + xmin + ' ' + ymax + ', '
+                        + xmax + ' ' + ymax + ', ' + xmax + ' ' + ymin + ', '
+                        + xmin + ' ' + ymin + '))';
+
+    var deferred = Q.defer();
+
+    tableColumnQuery(tablename)
+        .then(function(response){
+
+            var sql;
+            if(options.outputFormat === 'GeoJSON')
+                // select all parcels that lies within the provided bounding box
+                sql = common.featureCollectionSQL(tablename, options.queryModifiers, "WHERE st_intersects(t.geom, st_geomfromtext('" + bbox + "', 4326)) AND " + idKey + " = $1");
+            else
+                sql = common.objectArraySQL(tablename,  options.queryModifiers, "WHERE " + idKey + " = $1");
+            return pgb.queryDeferred(sql,{paramValues: [idValue]});
+        })
+        .then(function(result){
+
+            deferred.resolve(result)
+
+        })
+        .catch(function(err){
+            deferred.reject(err);
+        })
+        .done();
+
+    return deferred.promise;
+
+};
+
 
 controller.sanitize = function (val) {
     // we want a null to still be null, not a string
