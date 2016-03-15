@@ -104,7 +104,7 @@ controller.getWithId = function(tablename, idKey, idValue, opts){
 };
 
 
-controller.getIntersectsWithId = function(tablename, idKey, idValue, opts){
+controller.getIntersectsWithId = function(tablename, idKey, idValue, projectId, opts){
 
     var options = opts || {};
     options.queryModifiers = options.queryModifiers || {};
@@ -119,13 +119,11 @@ controller.getIntersectsWithId = function(tablename, idKey, idValue, opts){
             var geom = JSON.stringify(options.geom);
 
             if(options.outputFormat === 'GeoJSON')
-                // select all parcels that intersect with the geom excluding the parcel
-                // with the specified id.
-                sql = common.featureCollectionSQL(tablename, options.queryModifiers, "WHERE st_intersects(st_buffer(st_geomfromgeojson('" + geom + "')," + options.buffer + " ), t.geom::geography) AND " + idKey + " <> $1");
+                // select all project parcels that intersect with the geom excluding the parcel with the specified id.
+                sql = common.featureCollectionSQL(tablename, options.queryModifiers, "WHERE st_intersects(st_buffer(st_geomfromgeojson('" + geom + "')," + options.buffer + " ), t.geom::geography) AND project_id = $1 AND " + idKey + " <> $2");
             else
                 sql = common.objectArraySQL(tablename,  options.queryModifiers, "WHERE " + idKey + " = $1");
-            console.log(sql);
-            return pgb.queryDeferred(sql,{paramValues: [idValue]});
+            return pgb.queryDeferred(sql,{paramValues: [projectId, idValue]});
         })
         .then(function(result){
 

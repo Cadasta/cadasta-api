@@ -283,8 +283,9 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
     ]
 }
  */
-router.get('/:id/intersects/:buff', common.parseQueryOptions, function(req, res, next) {
+router.get('/:project_id/:id/intersects/:buff', common.parseQueryOptions, function(req, res, next) {
     var buffer = req.params.buff ? req.params.buff : '1.5';
+    var project_id = req.params.project_id;
     req.queryModifiers.returnGeometry = true;
 
     // get the buffered parcel geometry first
@@ -292,7 +293,7 @@ router.get('/:id/intersects/:buff', common.parseQueryOptions, function(req, res,
         .then(function(result){
             var geom = result[0].response.features[0].geometry;
             // then get the intersecting parcels excluding the selected parcel
-            ctrlCommon.getIntersectsWithId('parcel', 'id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', geom: geom, buffer: buffer})
+            ctrlCommon.getIntersectsWithId('parcel', 'id', req.params.id, project_id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', geom: geom, buffer: buffer})
                 .then(function(result){
                     res.status(200).json(result[0].response);
             })
