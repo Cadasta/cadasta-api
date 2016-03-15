@@ -208,6 +208,202 @@ router.get('/:id', common.parseQueryOptions, function(req, res, next) {
 
 });
 
+
+/**
+ * @api {get} /parcels/:id/intersects/:buff Get adjacent
+ * @apiName GetParcel
+ * @apiGroup Parcels
+ * @apiDescription Get a parcel (from the parcels table)
+ *
+ * @apiParam {Number} id parcel's unique ID.
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with one parcel feature
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {String} response.features.properties.id parcel id
+ * @apiSuccess {Number} response.features.properties.spatial_source integer code for the spatial source of the parcel
+ * @apiSuccess {String} response.features.properties.user_id user id that created parcel
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of last update
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/parcels/1/adjacent
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "type": "FeatureCollection",
+        "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -105.228338241577,
+                            21.1714137482368
+                        ],
+                        [
+                            -105.229024887085,
+                            21.1694127979643
+                        ],
+                        ...
+                        ...
+                        [
+                            -105.228338241577,
+                            21.1714137482368
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "id": 1,
+                "spatial_source": 4,
+                "user_id": "1",
+                "area": null,
+                "land_use": null,
+                "gov_pin": null,
+                "active": true,
+                "time_created": "2015-08-06T15:41:26.440037-07:00",
+                "time_updated": null,
+                "created_by": 1,
+                "updated_by": null
+            }
+        }
+    ]
+}
+ */
+router.get('/:project_id/:id/intersects/:buff', common.parseQueryOptions, function(req, res, next) {
+    var buffer = req.params.buff ? req.params.buff : '1.5';
+    var project_id = req.params.project_id;
+    req.queryModifiers.returnGeometry = true;
+
+    // get the buffered parcel geometry first
+    ctrlCommon.getWithId('parcel', 'id', req.params.id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+        .then(function(result){
+            var geom = result[0].response.features[0].geometry;
+            // then get the intersecting parcels excluding the selected parcel
+            ctrlCommon.getIntersectsWithId('parcel', 'id', req.params.id, project_id, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON', geom: geom, buffer: buffer})
+                .then(function(result){
+                    res.status(200).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+});
+
+
+/**
+ * @api {get} /parcels/:xmin/:ymin/:xmax/:ymax
+ * @apiName GetParcelsInBoundingBox
+ * @apiGroup Parcels
+ * @apiDescription Get the parcels within a bounding box.
+ *
+ * @apiParam {xmin} xmin east.
+ * @apiParam {ymin} xmax south.
+ * @apiParam {xmax} xmax west.
+ * @apiParam {ymax} ymax north.
+ *
+ * @apiParam (Optional query string parameters) {String} [fields] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_by] Options: id, spatial_source, user_id, time_created, time_updated
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
+ * @apiSuccess {Object} response A feature collection with one parcel feature
+ * @apiSuccess {String} response.type "Feature Collection"
+ * @apiSuccess {Object[]} response.features An array of feature objects
+ * @apiSuccess {String} response.features.type "Feature"
+ * @apiSuccess {Object} response.features.geometry GeoJSON geometry object
+ * @apiSuccess {Object} response.features.properties GeoJSON feature's properties
+ * @apiSuccess {String} response.features.properties.id parcel id
+ * @apiSuccess {Number} response.features.properties.spatial_source integer code for the spatial source of the parcel
+ * @apiSuccess {String} response.features.properties.user_id user id that created parcel
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of creation
+ * @apiSuccess {String} response.features.properties.time_created Time stamp of last update
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/parcels/1/adjacent
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+        "type": "FeatureCollection",
+        "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -105.228338241577,
+                            21.1714137482368
+                        ],
+                        [
+                            -105.229024887085,
+                            21.1694127979643
+                        ],
+                        ...
+                        ...
+                        [
+                            -105.228338241577,
+                            21.1714137482368
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "id": 1,
+                "spatial_source": 4,
+                "user_id": "1",
+                "area": null,
+                "land_use": null,
+                "gov_pin": null,
+                "active": true,
+                "time_created": "2015-08-06T15:41:26.440037-07:00",
+                "time_updated": null,
+                "created_by": 1,
+                "updated_by": null
+            }
+        }
+    ]
+}
+ */
+router.get('/:project_id/:xmin/:ymin/:xmax/:ymax', common.parseQueryOptions, function(req, res, next) {
+    var project_id = req.params.project_id;
+    var xmin = req.params.xmin;
+    var ymin = req.params.ymin;
+    var xmax = req.params.xmax;
+    var ymax = req.params.ymax;
+
+    req.queryModifiers.returnGeometry = true;
+
+    ctrlCommon.getIntersectsWithBBox('parcel', 'project_id', project_id, xmin, ymin, xmax, ymax, {queryModifiers: req.queryModifiers, outputFormat: 'GeoJSON'})
+                .then(function(result){
+                    res.status(200).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
+});
+
 /**
  * @api {get} /parcels/:id/history Get parcel history
  * @apiName GetParcelHistory
