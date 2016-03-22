@@ -875,16 +875,22 @@ router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, nex
         options.whereClauseValues = whereClauseValues;
     }
 
-
-    ctrlCommon.getAll('show_parcels_list', options)
+    ctrlCommon.getCountWithId('show_parcels_list', 'id', options)
         .then(function(result){
-            res.status(200).json(result[0].response);
+            addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('show_parcels_list', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
         })
         .catch(function(err){
             next(err);
         })
         .done();
-
 });
 
 // Get project resources
@@ -2035,6 +2041,31 @@ router.patch('/:id/parcels/:parcel_id', function(req, res, next) {
         .done();
 
 });
+
+function addPaginationHeaders(req, res, count){
+
+    var limit = req.query.limit;
+    var offset = req.query.offset;
+    var project_id = req.params.id;
+    var start_idx = 0;
+    var end_idx = 0;
+
+    if (limit && offset){
+        limit = parseInt(limit);
+        offset = parseInt(offset);
+        start_idx = offset;
+        end_idx = offset + limit;
+        var count = parseInt(count);
+        if (offset > count){
+            offset = count - limit;
+        }
+        if (end_idx > count) {
+            end_idx = count;
+        }
+        res.set('Content-Range', start_idx + '-' + end_idx + '/' + count);
+        res.set('Link', '</cadasta_get_project_parcel_list?project_id=' + project_id + '&limit=' + limit + '&offset=' + (offset + limit) + '; rel="next>", </cadasta_get_project_parcel_list?project_id=' + project_id + '&limit=' + limit + '&offset=' + (offset - limit) + '; rel="prev">');
+    }
+}
 
 
 module.exports = router;

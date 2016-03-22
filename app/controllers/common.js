@@ -175,6 +175,34 @@ controller.getIntersectsWithBBox = function(tablename, idKey, idValue, xmin, ymi
 
 };
 
+controller.getCountWithId = function(tablename, idKey, opts){
+
+    var options = opts || {};
+    options.queryModifiers = options.queryModifiers || {};
+
+    var deferred = Q.defer();
+
+    tableColumnQuery(tablename)
+        .then(function(response){
+
+            var sql = 'SELECT COUNT(' + idKey + ') FROM ' + tablename + ';';
+
+            return pgb.queryDeferred(sql);
+        })
+        .then(function(result){
+
+            deferred.resolve(result)
+
+        })
+        .catch(function(err){
+            deferred.reject(err);
+        })
+        .done();
+
+    return deferred.promise;
+
+};
+
 
 controller.sanitize = function (val) {
     // we want a null to still be null, not a string
