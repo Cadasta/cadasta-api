@@ -4,6 +4,7 @@ var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
 var pgb = require('../pg-binding.js');
+var pagination = require('../pagination.js');
 
 /**
  * @api {get} /projects/relationships/:id/relationship_history Project relationships - Get history
@@ -360,6 +361,24 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
     options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;
 
+    ctrlCommon.getCountWithId('show_relationships', 'id', options)
+        .then(function(result){
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('show_relationships', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+    /*
     ctrlCommon.getAll("show_relationships", options)
         .then(function(result){
 
@@ -370,7 +389,7 @@ router.get('/:project_id/relationships/relationships_list', common.parseQueryOpt
             next(err);
         })
         .done();
-
+    */
 });
 
 /**
