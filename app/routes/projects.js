@@ -582,7 +582,7 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
                 return res.status(200).json({message: "no project"});
             } else {
                 // Add properties to parcel's geojson
-                geoJSON.features[0].properties.project_resources = results[1][0].response.features;
+                geoJSON.features[0].properties.project_resourcesf = results[1][0].response.features;
                 geoJSON.features[0].properties.project_activity = results[2][0].response.features;
                 geoJSON.features[0].properties.parcels = results[3][0].response.features;
 
@@ -996,6 +996,24 @@ router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) 
     }
 
 
+    ctrlCommon.getCountWithId('resource', 'id', options)
+        .then(function(result){
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('resource', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+    /*
     ctrlCommon.getAll('resource', options)
         .then(function(result){
             res.status(200).json(result[0].response);
@@ -1004,7 +1022,7 @@ router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) 
             next(err);
         })
         .done();
-
+    */
 });
 
 // Get project parcel
@@ -1760,18 +1778,22 @@ router.get('/:id/activity', common.parseQueryOptions, function(req, res, next) {
     options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;
 
-
-    ctrlCommon.getAll("show_activity", options)
+    ctrlCommon.getCountWithId('show_activity', 'id', options)
         .then(function(result){
-
-            res.status(200).json(result[0].response);
-
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('show_activity', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
         })
         .catch(function(err){
             next(err);
         })
         .done();
-
 });
 
 // Get project resources
