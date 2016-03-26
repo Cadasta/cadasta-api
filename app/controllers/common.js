@@ -181,14 +181,12 @@ controller.getCountWithId = function(tablename, idKey, opts){
     options.queryModifiers = options.queryModifiers || {};
     var whereClause = options.whereClause;
     var whereClauseValues = options.whereClauseValues;
-    console.log(options, whereClauseValues);
     var deferred = Q.defer();
 
     tableColumnQuery(tablename)
         .then(function(response){
 
             var sql = 'SELECT COUNT(' + idKey + ') FROM ' + tablename + ' ' + whereClause + ';';
-            console.log(sql);
             return pgb.queryDeferred(sql, {paramValues: whereClauseValues});
         })
         .then(function(result){
