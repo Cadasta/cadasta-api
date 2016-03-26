@@ -20,9 +20,10 @@ pagination.addPaginationHeaders = function(req, res, count){
         offset = parseInt(offset);
         start_idx = offset + 1;
         end_idx = limit + offset;
-        var count = parseInt(count) -1;
+        var count = parseInt(count);
         end_idx = end_idx < count ? end_idx : count;
         res.set('Content-Range', start_idx + '-' + end_idx + '/' + count);
+        //console.log(res);
     }
 }
 
