@@ -582,7 +582,7 @@ router.get('/:id/overview', common.parseQueryOptions, function(req, res, next) {
                 return res.status(200).json({message: "no project"});
             } else {
                 // Add properties to parcel's geojson
-                geoJSON.features[0].properties.project_resourcesf = results[1][0].response.features;
+                geoJSON.features[0].properties.project_resources = results[1][0].response.features;
                 geoJSON.features[0].properties.project_activity = results[2][0].response.features;
                 geoJSON.features[0].properties.parcels = results[3][0].response.features;
 
