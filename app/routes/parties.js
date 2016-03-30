@@ -4,6 +4,7 @@ var common = require('../common.js');
 var ctrlCommon = require('../controllers/common.js');
 var Q = require('q');
 var pgb = require('../pg-binding.js');
+var pagination = require('../pagination.js');
 
 
 /**
@@ -464,6 +465,24 @@ router.get('/:project_id/parties', common.parseQueryOptions, function(req, res, 
     options.whereClause ='WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;
 
+    ctrlCommon.getCountWithId('show_parties', 'id', options)
+        .then(function(result){
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('show_parties', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+    /*
     ctrlCommon.getAll("show_parties", options)
         .then(function(result){
             res.status(200).json(result[0].response);
@@ -472,7 +491,7 @@ router.get('/:project_id/parties', common.parseQueryOptions, function(req, res, 
             next(err);
         })
         .done();
-
+    */
 });
 
 

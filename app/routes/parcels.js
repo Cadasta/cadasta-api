@@ -309,7 +309,7 @@ router.get('/:project_id/:id/intersects/:buff', common.parseQueryOptions, functi
 
 
 /**
- * @api {get} /parcels/:xmin/:ymin/:xmax/:ymax
+ * @api {get} /parcels/:project_id/:xmin/:ymin/:xmax/:ymax
  * @apiName GetParcelsInBoundingBox
  * @apiGroup Parcels
  * @apiDescription Get the parcels within a bounding box.

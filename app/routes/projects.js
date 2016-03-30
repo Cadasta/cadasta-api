@@ -6,6 +6,7 @@ var settings = require('../settings/settings.js');
 var ctrlCommon = require('../controllers/common.js');
 var pgb = require('../pg-binding.js');
 var errors = require('../errors');
+var pagination = require('../pagination.js');
 
 var Q = require('q');
 
@@ -875,16 +876,22 @@ router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, nex
         options.whereClauseValues = whereClauseValues;
     }
 
-
-    ctrlCommon.getAll('show_parcels_list', options)
+    ctrlCommon.getCountWithId('show_parcels_list', 'id', options)
         .then(function(result){
-            res.status(200).json(result[0].response);
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('show_parcels_list', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
         })
         .catch(function(err){
             next(err);
         })
         .done();
-
 });
 
 // Get project resources
@@ -989,6 +996,24 @@ router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) 
     }
 
 
+    ctrlCommon.getCountWithId('resource', 'id', options)
+        .then(function(result){
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('resource', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+
+    /*
     ctrlCommon.getAll('resource', options)
         .then(function(result){
             res.status(200).json(result[0].response);
@@ -997,7 +1022,7 @@ router.get('/:id/resources', common.parseQueryOptions, function(req, res, next) 
             next(err);
         })
         .done();
-
+    */
 });
 
 // Get project parcel
@@ -1753,18 +1778,22 @@ router.get('/:id/activity', common.parseQueryOptions, function(req, res, next) {
     options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
     options.whereClauseValues = whereClauseValues;
 
-
-    ctrlCommon.getAll("show_activity", options)
+    ctrlCommon.getCountWithId('show_activity', 'id', options)
         .then(function(result){
-
-            res.status(200).json(result[0].response);
-
+            pagination.addPaginationHeaders(req, res, result[0].count);
+            ctrlCommon.getAll('show_activity', options)
+            .then(function(result){
+                res.status(206).json(result[0].response);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
         })
         .catch(function(err){
             next(err);
         })
         .done();
-
 });
 
 // Get project resources

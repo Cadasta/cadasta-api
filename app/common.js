@@ -79,12 +79,20 @@ common.parseQueryOptions = function(req, res, next) {
 
         if(req.query.hasOwnProperty('limit')) {
 
-            if(!common.isInteger(Number(req.query.limit))) {
+            if(!common.isInteger(Number(req.query.limit))){
 
                 throw new errors.OptionError("Bad Request; invalid 'limit' option");
             }
 
             queryModifiers.limit = "LIMIT " + req.query.limit;
+        }
+
+        if(req.query.hasOwnProperty('offset')){
+            if(!common.isInteger(Number(req.query.offset))){
+                throw new errors.OptionError("Bad Request: invalid 'offset' option");
+            }
+
+            queryModifiers.offset = "OFFSET " + req.query.offset;
         }
 
         if(req.query.hasOwnProperty('sort_by')) {
@@ -130,6 +138,7 @@ common.featureCollectionSQL = function(table, mods, where){
     var modifiers = mods || {};
     var geomFragment = (modifiers.returnGeometry) ? "ST_AsGeoJSON(t.geom)::json" :"NULL";
     var limit = modifiers.limit || '';
+    var offset = modifiers.offset || '';
     var whereClause = where || '';
 
     var order_by ='';
@@ -158,13 +167,14 @@ common.featureCollectionSQL = function(table, mods, where){
     var sql = "SELECT row_to_json(fc) AS response "
         + "FROM ( SELECT 'FeatureCollection' As type, COALESCE(array_to_json(array_agg(f)), '[]') As features "
         + "FROM (SELECT 'Feature' As type, {{geometry}} As geometry "
-        + ", row_to_json({{columns}})  As properties FROM " + table + " As t {{where}} {{order_by}} {{limit}}) As f )  As fc;"
+        + ", row_to_json({{columns}})  As properties FROM " + table + " As t {{where}} {{order_by}} {{limit}} {{offset}}) As f )  As fc;"
 
 
     sql = sql.replace('{{columns}}', columns)
         .replace('{{geometry}}', geomFragment)
         .replace('{{where}}', whereClause)
         .replace('{{limit}}', limit)
+        .replace('{{offset}}', offset)
         .replace('{{order_by}}', order_by);
 
     return sql;
@@ -216,6 +226,8 @@ common.objectArraySQL = function(table, mods, where){
 
     return sql;
 };
+
+
 
 /*
 common.query = function (queryStr, cb) {
