@@ -894,6 +894,66 @@ router.get('/:id/parcels_list', common.parseQueryOptions, function(req, res, nex
         .done();
 });
 
+
+
+
+// Export project parcel data
+/**
+ * @api {get} /projects/:id/export_parcels Export project parcel data
+ * @apiName export_project_parcel_data
+ * @apiGroup Projects
+ * @apiDescription Export records from the export_parcels_list database view with a specific project id
+ *
+ * @apiParam {Number} id Project id number
+ *
+ * @apiParam (Optional query string parameters) {String} [tenure_type] Options: own, lease, occupy, informal occupy
+ * @apiParam (Optional query string parameters) {String} [sort_dir=ASC] Options: ASC or DESC
+ * @apiParam (Optional query string parameters) {Number} [limit] integer of records to return
+ * @apiParam (Optional query string parameters) {Boolean} [returnGeometry=false] integer of records to return
+ *
+ **/
+router.get('/:id/export_parcels', common.parseQueryOptions, function(req, res, next) {
+
+    req.queryModifiers.sort_by = req.queryModifiers.sort_by || "time_created,id";
+    req.queryModifiers.sort_dir = req.queryModifiers.sort_dir || "DESC";
+
+    var whereClauseArr = ['project_id = $1'];
+    var whereClauseValues = [req.params.id];
+
+    var options =  {
+        queryModifiers: req.queryModifiers,
+        outputFormat: req.query.outputFormat || 'GeoJSON'
+    };
+
+    if(req.query.tenure_type) {
+        whereClauseValues = whereClauseValues.concat(req.query.tenure_type.split(','));
+        whereClauseArr.push(common.createDynamicInArrayClause('tenure_type', 'text', req.query.tenure_type, whereClauseArr.length));
+    }
+
+    if(whereClauseArr.length > 0) {
+        options.whereClause = 'WHERE ' + whereClauseArr.join(' AND ');
+        options.whereClauseValues = whereClauseValues;
+    }
+
+    ctrlCommon.getCountWithId('export_parcels_list', 'id', options)
+        .then(function(result){
+            ctrlCommon.getAll('export_parcels_list', options)
+            .then(function(result){
+                console.log(result);
+                res.status(200).json(result);
+            })
+            .catch(function(err){
+                next(err);
+            })
+            .done();
+        })
+        .catch(function(err){
+            next(err);
+        })
+        .done();
+});
+
+
 // Get project resources
 /**
  * @api {get} /projects/:id/resources Project resources - get all
